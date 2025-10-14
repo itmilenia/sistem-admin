@@ -21,6 +21,9 @@
     <!--! BEGIN: Vendors CSS-->
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/vendors/css/vendors.min.css') }}" />
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/vendors/css/daterangepicker.min.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/vendors/css/dataTables.bs5.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/vendors/css/select2.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/vendors/css/select2-theme.min.css') }}">
     <!--! END: Vendors CSS-->
     <!--! BEGIN: Custom CSS-->
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/theme.min.css') }}" />
@@ -31,6 +34,17 @@
    <script src="https:oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
    <script src="https:oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
   <![endif]-->
+    <style>
+        .swal2-actions .btn {
+            margin: 0 6px;
+            /* kasih jarak kanan kiri */
+        }
+    </style>
+
+
+    </style>
+
+    @stack('styles')
 </head>
 
 <body>
@@ -343,6 +357,10 @@
     <script src="{{ asset('assets/vendors/js/daterangepicker.min.js') }}"></script>
     <script src="{{ asset('assets/vendors/js/apexcharts.min.js') }}"></script>
     <script src="{{ asset('assets/vendors/js/circle-progress.min.js') }}"></script>
+    <script src="{{ asset('assets/vendors/js/dataTables.min.js') }}"></script>
+    <script src="{{ asset('assets/vendors/js/dataTables.bs5.min.js') }}"></script>
+    <script src="{{ asset('assets/vendors/js/select2.min.js') }}"></script>
+    <script src="{{ asset('assets/vendors/js/select2-active.min.js') }}"></script>
     <!--! END: Vendors JS !-->
     <!--! BEGIN: Apps Init  !-->
     <script src="{{ asset('assets/js/common-init.min.js') }}"></script>
@@ -351,6 +369,7 @@
     <!--! BEGIN: Theme Customizer  !-->
     <script src="{{ asset('assets/js/theme-customizer-init.min.js') }}"></script>
     <!--! END: Theme Customizer !-->
+    @stack('scripts')
 </body>
 
 </html>

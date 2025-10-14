@@ -5,35 +5,38 @@
                 <div class="logo logo-lg">
                     <img src="{{ asset('assets/images/logo/logo.jpeg') }}" alt="Logo" class="logo logo-lg"
                         style="height: 80px; width: auto;">
-                        <span><b>Sistem Admin</b></span>
+                    <span><b>Sistem Admin</b></span>
                 </div>
                 <img src="{{ asset('assets/images/logo/logo.jpeg') }}" alt="" class="logo logo-sm" />
             </a>
         </div>
         <div class="navbar-content">
             <ul class="nxl-navbar">
-                <li class="nxl-item nxl-caption">
-                    <label>Master Data</label>
-                </li>
-                <li class="nxl-item nxl-hasmenu">
-                    <a href="javascript:void(0);" class="nxl-link">
-                        <span class="nxl-micon"><i class="feather-lock"></i></span>
-                        <span class="nxl-mtext">Manajemen User</span><span class="nxl-arrow"><i
-                                class="feather-chevron-right"></i></span>
-                    </a>
-                    <ul class="nxl-submenu">
-                        <li class="nxl-item"><a class="nxl-link" href="#">User</a></li>
-                        <li class="nxl-item"><a class="nxl-link" href="#">Peran</a></li>
-                        <li class="nxl-item"><a class="nxl-link" href="#">Izin Akses</a></li>
-                        <li class="nxl-item"><a class="nxl-link" href="#">Pengaturan Peran & Izin</a></li>
-                    </ul>
+                @can('manage_master')
+                    <li class="nxl-item nxl-caption">
+                        <label>Master Data</label>
+                    </li>
+                    <li class="nxl-item nxl-hasmenu {{ request()->routeIs(['master-user.*']) ? 'active' : '' }}">
+                        <a href="#" class="nxl-link">
+                            <span class="nxl-micon"><i class="feather-lock"></i></span>
+                            <span class="nxl-mtext">Manajemen User</span><span class="nxl-arrow"><i
+                                    class="feather-chevron-right"></i></span>
+                        </a>
+                        <ul class="nxl-submenu">
+                            <li class="nxl-item {{ request()->routeIs(['master-user.*']) ? 'active' : '' }}"><a
+                                    class="nxl-link" href="{{ route('master-user.index') }}">User</a></li>
+                            <li class="nxl-item"><a class="nxl-link" href="#">Peran</a></li>
+                            <li class="nxl-item"><a class="nxl-link" href="#">Izin Akses</a></li>
+                            <li class="nxl-item"><a class="nxl-link" href="#">Pengaturan Peran & Izin</a></li>
+                        </ul>
 
-                </li>
+                    </li>
+                @endcan
                 <li class="nxl-item nxl-caption">
                     <label>Navigation</label>
                 </li>
-                <li class="nxl-item nxl-hasmenu">
-                    <a href="#" class="nxl-link">
+                <li class="nxl-item nxl-hasmenu {{ request()->routeIs(['dashboard']) ? 'active' : '' }}">
+                    <a href="{{ route('dashboard') }}" class="nxl-link">
                         <span class="nxl-micon"><i class="feather-airplay"></i></span>
                         <span class="nxl-mtext">Dashboard</span>
                     </a>

@@ -23,7 +23,7 @@
                         <h5>Dashboard</h5>
                     </div>
                     <div class="card-body">
-                        <p class="mb-0">Welcome to Admin Dashboard</p>
+                        <p class="mb-0">Welcome to Admin Dashboard {{Auth::user()->Nama}}</p>
                     </div>
                 </div>
             </div>

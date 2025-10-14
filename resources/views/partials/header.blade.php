@@ -54,16 +54,22 @@
                                 <img src="{{ asset('assets/images/avatar/1.png') }}" alt="user-image"
                                     class="img-fluid user-avtar" />
                                 <div>
-                                    <h6 class="text-dark mb-0">Alexandra Della <span
-                                            class="badge bg-soft-success text-success ms-1">PRO</span></h6>
-                                    <span class="fs-12 fw-medium text-muted">alex.della@outlook.com</span>
+                                    <h6 class="text-dark mb-0">{{ Auth::user()->Nama }} <span
+                                            class="badge bg-soft-success text-success ms-1">{{ Auth::user()->getRoleNames()->implode(', ') }}</span>
+                                    </h6>
+                                    <span class="fs-12 fw-medium text-muted">{{ Auth::user()->email_karyawan ?? 'Tidak Ada Email' }}</span>
                                 </div>
                             </div>
                         </div>
-                        <a href="./auth-login-minimal.html" class="dropdown-item">
+                        <a href="#" class="dropdown-item"
+                            onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                             <i class="feather-log-out"></i>
                             <span>Logout</span>
                         </a>
+
+                        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                            @csrf
+                        </form>
                     </div>
                 </div>
             </div>
