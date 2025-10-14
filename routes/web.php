@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Master\RoleController;
 use App\Http\Controllers\Master\UserController;
 
 Route::get('/', function () {
@@ -22,8 +23,9 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
-    Route::middleware('permission:manage_master')->group(function () {
-        Route::prefix('master')->group(function () {
+    Route::prefix('manajemen-user')->group(function () {
+        // Route Master Karyawan
+        Route::middleware('permission:manage_master')->group(function () {
             Route::get('user', [UserController::class, 'index'])->name('master-user.index');
             Route::get('user/tambah', [UserController::class, 'create'])->name('master-user.create');
             Route::post('user', [UserController::class, 'store'])->name('master-user.store');
@@ -31,6 +33,16 @@ Route::middleware('auth')->group(function () {
             Route::put('user/{id}/update', [UserController::class, 'update'])->name('master-user.update');
             Route::put('user/{id}/delete', [UserController::class, 'delete'])->name('master-user.destroy');
             Route::get('/sync', [UserController::class, 'syncEmployeeData'])->name('master-user.sync');
+        });
+
+        // Route Master Role
+        Route::middleware('permission:manage_roles')->group(function () {
+            Route::get('peran', [RoleController::class, 'index'])->name('master-role.index');
+            Route::get('peran/tambah', [RoleController::class, 'create'])->name('master-role.create');
+            Route::post('peran', [RoleController::class, 'store'])->name('master-role.store');
+            Route::get('peran/{id}/edit', [RoleController::class, 'edit'])->name('master-role.edit');
+            Route::put('peran/{id}/update', [RoleController::class, 'update'])->name('master-role.update');
+            Route::delete('peran/{id}/delete', [RoleController::class, 'destroy'])->name('master-role.destroy');
         });
     });
 

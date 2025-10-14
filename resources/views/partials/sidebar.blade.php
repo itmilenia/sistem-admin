@@ -16,16 +16,22 @@
                     <li class="nxl-item nxl-caption">
                         <label>Master Data</label>
                     </li>
-                    <li class="nxl-item nxl-hasmenu {{ request()->routeIs(['master-user.*']) ? 'active' : '' }}">
+                    <li
+                        class="nxl-item nxl-hasmenu {{ request()->routeIs(['master-user.*', 'master-role.*']) ? 'active' : '' }}">
                         <a href="#" class="nxl-link">
                             <span class="nxl-micon"><i class="feather-lock"></i></span>
                             <span class="nxl-mtext">Manajemen User</span><span class="nxl-arrow"><i
                                     class="feather-chevron-right"></i></span>
                         </a>
                         <ul class="nxl-submenu">
-                            <li class="nxl-item {{ request()->routeIs(['master-user.*']) ? 'active' : '' }}"><a
-                                    class="nxl-link" href="{{ route('master-user.index') }}">User</a></li>
-                            <li class="nxl-item"><a class="nxl-link" href="#">Peran</a></li>
+                            <li class="nxl-item {{ request()->routeIs(['master-user.*']) ? 'active' : '' }}">
+                                <a class="nxl-link" href="{{ route('master-user.index') }}">User</a>
+                            </li>
+                            @can('manage_roles')
+                                <li class="nxl-item {{ request()->routeIs(['master-role.*']) ? 'active' : '' }}">
+                                    <a class="nxl-link" href="{{ route('master-role.index') }}">Peran</a>
+                                </li>
+                            @endcan
                             <li class="nxl-item"><a class="nxl-link" href="#">Izin Akses</a></li>
                             <li class="nxl-item"><a class="nxl-link" href="#">Pengaturan Peran & Izin</a></li>
                         </ul>
