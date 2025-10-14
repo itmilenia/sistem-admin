@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Master\PermissionController;
 use App\Http\Controllers\Master\RoleController;
 use App\Http\Controllers\Master\UserController;
 
@@ -43,6 +44,16 @@ Route::middleware('auth')->group(function () {
             Route::get('peran/{id}/edit', [RoleController::class, 'edit'])->name('master-role.edit');
             Route::put('peran/{id}/update', [RoleController::class, 'update'])->name('master-role.update');
             Route::delete('peran/{id}/delete', [RoleController::class, 'destroy'])->name('master-role.destroy');
+        });
+
+        // Route Izin Akses
+        Route::middleware('permission:manage_permissions')->group(function () {
+            Route::get('hak-akses', [PermissionController::class, 'index'])->name('master-permission.index');
+            Route::get('hak-akses/tambah', [PermissionController::class, 'create'])->name('master-permission.create');
+            Route::post('hak-akses', [PermissionController::class, 'store'])->name('master-permission.store');
+            Route::get('hak-akses/{id}/edit', [PermissionController::class, 'edit'])->name('master-permission.edit');
+            Route::put('hak-akses/{id}/update', [PermissionController::class, 'update'])->name('master-permission.update');
+            Route::delete('hak-akses/{id}/delete', [PermissionController::class, 'destroy'])->name('master-permission.destroy');
         });
     });
 

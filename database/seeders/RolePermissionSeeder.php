@@ -30,7 +30,7 @@ class RolePermissionSeeder extends Seeder
         // Assign permissions
         $owner->syncPermissions(Permission::all());
 
-        $adminPusat->syncPermissions(['view_dashboard', 'manage_permissions', 'manage_master']);
+        $adminPusat->syncPermissions(['view_dashboard', 'manage_master']);
 
         $adminCabang->syncPermissions(['view_dashboard']);
 

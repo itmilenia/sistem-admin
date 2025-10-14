@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Master Peran')
+@section('title', 'Master Hak Akses')
 
 @section('content')
     <x-alert />
@@ -22,49 +22,46 @@
             <div class="col-lg-12">
                 <div class="card stretch stretch-full">
                     <div class="card-header">
-                        <h5 class="card-title">Daftar Peran Sistem</h5>
+                        <h5 class="card-title">Daftar Hak Akses (Permissions)</h5>
                         <div class="card-header-action">
-                            <a href="{{ route('master-role.create') }}" class="btn btn-primary" data-bs-toggle="tooltip"
-                                title="Tambah Role Baru">
-                                <i class="feather-plus-circle me-2"></i> Tambah Peran
+                            <a href="{{ route('master-permission.create') }}" class="btn btn-primary"
+                                data-bs-toggle="tooltip" title="Tambah Hak Akses Baru">
+                                <i class="feather-plus-circle me-2"></i> Tambah Hak Akses
                             </a>
                         </div>
                     </div>
                     <div class="card-body custom-card-action p-0">
                         <div class="table-responsive">
-                            <table class="table table-bordered table-hover mb-0" id="table-role">
+                            <table class="table table-hover mb-0 table-bordered" id="table-permission">
                                 <thead>
                                     <tr>
                                         <th style="width: 5%;" class="text-center">#</th>
-                                        <th class="text-center">Nama Role</th>
+                                        <th class="text-center">Nama Hak Akses</th>
                                         <th class="text-center">Guard</th>
-                                        <th class="text-center">Jumlah User</th>
                                         <th class="text-center">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @forelse ($roles as $role)
+                                    @forelse ($permissions as $permission)
                                         <tr>
                                             <td class="text-center">{{ $loop->iteration }}</td>
-                                            <td><span
-                                                    class="fw-bold">{{ ucwords(str_replace('_', ' ', $role->name)) }}</span>
+                                            <td><span class="fw-bold">{{ $permission->name }}</span>
                                             </td>
                                             <td class="text-center"><span
-                                                    class="badge bg-secondary">{{ $role->guard_name }}</span></td>
-                                            <td class="text-center">{{ $role->active_users_count }} User</td>
+                                                    class="badge bg-secondary">{{ $permission->guard_name }}</span></td>
                                             <td>
                                                 <div class="hstack gap-2 justify-content-center">
-                                                    <a href="{{ route('master-role.edit', $role->id) }}"
+                                                    <a href="{{ route('master-permission.edit', $permission->id) }}"
                                                         class="btn btn-sm btn-primary" data-bs-toggle="tooltip"
-                                                        title="Edit Role">
+                                                        title="Edit Hak Akses">
                                                         <i class="feather-edit-2"></i>
                                                     </a>
-                                                    <form action="{{ route('master-role.destroy', $role->id) }}"
-                                                        method="POST" class="d-inline deleteRoleForm">
+                                                    <form action="{{ route('master-permission.destroy', $permission->id) }}"
+                                                        method="POST" class="d-inline deletePermissionForm">
                                                         @csrf
                                                         @method('DELETE')
                                                         <button type="submit" class="btn btn-sm btn-danger"
-                                                            data-bs-toggle="tooltip" title="Hapus Role">
+                                                            data-bs-toggle="tooltip" title="Hapus Hak Akses">
                                                             <i class="feather-trash-2"></i>
                                                         </button>
                                                     </form>
@@ -88,7 +85,7 @@
 
     <script>
         $(document).ready(function() {
-            $('#table-role').DataTable({
+            $('#table-permission').DataTable({
                 language: {
                     url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json'
                 }
@@ -99,13 +96,13 @@
     {{-- Konfirmasi hapus --}}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const forms = document.querySelectorAll('.deleteRoleForm');
-            forms.forEach(form => {
+            const deletePermissionForm = document.querySelectorAll('.deletePermissionForm');
+            deletePermissionForm.forEach(form => {
                 form.addEventListener('submit', function(e) {
                     e.preventDefault();
 
                     Swal.fire({
-                        title: 'Hapus Peran',
+                        title: 'Hapus Hak Akses',
                         text: "Pastikan data yang dipilih sudah benar.",
                         icon: 'question',
                         showCancelButton: true,

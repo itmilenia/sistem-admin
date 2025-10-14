@@ -111,13 +111,6 @@
                                             </td>
                                         </tr>
                                     @empty
-                                        <tr>
-                                            <td colspan="6" class="text-center py-4">
-                                                <p class="text-muted mb-0">Tidak ada data user yang ditemukan.</p>
-                                                <a href="{{ route('master-user.create') }}"
-                                                    class="btn btn-primary btn-sm mt-2">Tambah User Baru</a>
-                                            </td>
-                                        </tr>
                                     @endforelse
                                 </tbody>
                             </table>
@@ -134,7 +127,11 @@
 
     <script>
         $(document).ready(function() {
-            $('#user-list').DataTable();
+            $('#user-list').DataTable({
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json'
+                }
+            });
         });
     </script>
 

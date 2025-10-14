@@ -17,7 +17,7 @@
                         <label>Master Data</label>
                     </li>
                     <li
-                        class="nxl-item nxl-hasmenu {{ request()->routeIs(['master-user.*', 'master-role.*']) ? 'active' : '' }}">
+                        class="nxl-item nxl-hasmenu {{ request()->routeIs(['master-user.*', 'master-role.*', 'master-permission.*']) ? 'active' : '' }}">
                         <a href="#" class="nxl-link">
                             <span class="nxl-micon"><i class="feather-lock"></i></span>
                             <span class="nxl-mtext">Manajemen User</span><span class="nxl-arrow"><i
@@ -32,7 +32,11 @@
                                     <a class="nxl-link" href="{{ route('master-role.index') }}">Peran</a>
                                 </li>
                             @endcan
-                            <li class="nxl-item"><a class="nxl-link" href="#">Izin Akses</a></li>
+                            @can('manage_permissions')
+                                <li class="nxl-item {{ request()->routeIs(['master-permission.*']) ? 'active' : '' }}">
+                                    <a class="nxl-link" href="{{ route('master-permission.index') }}">Hak Akses</a>
+                                </li>
+                            @endcan
                             <li class="nxl-item"><a class="nxl-link" href="#">Pengaturan Peran & Izin</a></li>
                         </ul>
 
