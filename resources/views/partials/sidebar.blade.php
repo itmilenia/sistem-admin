@@ -37,7 +37,6 @@
                                     <a class="nxl-link" href="{{ route('master-permission.index') }}">Hak Akses</a>
                                 </li>
                             @endcan
-                            <li class="nxl-item"><a class="nxl-link" href="#">Pengaturan Peran & Izin</a></li>
                         </ul>
 
                     </li>

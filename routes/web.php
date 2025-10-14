@@ -12,18 +12,16 @@ Route::get('/', function () {
         : redirect()->route('login');
 })->name('home');
 
-Route::middleware('auth')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('welcome');
-    })->name('dashboard');
-});
-
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 });
 
 Route::middleware('auth')->group(function () {
+    Route::get('/dashboard', function () {
+        return view('welcome');
+    })->name('dashboard');
+
     Route::prefix('manajemen-user')->group(function () {
         // Route Master Karyawan
         Route::middleware('permission:manage_master')->group(function () {
