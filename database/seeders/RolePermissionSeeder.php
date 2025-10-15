@@ -13,6 +13,9 @@ class RolePermissionSeeder extends Seeder
         // Buat permissions dasar
         $permissions = [
             'view_dashboard',
+            'view_customer',
+            'view_customer_transaction',
+            'view_salesperson_sales',
             'manage_roles',
             'manage_permissions',
             'manage_master',
@@ -30,9 +33,9 @@ class RolePermissionSeeder extends Seeder
         // Assign permissions
         $owner->syncPermissions(Permission::all());
 
-        $adminPusat->syncPermissions(['view_dashboard', 'manage_master']);
+        $adminPusat->syncPermissions(['view_dashboard', 'manage_master', 'view_dashboard', 'view_customer', 'view_customer_transaction', 'view_salesperson_sales']);
 
-        $adminCabang->syncPermissions(['view_dashboard']);
+        $adminCabang->syncPermissions(['view_dashboard', 'view_customer', 'view_customer_transaction', 'view_salesperson_sales']);
 
         $this->command->info('✅ RolePermissionSeeder selesai dijalankan.');
     }

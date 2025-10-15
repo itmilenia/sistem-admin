@@ -6,8 +6,9 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Master\RoleController;
 use App\Http\Controllers\Master\UserController;
 use App\Http\Controllers\Feat\CustomerController;
-use App\Http\Controllers\Feat\CustomerTransactionController;
 use App\Http\Controllers\Master\PermissionController;
+use App\Http\Controllers\Feat\SalespersonSalesController;
+use App\Http\Controllers\Feat\CustomerTransactionController;
 
 Route::get('/', function () {
     return auth()
@@ -70,6 +71,15 @@ Route::middleware('auth')->group(function () {
             Route::get('/', [CustomerTransactionController::class, 'index'])->name('customer-transaction.index');
             Route::get('/data', [CustomerTransactionController::class, 'getData'])->name('customer-transaction.data');
             Route::get('/{id}/detail', [CustomerTransactionController::class, 'show'])->name('customer-transaction.show');
+        });
+    });
+
+    Route::prefix('sales')->group(function () {
+        Route::prefix('data-penjualan-sales')->name('salesperson-sales.')->middleware('permission:view_salesperson_sales')->group(function () {
+            Route::get('/', [SalespersonSalesController::class, 'index'])->name('index');
+            Route::get('/data', [SalespersonSalesController::class, 'getData'])->name('data');
+            Route::get('/{id}/detail', [SalespersonSalesController::class, 'show'])->name('show');
+            Route::get('/{id}/transactions', [SalespersonSalesController::class, 'getSalespersonTransactionsData'])->name('transactions.data');
         });
     });
 
