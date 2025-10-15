@@ -1,10 +1,12 @@
 <?php
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
-use App\Http\Controllers\Master\PermissionController;
 use App\Http\Controllers\Master\RoleController;
 use App\Http\Controllers\Master\UserController;
+use App\Http\Controllers\Feat\CustomerController;
+use App\Http\Controllers\Master\PermissionController;
 
 Route::get('/', function () {
     return auth()
@@ -52,6 +54,13 @@ Route::middleware('auth')->group(function () {
             Route::get('hak-akses/{id}/edit', [PermissionController::class, 'edit'])->name('master-permission.edit');
             Route::put('hak-akses/{id}/update', [PermissionController::class, 'update'])->name('master-permission.update');
             Route::delete('hak-akses/{id}/delete', [PermissionController::class, 'destroy'])->name('master-permission.destroy');
+        });
+    });
+
+    route::prefix('customer')->group(function () {
+        Route::prefix('data-customer')->middleware('permission:view_customer')->group(function () {
+            Route::get('/', [CustomerController::class, 'index'])->name('customer-data.index');
+            Route::get('/{id}/detail', [CustomerController::class, 'show'])->name('customer-data.show');
         });
     });
 

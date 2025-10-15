@@ -127,6 +127,23 @@ return [
             // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', 'false'),
         ],
 
+        'sqlsrv_wh' => [
+            'driver' => 'sqlsrv',
+            'host' => env('DB_WH_HOST', 'localhost'),
+            'port' => env('DB_WH_PORT', '1433'),
+            'database' => env('DB_WH_DATABASE', 'forge'),
+            'username' => env('DB_WH_USERNAME', 'forge'),
+            'password' => env('DB_WH_PASSWORD', ''),
+            'charset' => 'utf8',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'encrypt' => env('DB_ENCRYPT', 'yes'),
+            'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', 'true'),
+            'options' => [
+                'legacy_limit' => true,
+            ],
+        ],
+
     ],
 
     /*
