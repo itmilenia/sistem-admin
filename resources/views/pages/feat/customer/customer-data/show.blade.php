@@ -14,6 +14,11 @@
                 <li class="breadcrumb-item">Detail</li>
             </ul>
         </div>
+        <div class="page-header-right ms-auto">
+            <a href="{{ route('customer-data.index') }}" class="btn btn-secondary">
+                <i class="feather-arrow-left me-2"></i> Kembali ke Daftar
+            </a>
+        </div>
     </div>
 
     <div class="main-content">
@@ -22,9 +27,6 @@
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h5 class="card-title"><i class="feather-user me-2"></i>Informasi Detail Customer</h5>
-                        <a href="{{ route('customer-data.index') }}" class="btn btn-primary">
-                            <i class="feather-arrow-left me-2"></i> Kembali
-                        </a>
                     </div>
                     <div class="card-body">
                         <dl class="row">

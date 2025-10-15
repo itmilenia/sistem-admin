@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Master\RoleController;
 use App\Http\Controllers\Master\UserController;
 use App\Http\Controllers\Feat\CustomerController;
+use App\Http\Controllers\Feat\CustomerTransactionController;
 use App\Http\Controllers\Master\PermissionController;
 
 Route::get('/', function () {
@@ -58,9 +59,17 @@ Route::middleware('auth')->group(function () {
     });
 
     route::prefix('customer')->group(function () {
+        // Route Data Customer
         Route::prefix('data-customer')->middleware('permission:view_customer')->group(function () {
             Route::get('/', [CustomerController::class, 'index'])->name('customer-data.index');
             Route::get('/{id}/detail', [CustomerController::class, 'show'])->name('customer-data.show');
+        });
+
+        // Route Transaksi Customer
+        Route::prefix(('transaksi-pembelian-customer'))->middleware('permission:view_customer_transaction')->group(function () {
+            Route::get('/', [CustomerTransactionController::class, 'index'])->name('customer-transaction.index');
+            Route::get('/data', [CustomerTransactionController::class, 'getData'])->name('customer-transaction.data');
+            Route::get('/{id}/detail', [CustomerTransactionController::class, 'show'])->name('customer-transaction.show');
         });
     });
 
