@@ -16,7 +16,8 @@ class UserSeeder extends Seeder
         // Pastikan roles ada
         $owner        = Role::firstOrCreate(['name' => 'owner', 'guard_name' => 'web']);
         $admin_pusat  = Role::firstOrCreate(['name' => 'admin_pusat', 'guard_name' => 'web']);
-        $admin_cabang = Role::firstOrCreate(['name' => 'admin_cabang', 'guard_name' => 'web']);
+        $admin_cabang_milenia = Role::firstOrCreate(['name' => 'admin_cabang_milenia', 'guard_name' => 'web']);
+        $admin_cabang_map = Role::firstOrCreate(['name' => 'admin_cabang_map', 'guard_name' => 'web']);
 
 
         // 1) Buat Super Admin lokal
@@ -41,7 +42,8 @@ class UserSeeder extends Seeder
         $targetIds = [7605, 42, 7432, 7743];
 
         $adminPusatIds  = [7605];
-        $adminCabangIds = [42, 7432, 7743];
+        $adminCabangMap = [42];
+        $adminCabangMilenia = [7432, 7743];
 
         $karyawans = DB::connection('dbhrd')
             ->table('trkaryawan')
@@ -91,11 +93,10 @@ class UserSeeder extends Seeder
             // assign role gunakan nama role
             if (in_array($k->ID, $adminPusatIds)) {
                 $user->syncRoles([$admin_pusat->name]);
-            } elseif (in_array($k->ID, $adminCabangIds)) {
-                $user->syncRoles([$admin_cabang->name]);
-            } else {
-                // jika tidak ada mapping
-                $user->syncRoles([]);
+            } elseif (in_array($k->ID, $adminCabangMilenia)) {
+                $user->syncRoles([$admin_cabang_milenia->name]);
+            } elseif (in_array($k->ID, $adminCabangMap)) {
+                $user->syncRoles([$admin_cabang_map->name]);
             }
 
             // cek langsung apakah pivot terisi

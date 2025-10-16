@@ -13,7 +13,8 @@ class RolePermissionSeeder extends Seeder
         // Buat permissions dasar
         $permissions = [
             'view_dashboard',
-            'view_customer',
+            'view_customer_milenia',
+            'view_customer_map',
             'view_customer_transaction',
             'view_salesperson_sales',
             'manage_roles',
@@ -28,14 +29,35 @@ class RolePermissionSeeder extends Seeder
         // Roles
         $owner = Role::firstOrCreate(['name' => 'owner', 'guard_name' => 'web']);
         $adminPusat = Role::firstOrCreate(['name' => 'admin_pusat', 'guard_name' => 'web']);
-        $adminCabang = Role::firstOrCreate(['name' => 'admin_cabang', 'guard_name' => 'web']);
+        $adminCabang_milenia = Role::firstOrCreate(['name' => 'admin_cabang_milenia', 'guard_name' => 'web']);
+        $adminCabang_map = Role::firstOrCreate(['name' => 'admin_cabang_map', 'guard_name' => 'web']);
 
         // Assign permissions
         $owner->syncPermissions(Permission::all());
 
-        $adminPusat->syncPermissions(['view_dashboard', 'manage_master', 'view_dashboard', 'view_customer', 'view_customer_transaction', 'view_salesperson_sales']);
+        $adminPusat->syncPermissions([
+            'view_dashboard',
+            'manage_master',
+            'view_dashboard',
+            'view_customer_milenia',
+            'view_customer_map',
+            'view_customer_transaction',
+            'view_salesperson_sales'
+        ]);
 
-        $adminCabang->syncPermissions(['view_dashboard', 'view_customer', 'view_customer_transaction', 'view_salesperson_sales']);
+        $adminCabang_milenia->syncPermissions([
+            'view_dashboard',
+            'view_customer_milenia',
+            'view_customer_transaction',
+            'view_salesperson_sales'
+        ]);
+
+        $adminCabang_map->syncPermissions([
+            'view_dashboard',
+            'view_customer_map',
+            'view_customer_transaction',
+            'view_salesperson_sales'
+        ]);
 
         $this->command->info('✅ RolePermissionSeeder selesai dijalankan.');
     }

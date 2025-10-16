@@ -9,13 +9,13 @@
                 <h5 class="m-b-10">@yield('title')</h5>
             </div>
             <ul class="breadcrumb">
-                <li class="breadcrumb-item"><a href="#">Customer</a></li>
-                <li class="breadcrumb-item"><a href="{{ route('customer-data.index') }}">Data Customer</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('customer-data.landing') }}">Customer</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('customer-data-milenia.index') }}">Data Customer</a></li>
                 <li class="breadcrumb-item">Detail</li>
             </ul>
         </div>
         <div class="page-header-right ms-auto">
-            <a href="{{ route('customer-data.index') }}" class="btn btn-secondary">
+            <a href="{{ route('customer-data-milenia.index') }}" class="btn btn-secondary">
                 <i class="feather-arrow-left me-2"></i> Kembali ke Daftar
             </a>
         </div>

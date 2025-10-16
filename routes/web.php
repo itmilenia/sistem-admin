@@ -60,10 +60,17 @@ Route::middleware('auth')->group(function () {
     });
 
     route::prefix('customer')->group(function () {
+        Route::get('/landing', [CustomerController::class, 'landing'])->name('customer-data.landing');
+
         // Route Data Customer
-        Route::prefix('data-customer')->middleware('permission:view_customer')->group(function () {
-            Route::get('/', [CustomerController::class, 'index'])->name('customer-data.index');
-            Route::get('/{id}/detail', [CustomerController::class, 'show'])->name('customer-data.show');
+        Route::prefix('data-customer-milenia')->middleware('permission:view_customer_milenia')->group(function () {
+            Route::get('/', [CustomerController::class, 'indexMilenia'])->name('customer-data-milenia.index');
+            Route::get('/{id}/detail', [CustomerController::class, 'showMilenia'])->name('customer-data-milenia.show');
+        });
+
+        Route::prefix('data-customer-mega')->middleware('permission:view_customer_map')->group(function () {
+            Route::get('/', [CustomerController::class, 'indexMega'])->name('customer-data-map.index');
+            Route::get('/{id}/detail', [CustomerController::class, 'showMega'])->name('customer-data-map.show');
         });
 
         // Route Transaksi Customer

@@ -20,7 +20,7 @@
                 <h5 class="m-b-10">@yield('title')</h5>
             </div>
             <ul class="breadcrumb">
-                <li class="breadcrumb-item"><a href="#">Customer</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('customer-data.landing') }}">Customer</a></li>
                 <li class="breadcrumb-item">@yield('title')</li>
             </ul>
         </div>
@@ -31,7 +31,7 @@
             <div class="col-lg-12">
                 <div class="card stretch stretch-full">
                     <div class="card-header">
-                        <h5 class="card-title">Daftar Semua Customer</h5>
+                        <h5 class="card-title">Daftar Semua Customer Milenia Mega Mandiri</h5>
                     </div>
                     <div class="card-body custom-card-action p-0">
                         <div class="table-responsive">
@@ -58,7 +58,7 @@
                                             <td>{{ $customer->MFCUS_Mobilephone ?? '-' }}</td>
                                             <td>
                                                 <div class="hstack gap-2 justify-content-center">
-                                                    <a href="{{ route('customer-data.show', $customer->MFCUS_CustomerID) }}"
+                                                    <a href="{{ route('customer-data-milenia.show', $customer->MFCUS_CustomerID) }}"
                                                         class="btn btn-sm btn-info">
                                                         <i class="feather-eye me-2"></i> Lihat
                                                     </a>
