@@ -9,7 +9,7 @@
                 <h5 class="m-b-10">@yield('title')</h5>
             </div>
             <ul class="breadcrumb">
-                <li class="breadcrumb-item"><a href="#">Sales</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('salesperson-sales.landing') }}">Sales</a></li>
                 <li class="breadcrumb-item">@yield('title')</li>
             </ul>
         </div>
@@ -20,7 +20,7 @@
             <div class="col-lg-12">
                 <div class="card stretch stretch-full">
                     <div class="card-header">
-                        <h5 class="card-title">Daftar Penjualan per Sales</h5>
+                        <h5 class="card-title">Daftar Penjualan per Sales (Milenia Mega Mandiri - Cabang)</h5>
                     </div>
 
                     <div class="card-body">
@@ -86,7 +86,7 @@
                     search_salesperson: searchSalesperson.value,
                 });
 
-                fetch(`{{ route('salesperson-sales.data') }}?${params}`)
+                fetch(`{{ route('salesperson-sales.transactions.milenia.branch.data') }}?${params}`)
                     .then(res => res.json())
                     .then(res => {
                         nextCursor = res.next_cursor;

@@ -9,13 +9,14 @@
                 <h5 class="m-b-10">@yield('title'): {{ $salesperson->MFSSM_Description }}</h5>
             </div>
             <ul class="breadcrumb">
-                <li class="breadcrumb-item"><a href="#">Sales</a></li>
-                <li class="breadcrumb-item"><a href="{{ route('salesperson-sales.index') }}">Data Penjualan Sales</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('salesperson-sales.landing') }}">Sales</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('salesperson-sales.transactions.map.branch.index') }}">Data
+                        Penjualan Sales</a></li>
                 <li class="breadcrumb-item">Detail</li>
             </ul>
         </div>
         <div class="page-header-right ms-auto">
-            <a href="{{ route('salesperson-sales.index') }}" class="btn btn-secondary">
+            <a href="{{ route('salesperson-sales.transactions.map.branch.index') }}" class="btn btn-secondary">
                 <i class="feather-arrow-left me-2"></i> Kembali
             </a>
         </div>
@@ -64,14 +65,17 @@
                                     <tr>
                                         <th class="text-center">No. Invoice</th>
                                         <th class="text-center">Tanggal Invoice</th>
-                                        <th class="text-center">Nama Customer</th>
+                                        <th class="text-center">ID Barang</th>
+                                        <th class="text-center">Nama Barang</th>
+                                        <th class="text-center">Nama Brand</th>
+                                        <th class="text-center">Qty</th>
+                                        <th class="text-center">Harga Satuan</th>
                                         <th class="text-center">Jumlah</th>
-                                        <th class="text-center">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody id="transactions-data-body">
                                     <tr>
-                                        <td colspan="4" class="text-center">Memuat data...</td>
+                                        <td colspan="8" class="text-center">Memuat data...</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -107,7 +111,7 @@
             const endDateInput = document.getElementById('end_date');
 
             function loadData(cursor = null) {
-                tableBody.innerHTML = `<tr><td colspan="4" class="text-center">Memuat data...</td></tr>`;
+                tableBody.innerHTML = `<tr><td colspan="8" class="text-center">Memuat data...</td></tr>`;
                 filteredTotalSpan.textContent = 'Menghitung...';
 
                 const params = new URLSearchParams({
@@ -117,7 +121,7 @@
                 });
 
                 const url =
-                    `{{ route('salesperson-sales.transactions.data', $salesperson->MFSSM_SalesmanID) }}?${params}`;
+                    `{{ route('salesperson-sales.transactions.map.data.details', $salesperson->MFSSM_SalesmanID) }}?${params}`;
 
                 fetch(url)
                     .then(res => res.json())
@@ -135,7 +139,7 @@
 
                         if (res.data.length === 0) {
                             tableBody.innerHTML =
-                                `<tr><td colspan="4" class="text-center">Tidak ada transaksi ditemukan.</td></tr>`;
+                                `<tr><td colspan="8" class="text-center">Tidak ada transaksi ditemukan.</td></tr>`;
                             return;
                         }
 
@@ -144,16 +148,19 @@
                                 <tr>
                                     <td>${item.SOIVH_InvoiceID}</td>
                                     <td class="text-center">${item.SOIVH_InvoiceDate}</td>
-                                    <td>${item.customer_name}</td>
+                                    <td class="text-center">${item.item_id}</td>
+                                    <td>${item.item_name}</td>
+                                    <td>${item.brand_name}</td>
+                                    <td class="text-center">${Math.round(item.order_qty)}</td>
+                                    <td class="text-end">${item.unit_price}</td>
                                     <td class="text-end">${item.SOIVD_LineInvoiceAmount}</td>
-                                    <td class="text-center">${item.action}</td>
                                 </tr>
                             `;
                         });
                     })
                     .catch(() => {
                         tableBody.innerHTML =
-                            `<tr><td colspan="4" class="text-center text-danger">Gagal memuat data.</td></tr>`;
+                            `<tr><td colspan="8" class="text-center text-danger">Gagal memuat data.</td></tr>`;
                         filteredTotalSpan.textContent = 'Error';
                     });
             }

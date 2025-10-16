@@ -17,7 +17,10 @@ class RolePermissionSeeder extends Seeder
             'view_customer_map',
             'view_customer_transaction_map',
             'view_customer_transaction_milenia',
-            'view_salesperson_sales',
+            'view_salesperson_sales_milenia_pusat',
+            'view_salesperson_sales_milenia_cabang',
+            'view_salesperson_sales_map_pusat',
+            'view_salesperson_sales_map_cabang',
             'manage_roles',
             'manage_permissions',
             'manage_master',
@@ -29,14 +32,15 @@ class RolePermissionSeeder extends Seeder
 
         // Roles
         $owner = Role::firstOrCreate(['name' => 'owner', 'guard_name' => 'web']);
-        $adminPusat = Role::firstOrCreate(['name' => 'admin_pusat', 'guard_name' => 'web']);
+        $adminPusat_milenia = Role::firstOrCreate(['name' => 'admin_pusat_milenia', 'guard_name' => 'web']);
+        $adminPusat_map = Role::firstOrCreate(['name' => 'admin_pusat_map', 'guard_name' => 'web']);
         $adminCabang_milenia = Role::firstOrCreate(['name' => 'admin_cabang_milenia', 'guard_name' => 'web']);
         $adminCabang_map = Role::firstOrCreate(['name' => 'admin_cabang_map', 'guard_name' => 'web']);
 
         // Assign permissions
         $owner->syncPermissions(Permission::all());
 
-        $adminPusat->syncPermissions([
+        $adminPusat_milenia->syncPermissions([
             'view_dashboard',
             'manage_master',
             'view_dashboard',
@@ -44,21 +48,25 @@ class RolePermissionSeeder extends Seeder
             'view_customer_map',
             'view_customer_transaction_map',
             'view_customer_transaction_milenia',
-            'view_salesperson_sales'
+            'view_salesperson_sales_milenia_pusat',
+            'view_salesperson_sales_milenia_cabang',
+            'view_salesperson_sales_map_pusat',
+            'view_salesperson_sales_map_cabang'
         ]);
 
         $adminCabang_milenia->syncPermissions([
             'view_dashboard',
             'view_customer_milenia',
             'view_customer_transaction_milenia',
-            'view_salesperson_sales'
+            'view_salesperson_sales_milenia_cabang'
         ]);
 
-        $adminCabang_map->syncPermissions([
+        $adminPusat_map->syncPermissions([
             'view_dashboard',
             'view_customer_map',
             'view_customer_transaction_map',
-            'view_salesperson_sales'
+            'view_salesperson_sales_map_pusat',
+            'view_salesperson_sales_map_cabang'
         ]);
 
         $this->command->info('✅ RolePermissionSeeder selesai dijalankan.');

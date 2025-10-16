@@ -15,7 +15,8 @@ class UserSeeder extends Seeder
 
         // Pastikan roles ada
         $owner        = Role::firstOrCreate(['name' => 'owner', 'guard_name' => 'web']);
-        $admin_pusat  = Role::firstOrCreate(['name' => 'admin_pusat', 'guard_name' => 'web']);
+        $admin_pusat_milenia  = Role::firstOrCreate(['name' => 'admin_pusat_milenia', 'guard_name' => 'web']);
+        $admin_pusat_map  = Role::firstOrCreate(['name' => 'admin_pusat_map', 'guard_name' => 'web']);
         $admin_cabang_milenia = Role::firstOrCreate(['name' => 'admin_cabang_milenia', 'guard_name' => 'web']);
         $admin_cabang_map = Role::firstOrCreate(['name' => 'admin_cabang_map', 'guard_name' => 'web']);
 
@@ -42,7 +43,7 @@ class UserSeeder extends Seeder
         $targetIds = [7605, 42, 7432, 7743];
 
         $adminPusatIds  = [7605];
-        $adminCabangMap = [42];
+        $adminPusatMap = [42];
         $adminCabangMilenia = [7432, 7743];
 
         $karyawans = DB::connection('dbhrd')
@@ -92,11 +93,11 @@ class UserSeeder extends Seeder
 
             // assign role gunakan nama role
             if (in_array($k->ID, $adminPusatIds)) {
-                $user->syncRoles([$admin_pusat->name]);
+                $user->syncRoles([$admin_pusat_milenia->name]);
             } elseif (in_array($k->ID, $adminCabangMilenia)) {
                 $user->syncRoles([$admin_cabang_milenia->name]);
-            } elseif (in_array($k->ID, $adminCabangMap)) {
-                $user->syncRoles([$admin_cabang_map->name]);
+            } elseif (in_array($k->ID, $adminPusatMap)) {
+                $user->syncRoles([$admin_pusat_map->name]);
             }
 
             // cek langsung apakah pivot terisi
