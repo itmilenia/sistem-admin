@@ -19,9 +19,19 @@ class CustomerTransactionController extends Controller
         return view('pages.feat.customer.customer-transaction.index-milenia');
     }
 
+    public function indexMileniaBranch()
+    {
+        return view('pages.feat.customer.customer-transaction.index-milenia-branch');
+    }
+
     public function indexMap()
     {
         return view('pages.feat.customer.customer-transaction.index-map');
+    }
+
+    public function indexMapBranch()
+    {
+        return view('pages.feat.customer.customer-transaction.index-map-branch');
     }
 
     public function getDataMilenia(Request $request)
@@ -69,6 +79,51 @@ class CustomerTransactionController extends Controller
         ]);
     }
 
+    public function getDataMileniaBranch(Request $request)
+    {
+        $cursor = $request->input('cursor');
+        $perPage = 10;
+
+        $query = DB::connection('sqlsrv_wh')->table('SOIVH_CABANG')
+            ->join('MFCUS', 'SOIVH_CABANG.SOIVH_CustomerID', '=', 'MFCUS.MFCUS_CustomerID')
+            ->select(
+                'SOIVH_CABANG.SOIVH_InvoiceID',
+                'SOIVH_CABANG.SOIVH_InvoiceDate',
+                'MFCUS.MFCUS_Description as customer_name',
+                'SOIVH_CABANG.SOIVH_DueDate',
+                'SOIVH_CABANG.SOIVH_InvoiceAmount'
+            )
+            ->orderBy('SOIVH_CABANG.SOIVH_InvoiceID', 'desc');
+
+        // filter (No. Invoice dan Nama Customer)
+        if ($request->filled('search_invoice')) {
+            $query->where('SOIVH_CABANG.SOIVH_InvoiceID', 'like', '%' . $request->search_invoice . '%');
+        }
+
+        if ($request->filled('search_customer')) {
+            $query->where('MFCUS.MFCUS_Description', 'like', '%' . $request->search_customer . '%');
+        }
+
+        $purchases = $query->cursorPaginate($perPage, ['*'], 'cursor', $cursor);
+
+        $formattedData = $purchases->getCollection()->map(function ($item) {
+            return [
+                'SOIVH_InvoiceID' => $item->SOIVH_InvoiceID,
+                'customer_name' => $item->customer_name,
+                'SOIVH_InvoiceDate' => Carbon::parse($item->SOIVH_InvoiceDate)->translatedFormat('d F Y'),
+                'SOIVH_DueDate' => Carbon::parse($item->SOIVH_DueDate)->translatedFormat('d F Y'),
+                'SOIVH_InvoiceAmount' => 'Rp ' . number_format($item->SOIVH_InvoiceAmount, 0, ',', '.'),
+                'action' => '<a href="' . route('customer-transaction-milenia-branch.show', $item->SOIVH_InvoiceID) . '" class="btn btn-sm btn-info"><i class="feather-eye me-1"></i> Lihat</a>'
+            ];
+        });
+
+        return response()->json([
+            'data' => $formattedData,
+            'next_cursor' => $purchases->nextCursor()?->encode(),
+            'prev_cursor' => $purchases->previousCursor()?->encode(),
+        ]);
+    }
+
     public function getDataMap(Request $request)
     {
         $cursor = $request->input('cursor');
@@ -104,6 +159,51 @@ class CustomerTransactionController extends Controller
                 'SOIVH_DueDate' => Carbon::parse($item->SOIVH_DueDate)->translatedFormat('d F Y'),
                 'SOIVH_InvoiceAmount' => 'Rp ' . number_format($item->SOIVH_InvoiceAmount, 0, ',', '.'),
                 'action' => '<a href="' . route('customer-transaction-map.show', $item->SOIVH_InvoiceID) . '" class="btn btn-sm btn-info"><i class="feather-eye me-1"></i> Lihat</a>'
+            ];
+        });
+
+        return response()->json([
+            'data' => $formattedData,
+            'next_cursor' => $purchases->nextCursor()?->encode(),
+            'prev_cursor' => $purchases->previousCursor()?->encode(),
+        ]);
+    }
+
+    public function getDataMapBranch(Request $request)
+    {
+        $cursor = $request->input('cursor');
+        $perPage = 10;
+
+        $query = DB::connection('sqlsrv_snx')->table('SOIVH_CABANG')
+            ->join('MFCUS', 'SOIVH_CABANG.SOIVH_CustomerID', '=', 'MFCUS.MFCUS_CustomerID')
+            ->select(
+                'SOIVH_CABANG.SOIVH_InvoiceID',
+                'SOIVH_CABANG.SOIVH_InvoiceDate',
+                'MFCUS.MFCUS_Description as customer_name',
+                'SOIVH_CABANG.SOIVH_DueDate',
+                'SOIVH_CABANG.SOIVH_InvoiceAmount'
+            )
+            ->orderBy('SOIVH_CABANG.SOIVH_InvoiceID', 'desc');
+
+        // filter (No. Invoice dan Nama Customer)
+        if ($request->filled('search_invoice')) {
+            $query->where('SOIVH_CABANG.SOIVH_InvoiceID', 'like', '%' . $request->search_invoice . '%');
+        }
+
+        if ($request->filled('search_customer')) {
+            $query->where('MFCUS.MFCUS_Description', 'like', '%' . $request->search_customer . '%');
+        }
+
+        $purchases = $query->cursorPaginate($perPage, ['*'], 'cursor', $cursor);
+
+        $formattedData = $purchases->getCollection()->map(function ($item) {
+            return [
+                'SOIVH_InvoiceID' => $item->SOIVH_InvoiceID,
+                'customer_name' => $item->customer_name,
+                'SOIVH_InvoiceDate' => Carbon::parse($item->SOIVH_InvoiceDate)->translatedFormat('d F Y'),
+                'SOIVH_DueDate' => Carbon::parse($item->SOIVH_DueDate)->translatedFormat('d F Y'),
+                'SOIVH_InvoiceAmount' => 'Rp ' . number_format($item->SOIVH_InvoiceAmount, 0, ',', '.'),
+                'action' => '<a href="' . route('customer-transaction-map-branch.show', $item->SOIVH_InvoiceID) . '" class="btn btn-sm btn-info"><i class="feather-eye me-1"></i> Lihat</a>'
             ];
         });
 
@@ -168,6 +268,60 @@ class CustomerTransactionController extends Controller
         return view('pages.feat.customer.customer-transaction.show-milenia', compact('invoiceHeader', 'invoiceDetails'));
     }
 
+    public function showMileniaBranch($id)
+    {
+        $invoiceHeader = DB::connection('sqlsrv_wh')->table('SOIVH_CABANG')
+            ->leftJoin('MFCUS', 'SOIVH_CABANG.SOIVH_CustomerID', '=', 'MFCUS.MFCUS_CustomerID')
+            ->leftJoin('MFTRM', 'SOIVH_CABANG.SOIVH_TermsID', '=', 'MFTRM.MFTRM_TermsID')
+            ->select(
+                'SOIVH_InvoiceID',
+                'SOIVH_InvoiceDate',
+                'MFCUS.MFCUS_Description as customer_name',
+                'SOIVH_CurrencyID',
+                'SOIVH_Note',
+                'SOIVH_TaxID',
+                'MFTRM.MFTRM_Description as terms_description',
+                'SOIVH_DueDate',
+                'SOIVH_InvoiceAmount',
+                'SOIVH_TaxAmount',
+                'SOIVH_InvoiceAmountGross',
+                'SOIVH_DiscAmount',
+                'SOIVH_UserID'
+            )
+            ->where('SOIVH_InvoiceID', $id)
+            ->first();
+
+        if (!$invoiceHeader) {
+            abort(404, 'Data Invoice tidak ditemukan.');
+        }
+
+        $invoiceDetails = DB::connection('sqlsrv_wh')->table('SOIVD_CABANG')
+            ->leftJoin('MFSSM', 'SOIVD_CABANG.SOIVD_SalesmanID', '=', 'MFSSM.MFSSM_SalesmanID')
+            ->leftJoin('MFIMA', 'SOIVD_CABANG.SOIVD_ItemID', '=', 'MFIMA.MFIMA_ItemID')
+            ->select(
+                'SOIVD_LineNbr',
+                'SOIVD_DeliveryID',
+                'SOIVD_OrderID',
+                'SOIVD_OrderDate',
+                'MFSSM.MFSSM_Description as salesman_name',
+                'MFIMA.MFIMA_Description as item_name',
+                'SOIVD_UM',
+                'SOIVD_OrderQty',
+                'SOIVD_OrgPieceInvoiceAmount',
+                'SOIVD_OrgInvoiceAmount',
+                'SOIVD_DiscMarkPersen',
+                'SOIVD_DiscMarkAmount',
+                'SOIVD_TaxPersen',
+                'SOIVD_TaxAmount',
+                'SOIVD_LineInvoiceAmount'
+            )
+            ->where('SOIVD_InvoiceID', $id)
+            ->orderBy('SOIVD_LineNbr', 'asc')
+            ->get();
+
+        return view('pages.feat.customer.customer-transaction.show-milenia-branch', compact('invoiceHeader', 'invoiceDetails'));
+    }
+
     public function showMap($id)
     {
         $invoiceHeader = DB::connection('sqlsrv_snx')->table('SOIVH')
@@ -220,5 +374,59 @@ class CustomerTransactionController extends Controller
             ->get();
 
         return view('pages.feat.customer.customer-transaction.show-map', compact('invoiceHeader', 'invoiceDetails'));
+    }
+
+    public function showMapBranch($id)
+    {
+        $invoiceHeader = DB::connection('sqlsrv_snx')->table('SOIVH_CABANG')
+            ->leftJoin('MFCUS', 'SOIVH_CABANG.SOIVH_CustomerID', '=', 'MFCUS.MFCUS_CustomerID')
+            ->leftJoin('MFTRM', 'SOIVH_CABANG.SOIVH_TermsID', '=', 'MFTRM.MFTRM_TermsID')
+            ->select(
+                'SOIVH_InvoiceID',
+                'SOIVH_InvoiceDate',
+                'MFCUS.MFCUS_Description as customer_name',
+                'SOIVH_CurrencyID',
+                'SOIVH_Note',
+                'SOIVH_TaxID',
+                'MFTRM.MFTRM_Description as terms_description',
+                'SOIVH_DueDate',
+                'SOIVH_InvoiceAmount',
+                'SOIVH_TaxAmount',
+                'SOIVH_InvoiceAmountGross',
+                'SOIVH_DiscAmount',
+                'SOIVH_UserID'
+            )
+            ->where('SOIVH_InvoiceID', $id)
+            ->first();
+
+        if (!$invoiceHeader) {
+            abort(404, 'Data Invoice tidak ditemukan.');
+        }
+
+        $invoiceDetails = DB::connection('sqlsrv_snx')->table('SOIVD_CABANG')
+            ->leftJoin('MFSSM', 'SOIVD_CABANG.SOIVD_SalesmanID', '=', 'MFSSM.MFSSM_SalesmanID')
+            ->leftJoin('MFIMA', 'SOIVD_CABANG.SOIVD_ItemID', '=', 'MFIMA.MFIMA_ItemID')
+            ->select(
+                'SOIVD_LineNbr',
+                'SOIVD_DeliveryID',
+                'SOIVD_OrderID',
+                'SOIVD_OrderDate',
+                'MFSSM.MFSSM_Description as salesman_name',
+                'MFIMA.MFIMA_Description as item_name',
+                'SOIVD_UM',
+                'SOIVD_OrderQty',
+                'SOIVD_OrgPieceInvoiceAmount',
+                'SOIVD_OrgInvoiceAmount',
+                'SOIVD_DiscMarkPersen',
+                'SOIVD_DiscMarkAmount',
+                'SOIVD_TaxPersen',
+                'SOIVD_TaxAmount',
+                'SOIVD_LineInvoiceAmount'
+            )
+            ->where('SOIVD_InvoiceID', $id)
+            ->orderBy('SOIVD_LineNbr', 'asc')
+            ->get();
+
+        return view('pages.feat.customer.customer-transaction.show-map-branch', compact('invoiceHeader', 'invoiceDetails'));
     }
 }

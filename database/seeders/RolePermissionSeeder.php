@@ -15,8 +15,10 @@ class RolePermissionSeeder extends Seeder
             'view_dashboard',
             'view_customer_milenia',
             'view_customer_map',
-            'view_customer_transaction_map',
-            'view_customer_transaction_milenia',
+            'view_customer_transaction_map_pusat',
+            'view_customer_transaction_map_cabang',
+            'view_customer_transaction_milenia_pusat',
+            'view_customer_transaction_milenia_cabang',
             'view_salesperson_sales_milenia_pusat',
             'view_salesperson_sales_milenia_cabang',
             'view_salesperson_sales_map_pusat',
@@ -46,8 +48,10 @@ class RolePermissionSeeder extends Seeder
             'view_dashboard',
             'view_customer_milenia',
             'view_customer_map',
-            'view_customer_transaction_map',
-            'view_customer_transaction_milenia',
+            'view_customer_transaction_map_pusat',
+            'view_customer_transaction_map_cabang',
+            'view_customer_transaction_milenia_pusat',
+            'view_customer_transaction_milenia_cabang',
             'view_salesperson_sales_milenia_pusat',
             'view_salesperson_sales_milenia_cabang',
             'view_salesperson_sales_map_pusat',
@@ -57,14 +61,15 @@ class RolePermissionSeeder extends Seeder
         $adminCabang_milenia->syncPermissions([
             'view_dashboard',
             'view_customer_milenia',
-            'view_customer_transaction_milenia',
+            'view_customer_transaction_milenia_cabang',
             'view_salesperson_sales_milenia_cabang'
         ]);
 
         $adminPusat_map->syncPermissions([
             'view_dashboard',
             'view_customer_map',
-            'view_customer_transaction_map',
+            'view_customer_transaction_map_pusat',
+            'view_customer_transaction_map_cabang',
             'view_salesperson_sales_map_pusat',
             'view_salesperson_sales_map_cabang'
         ]);

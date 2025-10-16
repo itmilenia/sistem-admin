@@ -20,7 +20,7 @@
             <div class="col-lg-12">
                 <div class="card stretch stretch-full">
                     <div class="card-header">
-                        <h5 class="card-title">Daftar Semua Transaksi Pembelian (Mega Auto Prima)</h5>
+                        <h5 class="card-title">Daftar Semua Transaksi Pembelian (Mega Auto Prima - Pusat)</h5>
                     </div>
 
                     <div class="card-body">

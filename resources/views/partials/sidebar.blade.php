@@ -57,6 +57,8 @@
                         'customer-transaction.*',
                         'customer-transaction-map.*',
                         'customer-transaction-milenia.*',
+                        'customer-transaction-map-branch.*',
+                        'customer-transaction-milenia-branch.*',
                     ])
                         ? 'active'
                         : '' }}">
@@ -72,7 +74,7 @@
                                 Customer</a>
                         </li>
                         <li
-                            class="nxl-item {{ request()->routeIs(['customer-transaction.*', 'customer-transaction-map.*', 'customer-transaction-milenia.*']) ? 'active' : '' }}">
+                            class="nxl-item {{ request()->routeIs(['customer-transaction.*', 'customer-transaction-map.*', 'customer-transaction-milenia.*', 'customer-transaction-map-branch.*', 'customer-transaction-milenia-branch.*']) ? 'active' : '' }}">
                             <a class="nxl-link" href="{{ route('customer-transaction.landing') }}">Transaksi Pembelian
                                 Customer</a>
                         </li>

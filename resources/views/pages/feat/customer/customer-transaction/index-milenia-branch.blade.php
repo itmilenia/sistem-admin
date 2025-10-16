@@ -20,7 +20,7 @@
             <div class="col-lg-12">
                 <div class="card stretch stretch-full">
                     <div class="card-header">
-                        <h5 class="card-title">Daftar Semua Transaksi Pembelian (Milenia Mega Mandiri - Pusat)</h5>
+                        <h5 class="card-title">Daftar Semua Transaksi Pembelian (Milenia Mega Mandiri - Cabang)</h5>
                     </div>
 
                     <div class="card-body">
@@ -94,7 +94,7 @@
                     search_customer: searchCustomer.value
                 });
 
-                fetch(`{{ route('customer-transaction-milenia.data') }}?${params}`)
+                fetch(`{{ route('customer-transaction-milenia-branch.data') }}?${params}`)
                     .then(res => res.json())
                     .then(res => {
                         nextCursor = res.next_cursor;

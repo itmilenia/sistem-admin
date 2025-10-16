@@ -12,26 +12,6 @@
                 </div>
 
                 <div class="row justify-content-center">
-                    {{-- Mega Auto Prima --}}
-                    <div class="col-md-4 mb-4">
-                        <a href="{{ route('customer-data-map.index') }}" class="text-decoration-none">
-                            <div class="card shadow-lg border-0 h-100 hover-card"
-                                style="background-color: #000ACF; color: white; border-radius: 15px;">
-                                <div class="card-body text-center py-5">
-
-                                    {{-- Logo container putih --}}
-                                    <div
-                                        class="logo-wrapper bg-white mx-auto mb-4 d-flex align-items-center justify-content-center">
-                                        <img src="{{ asset('assets/images/logo/logo-map.png') }}" alt="Mega Auto Prima Logo"
-                                            class="img-fluid" style="max-height: 60px;">
-                                    </div>
-
-                                    <h3 class="fw-bold text-white">Mega Auto Prima</h3>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-
                     {{-- Milenia Mega Mandiri --}}
                     <div class="col-md-4 mb-4">
                         <a href="{{ route('customer-data-milenia.index') }}" class="text-decoration-none">
@@ -47,6 +27,26 @@
                                     </div>
 
                                     <h3 class="fw-bold text-white">Milenia Mega Mandiri</h3>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+
+                    {{-- Mega Auto Prima --}}
+                    <div class="col-md-4 mb-4">
+                        <a href="{{ route('customer-data-map.index') }}" class="text-decoration-none">
+                            <div class="card shadow-lg border-0 h-100 hover-card"
+                                style="background-color: #000ACF; color: white; border-radius: 15px;">
+                                <div class="card-body text-center py-5">
+
+                                    {{-- Logo container putih --}}
+                                    <div
+                                        class="logo-wrapper bg-white mx-auto mb-4 d-flex align-items-center justify-content-center">
+                                        <img src="{{ asset('assets/images/logo/logo-map.png') }}" alt="Mega Auto Prima Logo"
+                                            class="img-fluid" style="max-height: 60px;">
+                                    </div>
+
+                                    <h3 class="fw-bold text-white">Mega Auto Prima</h3>
                                 </div>
                             </div>
                         </a>
