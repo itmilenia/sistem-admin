@@ -15,7 +15,8 @@ class RolePermissionSeeder extends Seeder
             'view_dashboard',
             'view_customer_milenia',
             'view_customer_map',
-            'view_customer_transaction',
+            'view_customer_transaction_map',
+            'view_customer_transaction_milenia',
             'view_salesperson_sales',
             'manage_roles',
             'manage_permissions',
@@ -41,21 +42,22 @@ class RolePermissionSeeder extends Seeder
             'view_dashboard',
             'view_customer_milenia',
             'view_customer_map',
-            'view_customer_transaction',
+            'view_customer_transaction_map',
+            'view_customer_transaction_milenia',
             'view_salesperson_sales'
         ]);
 
         $adminCabang_milenia->syncPermissions([
             'view_dashboard',
             'view_customer_milenia',
-            'view_customer_transaction',
+            'view_customer_transaction_milenia',
             'view_salesperson_sales'
         ]);
 
         $adminCabang_map->syncPermissions([
             'view_dashboard',
             'view_customer_map',
-            'view_customer_transaction',
+            'view_customer_transaction_map',
             'view_salesperson_sales'
         ]);
 

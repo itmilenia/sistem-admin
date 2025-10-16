@@ -51,7 +51,7 @@
                     </a>
                 </li>
                 <li
-                    class="nxl-item nxl-hasmenu {{ request()->routeIs(['customer-data-milenia.*', 'customer-data-map.*', 'customer-transaction.*']) ? 'active' : '' }}">
+                    class="nxl-item nxl-hasmenu {{ request()->routeIs(['customer-data-milenia.*', 'customer-data-map.*', 'customer-transaction.*', 'customer-transaction-map.*', 'customer-transaction-milenia.*']) ? 'active' : '' }}">
                     <a href="javascript:void(0);" class="nxl-link">
                         <span class="nxl-micon"><i class="feather-users"></i></span>
                         <span class="nxl-mtext">Customer</span><span class="nxl-arrow"><i
@@ -63,8 +63,9 @@
                             <a class="nxl-link" href="{{ route('customer-data.landing') }}">Data
                                 Customer</a>
                         </li>
-                        <li class="nxl-item {{ request()->routeIs(['customer-transaction.*']) ? 'active' : '' }}">
-                            <a class="nxl-link" href="{{ route('customer-transaction.index') }}">Transaksi Pembelian
+                        <li
+                            class="nxl-item {{ request()->routeIs(['customer-transaction.*', 'customer-transaction-map.*', 'customer-transaction-milenia.*']) ? 'active' : '' }}">
+                            <a class="nxl-link" href="{{ route('customer-transaction.landing') }}">Transaksi Pembelian
                                 Customer</a>
                         </li>
                     </ul>

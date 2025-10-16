@@ -1,0 +1,77 @@
+@extends('layouts.app')
+
+@section('title', 'Pilih Customer')
+
+@section('content')
+    <div class="container py-5">
+        <div class="card shadow-sm border-0">
+            <div class="card-body py-5">
+                <div class="text-center mb-5">
+                    <h1 class="fw-bold mb-3">Pilih Customer</h1>
+                    <p class="lead text-muted">Silakan pilih jenis transaksi customer yang ingin ditampilkan</p>
+                </div>
+
+                <div class="row justify-content-center">
+                    {{-- Mega Auto Prima --}}
+                    <div class="col-md-4 mb-4">
+                        <a href="{{ route('customer-transaction-map.index') }}" class="text-decoration-none">
+                            <div class="card shadow-lg border-0 h-100 hover-card"
+                                style="background-color: #000ACF; color: white; border-radius: 15px;">
+                                <div class="card-body text-center py-5">
+                                    <div
+                                        class="logo-wrapper bg-white mx-auto mb-4 d-flex align-items-center justify-content-center">
+                                        <img src="{{ asset('assets/images/logo/logo-map.png') }}" alt="Mega Auto Prima Logo"
+                                            class="img-fluid" style="max-height: 60px;">
+                                    </div>
+                                    <h3 class="fw-bold text-white">Mega Auto Prima</h3>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+
+                    {{-- Milenia Mega Mandiri --}}
+                    <div class="col-md-4 mb-4">
+                        <a href="{{ route('customer-transaction-milenia.index') }}" class="text-decoration-none">
+                            <div class="card shadow-lg border-0 h-100 hover-card"
+                                style="background-color: #9393C4; color: white; border-radius: 15px;">
+                                <div class="card-body text-center py-5">
+                                    <div
+                                        class="logo-wrapper bg-white mx-auto mb-4 d-flex align-items-center justify-content-center">
+                                        <img src="{{ asset('assets/images/logo/logo-milenia.png') }}"
+                                            alt="Milenia Mega Mandiri Logo" class="img-fluid" style="max-height: 60px;">
+                                    </div>
+                                    <h3 class="fw-bold text-white">Milenia Mega Mandiri</h3>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .hover-card {
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .hover-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+        }
+
+        .logo-wrapper {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        @media (max-width: 576px) {
+            .logo-wrapper {
+                width: 90px;
+                height: 90px;
+            }
+        }
+    </style>
+@endsection

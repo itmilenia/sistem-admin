@@ -9,7 +9,7 @@
                 <h5 class="m-b-10">@yield('title')</h5>
             </div>
             <ul class="breadcrumb">
-                <li class="breadcrumb-item"><a href="#">Customer</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('customer-transaction.landing') }}">Customer</a></li>
                 <li class="breadcrumb-item">@yield('title')</li>
             </ul>
         </div>
@@ -20,7 +20,7 @@
             <div class="col-lg-12">
                 <div class="card stretch stretch-full">
                     <div class="card-header">
-                        <h5 class="card-title">Daftar Semua Transaksi Pembelian</h5>
+                        <h5 class="card-title">Daftar Semua Transaksi Pembelian (Mega Auto Prima)</h5>
                     </div>
 
                     <div class="card-body">
@@ -94,7 +94,7 @@
                     search_customer: searchCustomer.value
                 });
 
-                fetch(`{{ route('customer-transaction.data') }}?${params}`)
+                fetch(`{{ route('customer-transaction-map.data') }}?${params}`)
                     .then(res => res.json())
                     .then(res => {
                         nextCursor = res.next_cursor;

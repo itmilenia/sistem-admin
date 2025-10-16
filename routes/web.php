@@ -74,10 +74,22 @@ Route::middleware('auth')->group(function () {
         });
 
         // Route Transaksi Customer
-        Route::prefix(('transaksi-pembelian-customer'))->middleware('permission:view_customer_transaction')->group(function () {
-            Route::get('/', [CustomerTransactionController::class, 'index'])->name('customer-transaction.index');
-            Route::get('/data', [CustomerTransactionController::class, 'getData'])->name('customer-transaction.data');
-            Route::get('/{id}/detail', [CustomerTransactionController::class, 'show'])->name('customer-transaction.show');
+        Route::prefix(('transaksi-pembelian-customer'))->group(function () {
+            Route::get('/landing', [CustomerTransactionController::class, 'landing'])->name('customer-transaction.landing');
+
+            // Route Menampilkan Data Transaksi Customer Milenia
+            Route::prefix('milenia')->middleware('permission:view_customer_transaction_milenia')->group(function () {
+                Route::get('/', [CustomerTransactionController::class, 'indexMilenia'])->name('customer-transaction-milenia.index');
+                Route::get('/data', [CustomerTransactionController::class, 'getDataMilenia'])->name('customer-transaction-milenia.data');
+                Route::get('/{id}/detail', [CustomerTransactionController::class, 'showMilenia'])->name('customer-transaction-milenia.show');
+            });
+
+            // Route Menampilkan Data Transaksi Customer Map
+            Route::prefix('map')->middleware('permission:view_customer_transaction_map')->group(function () {
+                Route::get('/', [CustomerTransactionController::class, 'indexMap'])->name('customer-transaction-map.index');
+                Route::get('/data', [CustomerTransactionController::class, 'getDataMap'])->name('customer-transaction-map.data');
+                Route::get('/{id}/detail', [CustomerTransactionController::class, 'showMap'])->name('customer-transaction-map.show');
+            });
         });
     });
 

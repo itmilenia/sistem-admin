@@ -30,14 +30,15 @@
                 <h5 class="m-b-10">@yield('title')</h5>
             </div>
             <ul class="breadcrumb">
-                <li class="breadcrumb-item"><a href="#">Customer</a></li>
-                <li class="breadcrumb-item"><a href="{{ route('customer-transaction.index') }}">Transaksi Pembelian</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('customer-transaction.landing') }}">Customer</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('customer-transaction-map.index') }}">Transaksi Pembelian</a>
+                </li>
                 <li class="breadcrumb-item">@yield('title')</li>
             </ul>
         </div>
         {{-- Tombol Kembali ke Halaman Index --}}
         <div class="page-header-right ms-auto">
-            <a href="{{ route('customer-transaction.index') }}" class="btn btn-secondary">
+            <a href="{{ route('customer-transaction-map.index') }}" class="btn btn-secondary">
                 <i class="feather-arrow-left me-2"></i> Kembali ke Daftar
             </a>
         </div>
@@ -117,7 +118,7 @@
                                         <th class="text-center align-middle">Satuan</th>
                                         <th class="text-center align-middle">Harga Satuan</th>
                                         <th class="text-center align-middle">Diskon</th>
-                                        <th class="text-center align-middle">Jumlah Harga</th>
+                                        <th class="text-center align-middle">Jumlah Harga <br> (Setelah Diskon)</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -133,19 +134,12 @@
                                                 {{ number_format($detail->SOIVD_OrgPieceInvoiceAmount) }}</td>
                                             <td class="text-center">
                                                 {{ number_format($detail->SOIVD_DiscMarkPersen) }}%</td>
-                                            @php
-                                                $detailJumlahHarga =
-                                                    $detail->SOIVD_OrgPieceInvoiceAmount -
-                                                    $detail->SOIVD_DiscMarkAmount;
-                                            @endphp
                                             <td class="text-end">Rp
-                                                {{ number_format($detailJumlahHarga) }}</td>
-
-
+                                                {{ number_format($detail->SOIVD_LineInvoiceAmount) }}</td>
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="7" class="text-center">Tidak ada rincian barang untuk transaksi
+                                            <td colspan="8" class="text-center">Tidak ada rincian barang untuk transaksi
                                                 ini.</td>
                                         </tr>
                                     @endforelse
