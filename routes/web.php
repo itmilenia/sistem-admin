@@ -28,7 +28,7 @@ Route::middleware('auth')->group(function () {
 
     Route::prefix('manajemen-user')->group(function () {
         // Route Master Karyawan
-        Route::middleware('permission:manage_master')->group(function () {
+        Route::middleware('permission:kelola_data_master')->group(function () {
             Route::get('user', [UserController::class, 'index'])->name('master-user.index');
             Route::get('user/tambah', [UserController::class, 'create'])->name('master-user.create');
             Route::post('user', [UserController::class, 'store'])->name('master-user.store');
@@ -39,7 +39,7 @@ Route::middleware('auth')->group(function () {
         });
 
         // Route Master Role
-        Route::middleware('permission:manage_roles')->group(function () {
+        Route::middleware('permission:kelola_peran')->group(function () {
             Route::get('peran', [RoleController::class, 'index'])->name('master-role.index');
             Route::get('peran/tambah', [RoleController::class, 'create'])->name('master-role.create');
             Route::post('peran', [RoleController::class, 'store'])->name('master-role.store');
@@ -49,7 +49,7 @@ Route::middleware('auth')->group(function () {
         });
 
         // Route Izin Akses
-        Route::middleware('permission:manage_permissions')->group(function () {
+        Route::middleware('permission:kelola_hak_akses')->group(function () {
             Route::get('hak-akses', [PermissionController::class, 'index'])->name('master-permission.index');
             Route::get('hak-akses/tambah', [PermissionController::class, 'create'])->name('master-permission.create');
             Route::post('hak-akses', [PermissionController::class, 'store'])->name('master-permission.store');
@@ -63,12 +63,12 @@ Route::middleware('auth')->group(function () {
         Route::get('/landing', [CustomerController::class, 'landing'])->name('customer-data.landing');
 
         // Route Data Customer
-        Route::prefix('data-customer-milenia')->middleware('permission:view_customer_milenia')->group(function () {
+        Route::prefix('data-customer-milenia')->middleware('permission:lihat_data_customer_milenia')->group(function () {
             Route::get('/', [CustomerController::class, 'indexMilenia'])->name('customer-data-milenia.index');
             Route::get('/{id}/detail', [CustomerController::class, 'showMilenia'])->name('customer-data-milenia.show');
         });
 
-        Route::prefix('data-customer-mega')->middleware('permission:view_customer_map')->group(function () {
+        Route::prefix('data-customer-mega')->middleware('permission:lihat_data_customer_map')->group(function () {
             Route::get('/', [CustomerController::class, 'indexMega'])->name('customer-data-map.index');
             Route::get('/{id}/detail', [CustomerController::class, 'showMega'])->name('customer-data-map.show');
         });
@@ -78,26 +78,26 @@ Route::middleware('auth')->group(function () {
             Route::get('/landing', [CustomerTransactionController::class, 'landing'])->name('customer-transaction.landing');
 
             // Route Menampilkan Data Transaksi Customer Milenia
-            Route::prefix('milenia')->middleware('permission:view_customer_transaction_milenia_pusat')->group(function () {
+            Route::prefix('milenia')->middleware('permission:lihat_transaksi_customer_milenia_pusat')->group(function () {
                 Route::get('/', [CustomerTransactionController::class, 'indexMilenia'])->name('customer-transaction-milenia.index');
                 Route::get('/data', [CustomerTransactionController::class, 'getDataMilenia'])->name('customer-transaction-milenia.data');
                 Route::get('/{id}/detail', [CustomerTransactionController::class, 'showMilenia'])->name('customer-transaction-milenia.show');
             });
 
-            Route::prefix('milenia-cabang')->middleware('permission:view_customer_transaction_milenia_cabang')->group(function () {
+            Route::prefix('milenia-cabang')->middleware('permission:lihat_transaksi_customer_milenia_cabang')->group(function () {
                 Route::get('/', [CustomerTransactionController::class, 'indexMileniaBranch'])->name('customer-transaction-milenia-branch.index');
                 Route::get('/data', [CustomerTransactionController::class, 'getDataMileniaBranch'])->name('customer-transaction-milenia-branch.data');
                 Route::get('/{id}/detail', [CustomerTransactionController::class, 'showMileniaBranch'])->name('customer-transaction-milenia-branch.show');
             });
 
             // Route Menampilkan Data Transaksi Customer Map
-            Route::prefix('map')->middleware('permission:view_customer_transaction_map_pusat')->group(function () {
+            Route::prefix('map')->middleware('permission:lihat_transaksi_customer_map_pusat')->group(function () {
                 Route::get('/', [CustomerTransactionController::class, 'indexMap'])->name('customer-transaction-map.index');
                 Route::get('/data', [CustomerTransactionController::class, 'getDataMap'])->name('customer-transaction-map.data');
                 Route::get('/{id}/detail', [CustomerTransactionController::class, 'showMap'])->name('customer-transaction-map.show');
             });
 
-            Route::prefix('map-cabang')->middleware('permission:view_customer_transaction_map_cabang')->group(function () {
+            Route::prefix('map-cabang')->middleware('permission:lihat_transaksi_customer_map_cabang')->group(function () {
                 Route::get('/', [CustomerTransactionController::class, 'indexMapBranch'])->name('customer-transaction-map-branch.index');
                 Route::get('/data', [CustomerTransactionController::class, 'getDataMapBranch'])->name('customer-transaction-map-branch.data');
                 Route::get('/{id}/detail', [CustomerTransactionController::class, 'showMapBranch'])->name('customer-transaction-map-branch.show');
@@ -110,7 +110,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/landing', [SalespersonSalesController::class, 'landing'])->name('landing');
 
             // Route Menampilkan Data Penjualan Sales
-            Route::prefix('milenia')->middleware('permission:view_salesperson_sales_milenia_pusat')->group(function () {
+            Route::prefix('milenia')->middleware('permission:lihat_penjualan_sales_milenia_pusat')->group(function () {
                 Route::get('/', [SalespersonSalesController::class, 'indexMilenia'])->name('transactions.milenia.index');
                 Route::get('/data', [SalespersonSalesController::class, 'getDataMilenia'])->name('transactions.milenia.data');
                 Route::get('/{id}/detail', [SalespersonSalesController::class, 'showMilenia'])->name('transactions.milenia.show');
@@ -119,7 +119,7 @@ Route::middleware('auth')->group(function () {
                 Route::get('/{id}/export-sales-by-brand', [SalespersonSalesController::class, 'exportSalesMileniaByBrand'])->name('transactions.milenia.export-sales-by-brand');
             });
 
-            Route::prefix('milenia-cabang')->middleware('permission:view_salesperson_sales_milenia_cabang')->group(function () {
+            Route::prefix('milenia-cabang')->middleware('permission:lihat_penjualan_sales_milenia_cabang')->group(function () {
                 Route::get('/', [SalespersonSalesController::class, 'indexMileniaBranch'])->name('transactions.milenia.branch.index');
                 Route::get('/data', [SalespersonSalesController::class, 'getDataMileniaBranch'])->name('transactions.milenia.branch.data');
                 Route::get('/{id}/detail', [SalespersonSalesController::class, 'showMileniaBranch'])->name('transactions.milenia.branch.show');
@@ -129,7 +129,7 @@ Route::middleware('auth')->group(function () {
             });
 
             // Route Menampilkan Data Penjualan Sales
-            Route::prefix('map')->middleware('permission:view_salesperson_sales_map_pusat')->group(function () {
+            Route::prefix('map')->middleware('permission:lihat_penjualan_sales_map_pusat')->group(function () {
                 Route::get('/', [SalespersonSalesController::class, 'indexMap'])->name('transactions.map.index');
                 Route::get('/data', [SalespersonSalesController::class, 'getDataMap'])->name('transactions.map.data');
                 Route::get('/{id}/detail', [SalespersonSalesController::class, 'showMap'])->name('transactions.map.show');
@@ -138,7 +138,7 @@ Route::middleware('auth')->group(function () {
                 Route::get('/{id}/export-sales-by-brand', [SalespersonSalesController::class, 'exportSalesMapByBrand'])->name('transactions.map.export-sales-by-brand');
             });
 
-            Route::prefix('map-cabang')->middleware('permission:view_salesperson_sales_map_cabang')->group(function () {
+            Route::prefix('map-cabang')->middleware('permission:lihat_penjualan_sales_map_cabang')->group(function () {
                 Route::get('/', [SalespersonSalesController::class, 'indexMapBranch'])->name('transactions.map.branch.index');
                 Route::get('/data', [SalespersonSalesController::class, 'getDataMapBranch'])->name('transactions.map.branch.data');
                 Route::get('/{id}/detail', [SalespersonSalesController::class, 'showMapBranch'])->name('transactions.map.branch.show');

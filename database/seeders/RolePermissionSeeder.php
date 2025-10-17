@@ -12,20 +12,20 @@ class RolePermissionSeeder extends Seeder
     {
         // Buat permissions dasar
         $permissions = [
-            'view_dashboard',
-            'view_customer_milenia',
-            'view_customer_map',
-            'view_customer_transaction_map_pusat',
-            'view_customer_transaction_map_cabang',
-            'view_customer_transaction_milenia_pusat',
-            'view_customer_transaction_milenia_cabang',
-            'view_salesperson_sales_milenia_pusat',
-            'view_salesperson_sales_milenia_cabang',
-            'view_salesperson_sales_map_pusat',
-            'view_salesperson_sales_map_cabang',
-            'manage_roles',
-            'manage_permissions',
-            'manage_master',
+            'lihat_dashboard',
+            'lihat_data_customer_milenia',
+            'lihat_data_customer_map',
+            'lihat_transaksi_customer_map_pusat',
+            'lihat_transaksi_customer_map_cabang',
+            'lihat_transaksi_customer_milenia_pusat',
+            'lihat_transaksi_customer_milenia_cabang',
+            'lihat_penjualan_sales_milenia_pusat',
+            'lihat_penjualan_sales_milenia_cabang',
+            'lihat_penjualan_sales_map_pusat',
+            'lihat_penjualan_sales_map_cabang',
+            'kelola_peran',
+            'kelola_hak_akses',
+            'kelola_data_master',
         ];
 
         foreach ($permissions as $perm) {
@@ -43,35 +43,34 @@ class RolePermissionSeeder extends Seeder
         $owner->syncPermissions(Permission::all());
 
         $adminPusat_milenia->syncPermissions([
-            'view_dashboard',
-            'manage_master',
-            'view_dashboard',
-            'view_customer_milenia',
-            'view_customer_map',
-            'view_customer_transaction_map_pusat',
-            'view_customer_transaction_map_cabang',
-            'view_customer_transaction_milenia_pusat',
-            'view_customer_transaction_milenia_cabang',
-            'view_salesperson_sales_milenia_pusat',
-            'view_salesperson_sales_milenia_cabang',
-            'view_salesperson_sales_map_pusat',
-            'view_salesperson_sales_map_cabang'
+            'lihat_dashboard',
+            'kelola_data_master',
+            'lihat_data_customer_milenia',
+            'lihat_data_customer_map',
+            'lihat_transaksi_customer_map_pusat',
+            'lihat_transaksi_customer_map_cabang',
+            'lihat_transaksi_customer_milenia_pusat',
+            'lihat_transaksi_customer_milenia_cabang',
+            'lihat_penjualan_sales_milenia_pusat',
+            'lihat_penjualan_sales_milenia_cabang',
+            'lihat_penjualan_sales_map_pusat',
+            'lihat_penjualan_sales_map_cabang'
         ]);
 
         $adminCabang_milenia->syncPermissions([
-            'view_dashboard',
-            'view_customer_milenia',
-            'view_customer_transaction_milenia_cabang',
-            'view_salesperson_sales_milenia_cabang'
+            'lihat_dashboard',
+            'lihat_data_customer_milenia',
+            'lihat_transaksi_customer_milenia_cabang',
+            'lihat_penjualan_sales_milenia_cabang'
         ]);
 
         $adminPusat_map->syncPermissions([
-            'view_dashboard',
-            'view_customer_map',
-            'view_customer_transaction_map_pusat',
-            'view_customer_transaction_map_cabang',
-            'view_salesperson_sales_map_pusat',
-            'view_salesperson_sales_map_cabang'
+            'lihat_dashboard',
+            'lihat_data_customer_map',
+            'lihat_transaksi_customer_map_pusat',
+            'lihat_transaksi_customer_map_cabang',
+            'lihat_penjualan_sales_map_pusat',
+            'lihat_penjualan_sales_map_cabang'
         ]);
 
         $this->command->info('✅ RolePermissionSeeder selesai dijalankan.');
