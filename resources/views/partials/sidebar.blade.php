@@ -96,7 +96,8 @@
                         <li class="nxl-item"><a class="nxl-link" href="#">Surat Agreement</a></li>
                     </ul>
                 </li>
-                <li class="nxl-item nxl-hasmenu">
+                <li
+                    class="nxl-item nxl-hasmenu {{ request()->routeIs(['pricelist-produk.*', 'pricelist-produk-milenia.*', 'pricelist-produk-map.*']) ? 'active' : '' }}">
                     <a href="javascript:void(0);" class="nxl-link">
                         <span class="nxl-micon"><i class="feather-gift"></i></span>
                         <span class="nxl-mtext">Promo & Produk</span><span class="nxl-arrow"><i
@@ -104,7 +105,10 @@
                     </a>
                     <ul class="nxl-submenu">
                         <li class="nxl-item"><a class="nxl-link" href="#">Program Promo</a></li>
-                        <li class="nxl-item"><a class="nxl-link" href="#">Pricelist Produk</a></li>
+                        <li
+                            class="nxl-item {{ request()->routeIs(['pricelist-produk.*', 'pricelist-produk-milenia.*', 'pricelist-produk-map.*']) ? 'active' : '' }}">
+                            <a class="nxl-link" href="{{ route('pricelist-produk.landing') }}">Pricelist Produk</a>
+                        </li>
                         <li class="nxl-item"><a class="nxl-link" href="#">Form Klaim Produk</a></li>
                 </li>
             </ul>

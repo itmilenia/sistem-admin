@@ -23,6 +23,8 @@ class RolePermissionSeeder extends Seeder
             'lihat_penjualan_sales_milenia_cabang',
             'lihat_penjualan_sales_map_pusat',
             'lihat_penjualan_sales_map_cabang',
+            'lihat_data_pricelist_produk_milenia',
+            'lihat_data_pricelist_produk_map',
             'kelola_peran',
             'kelola_hak_akses',
             'kelola_data_master',
@@ -54,14 +56,17 @@ class RolePermissionSeeder extends Seeder
             'lihat_penjualan_sales_milenia_pusat',
             'lihat_penjualan_sales_milenia_cabang',
             'lihat_penjualan_sales_map_pusat',
-            'lihat_penjualan_sales_map_cabang'
+            'lihat_penjualan_sales_map_cabang',
+            'lihat_data_pricelist_produk_milenia',
+            'lihat_data_pricelist_produk_map'
         ]);
 
         $adminCabang_milenia->syncPermissions([
             'lihat_dashboard',
             'lihat_data_customer_milenia',
             'lihat_transaksi_customer_milenia_cabang',
-            'lihat_penjualan_sales_milenia_cabang'
+            'lihat_penjualan_sales_milenia_cabang',
+            'lihat_data_pricelist_produk_milenia',
         ]);
 
         $adminPusat_map->syncPermissions([
@@ -70,7 +75,8 @@ class RolePermissionSeeder extends Seeder
             'lihat_transaksi_customer_map_pusat',
             'lihat_transaksi_customer_map_cabang',
             'lihat_penjualan_sales_map_pusat',
-            'lihat_penjualan_sales_map_cabang'
+            'lihat_penjualan_sales_map_cabang',
+            'lihat_data_pricelist_produk_map',
         ]);
 
         $this->command->info('✅ RolePermissionSeeder selesai dijalankan.');

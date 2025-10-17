@@ -9,6 +9,7 @@ use App\Http\Controllers\Feat\CustomerController;
 use App\Http\Controllers\Master\PermissionController;
 use App\Http\Controllers\Feat\SalespersonSalesController;
 use App\Http\Controllers\Feat\CustomerTransactionController;
+use App\Http\Controllers\Feat\ProductPricelistController;
 
 Route::get('/', function () {
     return auth()
@@ -145,6 +146,21 @@ Route::middleware('auth')->group(function () {
                 Route::get('/{id}/transactions', [SalespersonSalesController::class, 'getSalespersonTransactionsDataMapBranch'])->name('transactions.map.data.branch.details');
                 Route::get('/export-all-per-sales', [SalespersonSalesController::class, 'exportAllSalesMapBranchByBrand'])->name('transactions.map-branch.export-all-per-sales');
                 Route::get('/{id}/export-sales-by-brand', [SalespersonSalesController::class, 'exportSalesMapBranchByBrand'])->name('transactions.map-branch.export-sales-by-brand');
+            });
+        });
+    });
+
+    Route::prefix('promo-produk')->group(function () {
+        // Route Menampilkan Data Pricelist Produk
+        Route::prefix('pricelist-produk')->group(function () {
+            Route::get('/landing', [ProductPricelistController::class, 'landing'])->name('pricelist-produk.landing');
+
+            Route::prefix('milenia')->middleware('permission:lihat_data_pricelist_produk_milenia')->group(function () {
+                Route::get('/', [ProductPricelistController::class, 'indexMilenia'])->name('pricelist-produk-milenia.index');
+            });
+
+            Route::prefix('map')->middleware('permission:lihat_data_pricelist_produk_map')->group(function () {
+                Route::get('/', [ProductPricelistController::class, 'indexMap'])->name('pricelist-produk-map.index');
             });
         });
     });
