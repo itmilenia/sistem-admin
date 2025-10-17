@@ -115,6 +115,7 @@ Route::middleware('auth')->group(function () {
                 Route::get('/data', [SalespersonSalesController::class, 'getDataMilenia'])->name('transactions.milenia.data');
                 Route::get('/{id}/detail', [SalespersonSalesController::class, 'showMilenia'])->name('transactions.milenia.show');
                 Route::get('/{id}/transactions', [SalespersonSalesController::class, 'getSalespersonTransactionsDataMilenia'])->name('transactions.milenia.data.details');
+                Route::get('/{id}/export-sales-by-brand', [SalespersonSalesController::class, 'exportSalesMileniaByBrand'])->name('transactions.milenia.export-sales-by-brand');
             });
 
             Route::prefix('milenia-cabang')->middleware('permission:view_salesperson_sales_milenia_cabang')->group(function () {
@@ -122,6 +123,7 @@ Route::middleware('auth')->group(function () {
                 Route::get('/data', [SalespersonSalesController::class, 'getDataMileniaBranch'])->name('transactions.milenia.branch.data');
                 Route::get('/{id}/detail', [SalespersonSalesController::class, 'showMileniaBranch'])->name('transactions.milenia.branch.show');
                 Route::get('/{id}/transactions', [SalespersonSalesController::class, 'getSalespersonTransactionsDataMileniaBranch'])->name('transactions.milenia.data.branch.details');
+                Route::get('/{id}/export-sales-by-brand', [SalespersonSalesController::class, 'exportSalesMileniaBranchByBrand'])->name('transactions.milenia-branch.export-sales-by-brand');
             });
 
             // Route Menampilkan Data Penjualan Sales
@@ -130,6 +132,7 @@ Route::middleware('auth')->group(function () {
                 Route::get('/data', [SalespersonSalesController::class, 'getDataMap'])->name('transactions.map.data');
                 Route::get('/{id}/detail', [SalespersonSalesController::class, 'showMap'])->name('transactions.map.show');
                 Route::get('/{id}/transactions', [SalespersonSalesController::class, 'getSalespersonTransactionsDataMap'])->name('transactions.map.data.details');
+                Route::get('/{id}/export-sales-by-brand', [SalespersonSalesController::class, 'exportSalesMapByBrand'])->name('transactions.map.export-sales-by-brand');
             });
 
             Route::prefix('map-cabang')->middleware('permission:view_salesperson_sales_map_cabang')->group(function () {
@@ -137,6 +140,7 @@ Route::middleware('auth')->group(function () {
                 Route::get('/data', [SalespersonSalesController::class, 'getDataMapBranch'])->name('transactions.map.branch.data');
                 Route::get('/{id}/detail', [SalespersonSalesController::class, 'showMapBranch'])->name('transactions.map.branch.show');
                 Route::get('/{id}/transactions', [SalespersonSalesController::class, 'getSalespersonTransactionsDataMapBranch'])->name('transactions.map.data.branch.details');
+                Route::get('/{id}/export-sales-by-brand', [SalespersonSalesController::class, 'exportSalesMapBranchByBrand'])->name('transactions.map-branch.export-sales-by-brand');
             });
         });
     });

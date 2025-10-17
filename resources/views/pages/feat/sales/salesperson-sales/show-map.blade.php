@@ -53,9 +53,14 @@
                 <div class="card stretch stretch-full">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h5 class="card-title mb-0">Daftar Transaksi</h5>
-                        <div class="text-end">
-                            <strong>Total Penjualan (sesuai filter):</strong>
-                            <span id="filteredTotal" class="fs-5 fw-bold text-success">Memuat...</span>
+                        <div class="d-flex align-items-center gap-3">
+                            <div>
+                                <strong>Total Penjualan (sesuai filter):</strong>
+                                <span id="filteredTotal" class="fs-5 fw-bold text-success">Memuat...</span>
+                            </div>
+                            <a href="#" id="exportBtn" class="btn btn-success disabled">
+                                <i class="feather-download me-2"></i> Export Excel
+                            </a>
                         </div>
                     </div>
                     <div class="card-body">
@@ -94,7 +99,6 @@
 @endsection
 
 @push('scripts')
-    {{-- Sebelum bisa digunakan, controller perlu diubah sedikit untuk mengirim total terfilter --}}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             let nextCursor = null;
@@ -109,6 +113,27 @@
 
             const startDateInput = document.getElementById('start_date');
             const endDateInput = document.getElementById('end_date');
+            const exportBtn = document.getElementById('exportBtn');
+
+            function updateExportLink() {
+                const startDate = startDateInput.value;
+                const endDate = endDateInput.value;
+
+                if (startDate && endDate) {
+                    const params = new URLSearchParams({
+                        start_date: startDate,
+                        end_date: endDate
+                    });
+
+                    const baseUrl =
+                        `{{ route('salesperson-sales.transactions.map.export-sales-by-brand', $salesperson->MFSSM_SalesmanID) }}`;
+                    exportBtn.href = `${baseUrl}?${params.toString()}`;
+                    exportBtn.classList.remove('disabled');
+                } else {
+                    exportBtn.href = '#'; // Reset link
+                    exportBtn.classList.add('disabled');
+                }
+            }
 
             function loadData(cursor = null) {
                 tableBody.innerHTML = `<tr><td colspan="8" class="text-center">Memuat data...</td></tr>`;
@@ -131,10 +156,7 @@
                         prevBtn.disabled = !prevCursor;
                         nextBtn.disabled = !nextCursor;
 
-                        // Perbarui total penjualan terfilter
-                        // Catatan: Controller perlu diupdate untuk mengirim 'total_filtered_sales'
                         filteredTotalSpan.textContent = res.total_filtered_sales || 'Rp 0';
-
                         tableBody.innerHTML = '';
 
                         if (res.data.length === 0) {
@@ -166,6 +188,7 @@
             }
 
             loadData();
+            updateExportLink();
 
             nextBtn.addEventListener('click', () => {
                 if (nextCursor) loadData(nextCursor);
@@ -173,13 +196,20 @@
             prevBtn.addEventListener('click', () => {
                 if (prevCursor) loadData(prevCursor);
             });
-            filterBtn.addEventListener('click', () => loadData());
+            filterBtn.addEventListener('click', () => {
+                loadData();
+                updateExportLink();
+            });
 
             resetBtn.addEventListener('click', () => {
                 startDateInput.value = '';
                 endDateInput.value = '';
                 loadData();
+                updateExportLink();
             });
+
+            startDateInput.addEventListener('input', updateExportLink);
+            endDateInput.addEventListener('input', updateExportLink);
         });
     </script>
 @endpush

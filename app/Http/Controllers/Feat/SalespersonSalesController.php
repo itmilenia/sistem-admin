@@ -7,6 +7,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\SalesByBrandExportMap;
+use Illuminate\Support\Facades\Validator;
+use App\Exports\SalesByBrandExportMilenia;
+use App\Exports\SalesByBrandExportMapBranch;
+use App\Exports\SalesByBrandExportMileniaBranch;
 
 class SalespersonSalesController extends Controller
 {
@@ -728,5 +734,101 @@ class SalespersonSalesController extends Controller
             ]);
             return response()->json(['error' => 'Terjadi kesalahan pada server saat mengambil data transaksi.'], 500);
         }
+    }
+
+    public function exportSalesMileniaByBrand($id, Request $request)
+    {
+        // Validasi input tanggal
+        $validator = Validator::make($request->all(), [
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+        $salesperson = DB::connection('sqlsrv_wh')->table('MFSSM')->where('MFSSM_SalesmanID', $id)->first();
+        $salespersonName = $salesperson ? $salesperson->MFSSM_Description : 'Sales ID: ' . $id;
+        $description = 'LAPORAN PENJUALAN SALES MILENIA PUSAT';
+
+        $fileName = "Sales_Report_{$id}_{$startDate}_to_{$endDate}.xlsx";
+
+        // Panggil dan download file Excel
+        return Excel::download(new SalesByBrandExportMilenia($id, $startDate, $endDate, $salespersonName, $description), $fileName);
+    }
+
+    public function exportSalesMapByBrand($id, Request $request)
+    {
+        // Validasi input tanggal
+        $validator = Validator::make($request->all(), [
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+        $salesperson = DB::connection('sqlsrv_snx')->table('MFSSM')->where('MFSSM_SalesmanID', $id)->first();
+        $salespersonName = $salesperson ? $salesperson->MFSSM_Description : 'Sales ID: ' . $id;
+        $description = 'LAPORAN PENJUALAN SALES MAP PUSAT';
+
+        $fileName = "Sales_Report_{$id}_{$startDate}_to_{$endDate}.xlsx";
+
+        // Panggil dan download file Excel
+        return Excel::download(new SalesByBrandExportMap($id, $startDate, $endDate, $salespersonName, $description), $fileName);
+    }
+
+    public function exportSalesMileniaBranchByBrand($id, Request $request)
+    {
+        // Validasi input tanggal
+        $validator = Validator::make($request->all(), [
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+        $salesperson = DB::connection('sqlsrv_wh')->table('MFSSM')->where('MFSSM_SalesmanID', $id)->first();
+        $salespersonName = $salesperson ? $salesperson->MFSSM_Description : 'Sales ID: ' . $id;
+        $description = 'LAPORAN PENJUALAN SALES MILENIA CABANG';
+
+        $fileName = "Sales_Report_{$id}_{$startDate}_to_{$endDate}.xlsx";
+
+        // Panggil dan download file Excel
+        return Excel::download(new SalesByBrandExportMileniaBranch($id, $startDate, $endDate, $salespersonName, $description), $fileName);
+    }
+
+    public function exportSalesMapBranchByBrand($id, Request $request)
+    {
+        // Validasi input tanggal
+        $validator = Validator::make($request->all(), [
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+        $salesperson = DB::connection('sqlsrv_snx')->table('MFSSM')->where('MFSSM_SalesmanID', $id)->first();
+        $salespersonName = $salesperson ? $salesperson->MFSSM_Description : 'Sales ID: ' . $id;
+        $description = 'LAPORAN PENJUALAN SALES MAP CABANG';
+
+        $fileName = "Sales_Report_{$id}_{$startDate}_to_{$endDate}.xlsx";
+
+        // Panggil dan download file Excel
+        return Excel::download(new SalesByBrandExportMapBranch($id, $startDate, $endDate, $salespersonName, $description), $fileName);
     }
 }
