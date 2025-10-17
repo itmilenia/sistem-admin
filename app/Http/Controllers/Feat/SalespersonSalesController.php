@@ -13,6 +13,10 @@ use Illuminate\Support\Facades\Validator;
 use App\Exports\SalesByBrandExportMilenia;
 use App\Exports\SalesByBrandExportMapBranch;
 use App\Exports\SalesByBrandExportMileniaBranch;
+use App\Exports\SalesByBrandPerSalespersonExportMap;
+use App\Exports\SalesByBrandPerSalespersonExportMilenia;
+use App\Exports\SalesByBrandPerSalespersonExportMapBranch;
+use App\Exports\SalesByBrandPerSalespersonExportMileniaBranch;
 
 class SalespersonSalesController extends Controller
 {
@@ -734,6 +738,90 @@ class SalespersonSalesController extends Controller
             ]);
             return response()->json(['error' => 'Terjadi kesalahan pada server saat mengambil data transaksi.'], 500);
         }
+    }
+
+    public function exportAllSalesMileniaByBrand(Request $request)
+    {
+        // 1. Validasi input tanggal
+        $validator = Validator::make($request->all(), [
+            'start_date' => 'required|date',
+            'end_date'   => 'required|date|after_or_equal:start_date',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $startDate = $request->input('start_date');
+        $endDate   = $request->input('end_date');
+        $description = 'LAPORAN PENJUALAN SALES MILENIA PUSAT';
+
+        $fileName = "Laporan Penjualan Per Sales (Milenia Pusat) - {$startDate} to {$endDate}.xlsx";
+
+        return Excel::download(new SalesByBrandPerSalespersonExportMilenia($startDate, $endDate, $description), $fileName);
+    }
+
+    public function exportAllSalesMileniaBranchByBrand(Request $request)
+    {
+        // 1. Validasi input tanggal
+        $validator = Validator::make($request->all(), [
+            'start_date' => 'required|date',
+            'end_date'   => 'required|date|after_or_equal:start_date',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $startDate = $request->input('start_date');
+        $endDate   = $request->input('end_date');
+        $description = 'LAPORAN PENJUALAN SALES MILENIA CABANG';
+
+        $fileName = "Laporan Penjualan Per Sales (Milenia Cabang) - {$startDate} to {$endDate}.xlsx";
+
+        return Excel::download(new SalesByBrandPerSalespersonExportMileniaBranch($startDate, $endDate, $description), $fileName);
+    }
+
+    public function exportAllSalesMapByBrand(Request $request)
+    {
+        // 1. Validasi input tanggal
+        $validator = Validator::make($request->all(), [
+            'start_date' => 'required|date',
+            'end_date'   => 'required|date|after_or_equal:start_date',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $startDate = $request->input('start_date');
+        $endDate   = $request->input('end_date');
+        $description = 'LAPORAN PENJUALAN SALES MAP PUSAT';
+
+        $fileName = "Laporan Penjualan Per Sales (MAP Pusat) - {$startDate} to {$endDate}.xlsx";
+
+        return Excel::download(new SalesByBrandPerSalespersonExportMap($startDate, $endDate, $description), $fileName);
+    }
+
+    public function exportAllSalesMapBranchByBrand(Request $request)
+    {
+        // 1. Validasi input tanggal
+        $validator = Validator::make($request->all(), [
+            'start_date' => 'required|date',
+            'end_date'   => 'required|date|after_or_equal:start_date',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $startDate = $request->input('start_date');
+        $endDate   = $request->input('end_date');
+        $description = 'LAPORAN PENJUALAN SALES MAP CABANG';
+
+        $fileName = "Laporan Penjualan Per Sales (MAP Cabang) - {$startDate} to {$endDate}.xlsx";
+
+        return Excel::download(new SalesByBrandPerSalespersonExportMapBranch($startDate, $endDate, $description), $fileName);
     }
 
     public function exportSalesMileniaByBrand($id, Request $request)
