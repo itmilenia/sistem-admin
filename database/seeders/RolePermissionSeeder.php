@@ -25,6 +25,14 @@ class RolePermissionSeeder extends Seeder
             'lihat_penjualan_sales_map_cabang',
             'lihat_data_pricelist_produk_milenia',
             'lihat_data_pricelist_produk_map',
+            'lihat_surat_penawaran_milenia',
+            'lihat_surat_penawaran_map',
+            'buat_surat_penawaran_milenia',
+            'buat_surat_penawaran_map',
+            'ubah_surat_penawaran_milenia',
+            'ubah_surat_penawaran_map',
+            'hapus_surat_penawaran_milenia',
+            'hapus_surat_penawaran_map',
             'kelola_peran',
             'kelola_hak_akses',
             'kelola_data_master',
@@ -58,7 +66,15 @@ class RolePermissionSeeder extends Seeder
             'lihat_penjualan_sales_map_pusat',
             'lihat_penjualan_sales_map_cabang',
             'lihat_data_pricelist_produk_milenia',
-            'lihat_data_pricelist_produk_map'
+            'lihat_data_pricelist_produk_map',
+            'lihat_surat_penawaran_milenia',
+            'lihat_surat_penawaran_map',
+            'buat_surat_penawaran_milenia',
+            'buat_surat_penawaran_map',
+            'ubah_surat_penawaran_milenia',
+            'ubah_surat_penawaran_map',
+            'hapus_surat_penawaran_milenia',
+            'hapus_surat_penawaran_map',
         ]);
 
         $adminCabang_milenia->syncPermissions([
@@ -67,6 +83,10 @@ class RolePermissionSeeder extends Seeder
             'lihat_transaksi_customer_milenia_cabang',
             'lihat_penjualan_sales_milenia_cabang',
             'lihat_data_pricelist_produk_milenia',
+            'lihat_surat_penawaran_milenia',
+            'buat_surat_penawaran_milenia',
+            'ubah_surat_penawaran_milenia',
+            'hapus_surat_penawaran_milenia',
         ]);
 
         $adminPusat_map->syncPermissions([
@@ -77,6 +97,10 @@ class RolePermissionSeeder extends Seeder
             'lihat_penjualan_sales_map_pusat',
             'lihat_penjualan_sales_map_cabang',
             'lihat_data_pricelist_produk_map',
+            'lihat_surat_penawaran_map',
+            'buat_surat_penawaran_map',
+            'ubah_surat_penawaran_map',
+            'hapus_surat_penawaran_map',
         ]);
 
         $this->command->info('✅ RolePermissionSeeder selesai dijalankan.');

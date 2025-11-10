@@ -39,9 +39,11 @@
             margin: 0 6px;
             /* kasih jarak kanan kiri */
         }
-    </style>
 
-
+        .form-select {
+            font-size: 0.875rem;
+            /* Sama seperti .form-control default Bootstrap */
+        }
     </style>
 
     @stack('styles')
@@ -364,7 +366,7 @@
     <!--! END: Vendors JS !-->
     <!--! BEGIN: Apps Init  !-->
     <script src="{{ asset('assets/js/common-init.min.js') }}"></script>
-    <script src="{{ 'assets/js/dashboard-init.min.js' }}"></script>
+    {{-- <script src="{{ 'assets/js/dashboard-init.min.js' }}"></script> --}}
     <!--! END: Apps Init !-->
     <!--! BEGIN: Theme Customizer  !-->
     <script src="{{ asset('assets/js/theme-customizer-init.min.js') }}"></script>

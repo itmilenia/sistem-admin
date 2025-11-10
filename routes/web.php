@@ -7,9 +7,10 @@ use App\Http\Controllers\Master\RoleController;
 use App\Http\Controllers\Master\UserController;
 use App\Http\Controllers\Feat\CustomerController;
 use App\Http\Controllers\Master\PermissionController;
+use App\Http\Controllers\Feat\QuotationLetterController;
+use App\Http\Controllers\Feat\ProductPricelistController;
 use App\Http\Controllers\Feat\SalespersonSalesController;
 use App\Http\Controllers\Feat\CustomerTransactionController;
-use App\Http\Controllers\Feat\ProductPricelistController;
 
 Route::get('/', function () {
     return auth()
@@ -146,6 +147,31 @@ Route::middleware('auth')->group(function () {
                 Route::get('/{id}/transactions', [SalespersonSalesController::class, 'getSalespersonTransactionsDataMapBranch'])->name('transactions.map.data.branch.details');
                 Route::get('/export-all-per-sales', [SalespersonSalesController::class, 'exportAllSalesMapBranchByBrand'])->name('transactions.map-branch.export-all-per-sales');
                 Route::get('/{id}/export-sales-by-brand', [SalespersonSalesController::class, 'exportSalesMapBranchByBrand'])->name('transactions.map-branch.export-sales-by-brand');
+            });
+        });
+
+        // Route Menampilkan Data Surat Penawaran (Quotation Letter)
+        Route::prefix('surat-penawaran')->name('quotation-letter.')->group(function () {
+
+            Route::get('/landing', [QuotationLetterController::class, 'landing'])->name('landing');
+            Route::post('/store', [QuotationLetterController::class, 'store'])->name('store');
+            Route::put('/{id}/update', [QuotationLetterController::class, 'update'])->name('update');
+            Route::delete('/{id}/delete', [QuotationLetterController::class, 'destroy'])->name('destroy');
+
+            // Milenia
+            Route::prefix('milenia')->group(function () {
+                Route::get('/', [QuotationLetterController::class, 'indexMilenia'])->middleware('permission:lihat_surat_penawaran_milenia')->name('milenia.index');
+                Route::get('/{id}/detail', [QuotationLetterController::class, 'showMilenia'])->middleware('permission:lihat_surat_penawaran_milenia')->name('milenia.show');
+                Route::get('/tambah', [QuotationLetterController::class, 'createMilenia'])->middleware('permission:buat_surat_penawaran_milenia')->name('milenia.create');
+                Route::get('/{id}/edit', [QuotationLetterController::class, 'editMilenia'])->middleware('permission:ubah_surat_penawaran_milenia')->name('milenia.edit');
+            });
+
+            // Map
+            Route::prefix('map')->group(function () {
+                Route::get('/', [QuotationLetterController::class, 'indexMap'])->middleware('permission:lihat_surat_penawaran_map')->name('map.index');
+                Route::get('/{id}/detail', [QuotationLetterController::class, 'showMap'])->middleware('permission:lihat_surat_penawaran_map')->name('map.show');
+                Route::get('/tambah', [QuotationLetterController::class, 'createMap'])->middleware('permission:buat_surat_penawaran_map')->name('map.create');
+                Route::get('/{id}/edit', [QuotationLetterController::class, 'editMap'])->middleware('permission:ubah_surat_penawaran_map')->name('map.edit');
             });
         });
     });

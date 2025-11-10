@@ -80,7 +80,7 @@
                         </li>
                     </ul>
                 </li>
-                <li class="nxl-item nxl-hasmenu {{ request()->routeIs(['salesperson-sales.*']) ? 'active' : '' }}">
+                <li class="nxl-item nxl-hasmenu {{ request()->routeIs(['salesperson-sales.*', 'quotation-letter.*']) ? 'active' : '' }}">
                     <a href="javascript:void(0);" class="nxl-link">
                         <span class="nxl-micon"><i class="feather-briefcase"></i></span>
                         <span class="nxl-mtext">Sales</span><span class="nxl-arrow"><i
@@ -92,7 +92,9 @@
                             <a class="nxl-link" href="{{ route('salesperson-sales.landing') }}">Data
                                 Penjualan Sales</a>
                         </li>
-                        <li class="nxl-item"><a class="nxl-link" href="#">Surat Penawaran</a></li>
+                        <li class="nxl-item {{ request()->routeIs(['quotation-letter.*']) ? 'active' : '' }}">
+                            <a class="nxl-link" href="{{ route('quotation-letter.landing') }}">Surat Penawaran</a>
+                        </li>
                         <li class="nxl-item"><a class="nxl-link" href="#">Surat Agreement</a></li>
                     </ul>
                 </li>

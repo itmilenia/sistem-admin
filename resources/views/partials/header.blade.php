@@ -54,10 +54,14 @@
                                 <img src="{{ asset('assets/images/avatar/1.png') }}" alt="user-image"
                                     class="img-fluid user-avtar" />
                                 <div>
-                                    <h6 class="text-dark mb-0">{{ Auth::user()->Nama }} <span
+                                    @php
+                                        use Illuminate\Support\Str;
+                                    @endphp
+                                    <h6 class="text-dark mb-0">{{ Str::words(Auth::user()->Nama, 2, '') }} <span
                                             class="badge bg-soft-success text-success ms-1">{{ Auth::user()->getRoleNames()->implode(', ') }}</span>
                                     </h6>
-                                    <span class="fs-12 fw-medium text-muted">{{ Auth::user()->email_karyawan ?? 'Tidak Ada Email' }}</span>
+                                    <span
+                                        class="fs-12 fw-medium text-muted">{{ Auth::user()->email_karyawan ?? 'Tidak Ada Email' }}</span>
                                 </div>
                             </div>
                         </div>
