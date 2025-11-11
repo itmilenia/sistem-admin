@@ -9,6 +9,7 @@ use App\Http\Controllers\Master\UserController;
 use App\Http\Controllers\Feat\CustomerController;
 use App\Http\Controllers\Master\PermissionController;
 use App\Http\Controllers\Master\ProductBrandController;
+use App\Http\Controllers\Feat\AgreementLetterController;
 use App\Http\Controllers\Feat\QuotationLetterController;
 use App\Http\Controllers\Feat\ProductPricelistController;
 use App\Http\Controllers\Feat\SalespersonSalesController;
@@ -199,6 +200,30 @@ Route::middleware('auth')->group(function () {
                 Route::get('/{id}/detail', [QuotationLetterController::class, 'showMap'])->middleware('permission:lihat_surat_penawaran_map')->name('map.show');
                 Route::get('/tambah', [QuotationLetterController::class, 'createMap'])->middleware('permission:buat_surat_penawaran_map')->name('map.create');
                 Route::get('/{id}/edit', [QuotationLetterController::class, 'editMap'])->middleware('permission:ubah_surat_penawaran_map')->name('map.edit');
+            });
+        });
+
+        // Route Menampilkan Data Surat Agreement (Agreement Letter)
+        Route::prefix('surat-agreement')->name('agreement-letter.')->group(function () {
+            Route::get('/landing', [AgreementLetterController::class, 'landing'])->name('landing');
+            Route::post('/store', [AgreementLetterController::class, 'store'])->name('store');
+            Route::put('/{id}/update', [AgreementLetterController::class, 'update'])->name('update');
+            Route::delete('/{id}/delete', [AgreementLetterController::class, 'destroy'])->name('destroy');
+
+            // Milenia
+            Route::prefix('milenia')->group(function () {
+                Route::get('/', [AgreementLetterController::class, 'indexMilenia'])->middleware('permission:lihat_surat_agreement_milenia')->name('milenia.index');
+                Route::get('/{id}/detail', [AgreementLetterController::class, 'showMilenia'])->middleware('permission:lihat_surat_agreement_milenia')->name('milenia.show');
+                Route::get('/tambah', [AgreementLetterController::class, 'createMilenia'])->middleware('permission:buat_surat_agreement_milenia')->name('milenia.create');
+                Route::get('/{id}/edit', [AgreementLetterController::class, 'editMilenia'])->middleware('permission:ubah_surat_agreement_milenia')->name('milenia.edit');
+            });
+
+            // Map
+            Route::prefix('map')->group(function () {
+                Route::get('/', [AgreementLetterController::class, 'indexMap'])->middleware('permission:lihat_surat_agreement_map')->name('map.index');
+                Route::get('/{id}/detail', [AgreementLetterController::class, 'showMap'])->middleware('permission:lihat_surat_agreement_map')->name('map.show');
+                Route::get('/tambah', [AgreementLetterController::class, 'createMap'])->middleware('permission:buat_surat_agreement_map')->name('map.create');
+                Route::get('/{id}/edit', [AgreementLetterController::class, 'editMap'])->middleware('permission:ubah_surat_agreement_map')->name('map.edit');
             });
         });
     });

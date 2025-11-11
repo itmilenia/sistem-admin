@@ -63,7 +63,25 @@
                                     </div>
                                 </div>
 
-                                {{-- Field 2: Status --}}
+                                {{-- Field 2: Company Type --}}
+                                <div class="row mb-3">
+                                    <label for="pb-company-type" class="col-sm-3 col-form-label">Jenis Perusahaan <span
+                                            class="text-danger">*</span></label>
+                                    <div class="col-sm-9">
+                                        <div class="input-group">
+                                            <select class="form-select @error('company_type') is-invalid @enderror"
+                                                id="pb-company-type" name="company_type" required>
+                                                <option value="PT Mega Auto Prima" @selected(old('company_type', 'PT Mega Auto Prima') == 'PT Mega Auto Prima')>PT Mega Auto Prima</option>
+                                                <option value="PT Milenia Mega Mandiri" @selected(old('company_type', 'PT Milenia Mega Mandiri') == 'PT Milenia Mega Mandiri')>PT Milenia Mega Mandiri</option>
+                                            </select>
+                                            @error('company_type')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{-- Field 3: Status --}}
                                 <div class="row mb-3">
                                     <label for="pb-status" class="col-sm-3 col-form-label">Status <span
                                             class="text-danger">*</span></label>

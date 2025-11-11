@@ -27,6 +27,7 @@ class StoreProductBrandRequest extends FormRequest
                 'max:255',
                 Rule::unique("{$connection}.{$table}", 'brand_name'),
             ],
+            'company_type' => ['required', 'string', 'in:PT Milenia Mega Mandiri,PT Mega Auto Prima'],
             'is_active' => ['required', 'boolean'],
         ];
     }
@@ -36,6 +37,8 @@ class StoreProductBrandRequest extends FormRequest
         return [
             'brand_name.required' => 'Nama brand harus diisi.',
             'brand_name.unique' => 'Nama brand sudah ada.',
+            'company_type.required' => 'Tipe brand harus diisi.',
+            'company_type.in' => 'Tipe brand tidak valid.',
             'is_active.required' => 'Status brand harus diisi.',
             'is_active.boolean' => 'Status brand tidak valid.',
         ];

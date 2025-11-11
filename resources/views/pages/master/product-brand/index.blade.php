@@ -51,6 +51,7 @@
                                     <tr class="text-nowrap">
                                         <th class="text-center align-middle" style="width: 50px;">NO</th>
                                         <th class="align-middle">NAMA BRAND</th>
+                                        <th class="align-middle">JENIS PERUSAHAAN</th>
                                         <th class="text-center align-middle" style="width: 100px;">STATUS</th>
                                         <th class="text-center align-middle" style="width: 200px;">AKSI</th>
                                     </tr>
@@ -61,6 +62,7 @@
                                         <tr>
                                             <td class="text-center">{{ $index + 1 }}</td>
                                             <td>{{ $brand->brand_name }}</td>
+                                            <td>{{ $brand->company_type ?? 'N/A' }}</td>
                                             <td class="text-center align-middle">
                                                 {{-- Status
                                                 badge --}}
