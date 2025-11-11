@@ -41,7 +41,7 @@
 
                     </li>
 
-                    <li class="nxl-item nxl-hasmenu {{ request()->routeIs(['master-customer-network.*']) ? 'active' : '' }}">
+                    <li class="nxl-item nxl-hasmenu {{ request()->routeIs(['master-customer-network.*', 'master-product-brand.*']) ? 'active' : '' }}">
                         <a href="#" class="nxl-link">
                             <span class="nxl-micon"><i class="feather-settings"></i></span>
                             <span class="nxl-mtext">Manajemen Fitur</span><span class="nxl-arrow"><i
@@ -49,8 +49,11 @@
                         </a>
                         <ul class="nxl-submenu">
                             @can('kelola_data_master')
-                                <li class="nxl-item {{ request()->routeIs(['master-customer-network.index']) ? 'active' : '' }}">
+                                <li class="nxl-item {{ request()->routeIs(['master-customer-network.*']) ? 'active' : '' }}">
                                     <a class="nxl-link" href="{{ route('master-customer-network.index') }}">Jaringan Customer</a>
+                                </li>
+                                <li class="nxl-item {{ request()->routeIs(['master-product-brand.*']) ? 'active' : '' }}">
+                                    <a class="nxl-link" href="{{ route('master-product-brand.index') }}">Product Brand</a>
                                 </li>
                             @endcan
                         </ul>

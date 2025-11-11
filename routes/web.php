@@ -8,11 +8,12 @@ use App\Http\Controllers\Master\RoleController;
 use App\Http\Controllers\Master\UserController;
 use App\Http\Controllers\Feat\CustomerController;
 use App\Http\Controllers\Master\PermissionController;
+use App\Http\Controllers\Master\ProductBrandController;
 use App\Http\Controllers\Feat\QuotationLetterController;
 use App\Http\Controllers\Feat\ProductPricelistController;
 use App\Http\Controllers\Feat\SalespersonSalesController;
-use App\Http\Controllers\Feat\CustomerTransactionController;
 use App\Http\Controllers\Master\CustomerNetworkController;
+use App\Http\Controllers\Feat\CustomerTransactionController;
 
 Route::get('/', function () {
     return auth()
@@ -40,7 +41,16 @@ Route::middleware('auth')->group(function () {
                 Route::post('/', [CustomerNetworkController::class, 'store'])->name('store');
                 Route::get('/{id}/edit', [CustomerNetworkController::class, 'edit'])->name('edit');
                 Route::put('/{id}/update', [CustomerNetworkController::class, 'update'])->name('update');
-                Route::put('/{id}/delete', [CustomerNetworkController::class, 'delete'])->name('destroy');
+            });
+
+            // Route Product Brand
+            Route::prefix('product-brand')->name('master-product-brand.')->group(function () {
+                Route::get('/', [ProductBrandController::class, 'index'])->name('index');
+                Route::get('/{id}/detail', [ProductBrandController::class, 'detail'])->name('detail');
+                Route::get('/tambah', [ProductBrandController::class, 'create'])->name('create');
+                Route::post('/', [ProductBrandController::class, 'store'])->name('store');
+                Route::get('/{id}/edit', [ProductBrandController::class, 'edit'])->name('edit');
+                Route::put('/{id}/update', [ProductBrandController::class, 'update'])->name('update');
             });
         });
     });

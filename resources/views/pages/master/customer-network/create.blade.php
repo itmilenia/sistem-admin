@@ -12,12 +12,10 @@
                 <h5 class="m-b-10">@yield('title')</h5>
             </div>
             <ul class="breadcrumb">
-                <li class="breadcrumb-item"><a href="#">Master Data</a></li>
-                <li class="breadcrumb-item"><a href="#">Review & Demo</a></li>
+                <li class="breadcrumb-item"><a href="#">Manajemen Fitur</a></li>
                 <li class="breadcrumb-item"><a href="{{ route('master-customer-network.index') }}">Master Jaringan
-                        Customer</a>
-                </li>
-                <li class="breadcrumb-item">Tambah Baru</li>
+                        Customer</a></li>
+                <li class="breadcrumb-item">@yield('title')</li>
             </ul>
         </div>
         <div class="page-header-right ms-auto">
