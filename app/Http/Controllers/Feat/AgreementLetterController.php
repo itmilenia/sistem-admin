@@ -61,6 +61,7 @@ class AgreementLetterController extends Controller
         $salesNames = DB::connection('dbhrd')->table('trkaryawan')
             ->select('Nama')
             ->where('Aktif', 1)
+            ->where('statuskar', 'MILENIA')
             ->where('Divisi', 'Sales')
             ->pluck('Nama');
 
@@ -81,6 +82,7 @@ class AgreementLetterController extends Controller
         $salesNames = DB::connection('dbhrd')->table('trkaryawan')
             ->select('Nama')
             ->where('Aktif', 1)
+            ->where('statuskar', 'MILENIA')
             ->where('Divisi', 'Sales')
             ->pluck('Nama');
 
@@ -95,6 +97,53 @@ class AgreementLetterController extends Controller
             ->get();
 
         return view('pages.feat.sales.agreement-letter.map.index', compact('agreementLetters'));
+    }
+
+    public function showMap($id)
+    {
+        $agreementLetter = AgreementLetter::with('customer')->findOrFail($id);
+
+        // Cek permission sesuai tipe surat
+        $this->authorizeLetterAction($agreementLetter, 'lihat');
+
+        return view('pages.feat.sales.agreement-letter.map.detail', compact('agreementLetter'));
+    }
+
+    public function createMap()
+    {
+        $customers = CustomerNetwork::where('is_active', 1)
+            ->orderBy('name', 'asc')
+            ->get();
+
+        $salesNames = DB::connection('dbhrd')->table('trkaryawan')
+            ->select('Nama')
+            ->where('Aktif', 1)
+            ->where('statuskar', 'MAP')
+            ->where('Divisi', 'Sales')
+            ->pluck('Nama');
+
+        return view('pages.feat.sales.agreement-letter.map.create', compact('customers', 'salesNames'));
+    }
+
+    public function editMap($id)
+    {
+        $agreementLetter = AgreementLetter::with('customer')->findOrFail($id);
+
+        // Cek permission sesuai tipe surat
+        $this->authorizeLetterAction($agreementLetter, 'ubah');
+
+        $customers = CustomerNetwork::where('is_active', 1)
+            ->orderBy('name', 'asc')
+            ->get();
+
+        $salesNames = DB::connection('dbhrd')->table('trkaryawan')
+            ->select('Nama')
+            ->where('Aktif', 1)
+            ->where('statuskar', 'MAP')
+            ->where('Divisi', 'Sales')
+            ->pluck('Nama');
+
+        return view('pages.feat.sales.agreement-letter.map.edit', compact('agreementLetter', 'customers', 'salesNames'));
     }
 
     public function store(StoreAgreementLetterRequest $request)
@@ -157,9 +206,14 @@ class AgreementLetterController extends Controller
             // 4. Commit Transaksi
             DB::commit();
 
-            // 5. Redirect ke halaman index
-            return redirect()->route('agreement-letter.milenia.index')
-                ->with('success', 'Surat Agreement baru berhasil ditambahkan.');
+            // 5. Redirect ke halaman index sesuai company_type
+            if ($validated['company_type'] === 'PT Milenia Mega Mandiri') {
+                return redirect()->route('agreement-letter.milenia.index')
+                    ->with('success', 'Surat Agreement Milenia baru berhasil ditambahkan.');
+            } elseif ($validated['company_type'] === 'PT Mega Auto Prima') {
+                return redirect()->route('agreement-letter.map.index')
+                    ->with('success', 'Surat Agreement MAP baru berhasil ditambahkan.');
+            }
         } catch (Throwable $e) {
             // 6. Rollback Transaksi jika terjadi kesalahan
             DB::rollBack();
@@ -241,9 +295,14 @@ class AgreementLetterController extends Controller
             // 6. Commit Transaksi
             DB::commit();
 
-            // 7. Redirect ke halaman index
-            return redirect()->route('agreement-letter.milenia.index')
-                ->with('success', 'Surat Agreement berhasil diperbarui.');
+            // 7. Redirect ke halaman index sesuai company_type
+            if ($validated['company_type'] === 'PT Milenia Mega Mandiri') {
+                return redirect()->route('agreement-letter.milenia.index')
+                    ->with('success', 'Surat Agreement Milenia berhasil diperbarui.');
+            } elseif ($validated['company_type'] === 'PT Mega Auto Prima') {
+                return redirect()->route('agreement-letter.map.index')
+                    ->with('success', 'Surat Agreement MAP berhasil diperbarui.');
+            }
         } catch (Throwable $e) {
             // 8. Rollback Transaksi
             DB::rollBack();
@@ -272,14 +331,15 @@ class AgreementLetterController extends Controller
     public function destroy($id)
     {
         $agreementLetter = AgreementLetter::findOrFail($id);
+        $company_type = $agreementLetter->company_type;
         $user = auth()->user();
 
         // 1. Cek permission berdasarkan company_type
-        if ($agreementLetter->company_type === 'PT Milenia Mega Mandiri' && !$user->can('hapus_surat_agreement_milenia')) {
+        if ($company_type === 'PT Milenia Mega Mandiri' && !$user->can('hapus_surat_agreement_milenia')) {
             abort(403, 'Anda tidak memiliki izin menghapus Surat Agreement Milenia.');
         }
 
-        if ($agreementLetter->company_type === 'PT Mega Auto Prima' && !$user->can('hapus_surat_agreement_map')) {
+        if ($company_type === 'PT Mega Auto Prima' && !$user->can('hapus_surat_agreement_map')) {
             abort(403, 'Anda tidak memiliki izin menghapus Surat Agreement MAP.');
         }
 
@@ -298,6 +358,15 @@ class AgreementLetterController extends Controller
 
             // 4. Commit Transaksi
             DB::commit();
+
+            // redirect ke halaman index sesuai company_type
+            if ($company_type === 'PT Milenia Mega Mandiri') {
+                return redirect()->route('agreement-letter.milenia.index')
+                    ->with('success', 'Surat Agreement Milenia berhasil dihapus.');
+            } elseif ($company_type === 'PT Mega Auto Prima') {
+                return redirect()->route('agreement-letter.map.index')
+                    ->with('success', 'Surat Agreement MAP berhasil dihapus.');
+            }
 
             // 5. Redirect ke halaman index
             return redirect()->route('agreement-letter.milenia.index')
