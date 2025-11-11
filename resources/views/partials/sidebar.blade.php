@@ -12,7 +12,7 @@
         </div>
         <div class="navbar-content">
             <ul class="nxl-navbar">
-                @can('manage_master')
+                @can('kelola_data_master')
                     <li class="nxl-item nxl-caption">
                         <label>Master Data</label>
                     </li>
@@ -27,18 +27,33 @@
                             <li class="nxl-item {{ request()->routeIs(['master-user.*']) ? 'active' : '' }}">
                                 <a class="nxl-link" href="{{ route('master-user.index') }}">User</a>
                             </li>
-                            @can('manage_roles')
+                            @can('kelola_peran')
                                 <li class="nxl-item {{ request()->routeIs(['master-role.*']) ? 'active' : '' }}">
                                     <a class="nxl-link" href="{{ route('master-role.index') }}">Peran</a>
                                 </li>
                             @endcan
-                            @can('manage_permissions')
+                            @can('kelola_hak_akses')
                                 <li class="nxl-item {{ request()->routeIs(['master-permission.*']) ? 'active' : '' }}">
                                     <a class="nxl-link" href="{{ route('master-permission.index') }}">Hak Akses</a>
                                 </li>
                             @endcan
                         </ul>
 
+                    </li>
+
+                    <li class="nxl-item nxl-hasmenu {{ request()->routeIs(['master-customer-network.*']) ? 'active' : '' }}">
+                        <a href="#" class="nxl-link">
+                            <span class="nxl-micon"><i class="feather-settings"></i></span>
+                            <span class="nxl-mtext">Manajemen Fitur</span><span class="nxl-arrow"><i
+                                    class="feather-chevron-right"></i></span>
+                        </a>
+                        <ul class="nxl-submenu">
+                            @can('kelola_data_master')
+                                <li class="nxl-item {{ request()->routeIs(['master-customer-network.index']) ? 'active' : '' }}">
+                                    <a class="nxl-link" href="{{ route('master-customer-network.index') }}">Jaringan Customer</a>
+                                </li>
+                            @endcan
+                        </ul>
                     </li>
                 @endcan
                 <li class="nxl-item nxl-caption">
@@ -80,7 +95,8 @@
                         </li>
                     </ul>
                 </li>
-                <li class="nxl-item nxl-hasmenu {{ request()->routeIs(['salesperson-sales.*', 'quotation-letter.*']) ? 'active' : '' }}">
+                <li
+                    class="nxl-item nxl-hasmenu {{ request()->routeIs(['salesperson-sales.*', 'quotation-letter.*']) ? 'active' : '' }}">
                     <a href="javascript:void(0);" class="nxl-link">
                         <span class="nxl-micon"><i class="feather-briefcase"></i></span>
                         <span class="nxl-mtext">Sales</span><span class="nxl-arrow"><i

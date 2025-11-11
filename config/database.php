@@ -77,6 +77,20 @@ return [
             'engine' => null,
         ],
 
+        'db_product_trainer' => [
+            'driver' => 'mysql',
+            'host' => env('DB_PRODUCT_TRAINER_HOST', '127.0.0.1'),
+            'port' => env('DB_PRODUCT_TRAINER_PORT', '3306'),
+            'database' => env('DB_PRODUCT_TRAINER_DATABASE', 'product-trainer-app'),
+            'username' => env('DB_PRODUCT_TRAINER_USERNAME', 'root'),
+            'password' => env('DB_PRODUCT_TRAINER_PASSWORD', ''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'strict' => true,
+            'engine' => null,
+        ],
+
         'mariadb' => [
             'driver' => 'mariadb',
             'url' => env('DB_URL'),

@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\CustomerNetwork;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
@@ -11,6 +12,7 @@ use App\Http\Controllers\Feat\QuotationLetterController;
 use App\Http\Controllers\Feat\ProductPricelistController;
 use App\Http\Controllers\Feat\SalespersonSalesController;
 use App\Http\Controllers\Feat\CustomerTransactionController;
+use App\Http\Controllers\Master\CustomerNetworkController;
 
 Route::get('/', function () {
     return auth()
@@ -27,6 +29,21 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', function () {
         return view('welcome');
     })->name('dashboard');
+
+    Route::prefix('manajemen-fitur')->group(function () {
+        // Route Jaringan Customer
+        Route::middleware('permission:kelola_data_master')->group(function () {
+            Route::prefix('jaringan-customer')->name('master-customer-network.')->group(function () {
+                Route::get('/', [CustomerNetworkController::class, 'index'])->name('index');
+                Route::get('/{id}/detail', [CustomerNetworkController::class, 'detail'])->name('detail');
+                Route::get('/tambah', [CustomerNetworkController::class, 'create'])->name('create');
+                Route::post('/', [CustomerNetworkController::class, 'store'])->name('store');
+                Route::get('/{id}/edit', [CustomerNetworkController::class, 'edit'])->name('edit');
+                Route::put('/{id}/update', [CustomerNetworkController::class, 'update'])->name('update');
+                Route::put('/{id}/delete', [CustomerNetworkController::class, 'delete'])->name('destroy');
+            });
+        });
+    });
 
     Route::prefix('manajemen-user')->group(function () {
         // Route Master Karyawan
