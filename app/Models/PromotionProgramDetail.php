@@ -22,4 +22,9 @@ class PromotionProgramDetail extends Model
     {
         return $this->belongsTo(ItemMilenia::class, 'item_id', 'MFIMA_ItemID');
     }
+
+    public function itemMap()
+    {
+        return $this->belongsTo(ItemMap::class, 'item_id', 'MFIMA_ItemID');
+    }
 }

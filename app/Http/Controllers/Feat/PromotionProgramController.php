@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\StorePromotionProgramRequest;
 use App\Http\Requests\UpdatePromotionProgramRequest;
+use App\Models\ItemMap;
 
 class PromotionProgramController extends Controller
 {
@@ -19,12 +20,12 @@ class PromotionProgramController extends Controller
     {
         $user = auth()->user();
 
-        if ($promotion->company_type === 'PT Milenia Mega Mandiri' && !$user->can("{$action}_surat_agreement_milenia")) {
-            abort(403, 'Anda tidak memiliki izin untuk mengakses Surat Agreement Milenia.');
+        if ($promotion->company_type === 'PT Milenia Mega Mandiri' && !$user->can("{$action}_program_promo_milenia")) {
+            abort(403, 'Anda tidak memiliki izin untuk mengakses Program Promo Milenia.');
         }
 
-        if ($promotion->company_type === 'PT Mega Auto Prima' && !$user->can("{$action}_surat_agreement_map")) {
-            abort(403, 'Anda tidak memiliki izin untuk mengakses Surat Agreement Map.');
+        if ($promotion->company_type === 'PT Mega Auto Prima' && !$user->can("{$action}_program_promo_map")) {
+            abort(403, 'Anda tidak memiliki izin untuk mengakses Program Promo MAP.');
         }
     }
 
@@ -50,6 +51,9 @@ class PromotionProgramController extends Controller
             'createdBy',
             'updatedBy'
         ])->findOrFail($id);
+
+        // Cek permission sesuai tipe surat
+        $this->authorizePromotionAction($promotionProgram, 'lihat');
 
         return view('pages.feat.promo-produk.promotion-program.milenia.detail', compact('promotionProgram'));
     }
@@ -99,6 +103,9 @@ class PromotionProgramController extends Controller
         // Ambil data promotion program berdasarkan ID
         $promotionProgram = PromotionProgram::findOrFail($id);
 
+        // Cek permission sesuai tipe surat
+        $this->authorizePromotionAction($promotionProgram, 'lihat');
+
         $promotionProgram->load(['details']);
 
         $selectedItemIds = $promotionProgram->details->pluck('item_id');
@@ -107,6 +114,88 @@ class PromotionProgramController extends Controller
             ->get();
 
         return view('pages.feat.promo-produk.promotion-program.milenia.edit', compact('promotionProgram', 'selectedItems'));
+    }
+
+    public function indexMap()
+    {
+        $promotionPrograms = PromotionProgram::with(['details', 'createdBy', 'updatedBy'])
+            ->orderBy('effective_start_date', 'desc')
+            ->where('company_type', 'PT Mega Auto Prima')
+            ->get();
+
+        return view('pages.feat.promo-produk.promotion-program.map.index', compact('promotionPrograms'));
+    }
+
+    public function showMap($id)
+    {
+        $promotionProgram = PromotionProgram::with([
+            'details.itemMap.mapBrands',
+            'createdBy',
+            'updatedBy'
+        ])->findOrFail($id);
+
+        // Cek permission sesuai tipe surat
+        $this->authorizePromotionAction($promotionProgram, 'lihat');
+
+        return view('pages.feat.promo-produk.promotion-program.map.detail', compact('promotionProgram'));
+    }
+
+    public function searchItemsMap(Request $request)
+    {
+        $search = $request->input('q');
+
+        if (empty($search)) {
+            return response()->json(['results' => []]);
+        }
+
+        // Cari berdasarkan ItemID atau ItemName
+        $items = ItemMap::select('MFIMA_ItemID', 'MFIMA_Description')
+            ->where(function ($query) use ($search) {
+                $query->where('MFIMA_ItemID', 'like', "%{$search}%")
+                    ->orWhere('MFIMA_Description', 'like', "%{$search}%");
+            })
+            ->where('MFIMA_Active', 1)
+            ->orderBy('MFIMA_Description', 'asc')
+            ->take(50)
+            ->get();
+
+        // Format data agar sesuai dengan Select2
+        $formattedItems = $items->map(function ($item) {
+            return [
+                'id' => $item->MFIMA_ItemID,
+                'text' => $item->MFIMA_ItemID . ' - ' . $item->MFIMA_Description
+            ];
+        });
+
+        return response()->json(['results' => $formattedItems]);
+    }
+
+    public function createMap()
+    {
+        $items = ItemMap::select('MFIMA_ItemID', 'MFIMA_Description')
+            ->orderBy('MFIMA_Description', 'asc')
+            ->where('MFIMA_Active', 1)
+            ->get();
+
+        return view('pages.feat.promo-produk.promotion-program.map.create', compact('items'));
+    }
+
+    public function editMap($id)
+    {
+        // Ambil data promotion program berdasarkan ID
+        $promotionProgram = PromotionProgram::findOrFail($id);
+
+        // Cek permission sesuai tipe surat
+        $this->authorizePromotionAction($promotionProgram, 'lihat');
+
+        $promotionProgram->load(['details']);
+
+        $selectedItemIds = $promotionProgram->details->pluck('item_id');
+        $selectedItems = ItemMilenia::select('MFIMA_ItemID', 'MFIMA_Description')
+            ->whereIn('MFIMA_ItemID', $selectedItemIds)
+            ->get();
+
+        return view('pages.feat.promo-produk.promotion-program.map.edit', compact('promotionProgram', 'selectedItems'));
     }
 
     public function store(StorePromotionProgramRequest $request)
@@ -120,11 +209,11 @@ class PromotionProgramController extends Controller
 
         // 1. Cek permission berdasarkan company_type (mengadaptasi dari referensi)
         if ($validated['company_type'] === 'PT Milenia Mega Mandiri' && !$user->can('buat_program_promo_milenia')) {
-            abort(403, 'Anda tidak memiliki izin membuat Surat Agreement Milenia.');
+            abort(403, 'Anda tidak memiliki izin membuat Program Promo Milenia.');
         }
 
         if ($validated['company_type'] === 'PT Mega Auto Prima' && !$user->can('buat_program_promo_map')) {
-            abort(403, 'Anda tidak memiliki izin membuat Surat Agreement MAP.');
+            abort(403, 'Anda tidak memiliki izin membuat Program Promo MAP.');
         }
 
         $file = $request->file('program_file');
@@ -323,6 +412,8 @@ class PromotionProgramController extends Controller
         // 1. Otorisasi (Pastikan Anda punya permission ini di sistem Anda)
         $this->authorizePromotionAction($promotionProgram, 'hapus');
 
+
+        $companyType = $promotionProgram->company_type;
         $oldFilePath = $promotionProgram->program_file;
         $programName = $promotionProgram->program_name;
 
@@ -344,9 +435,14 @@ class PromotionProgramController extends Controller
                 }
             }
 
-            // 5. Redirect ke index dengan pesan sukses
-            return redirect()->route('promotion-program.milenia.index')
-                ->with('success', 'Program promosi "' . $programName . '" dan data terkait berhasil dihapus.');
+            // 5. Redirect ke index dengan pesan sukses berdasarkan companyType
+            if ($companyType === 'PT Milenia Mega Mandiri') {
+                return redirect()->route('promotion-program.milenia.index')
+                    ->with('success', 'Program promosi "' . $programName . '" dan data terkait berhasil dihapus.');
+            } else {
+                return redirect()->route('promotion-program.map.index')
+                    ->with('success', 'Program promosi "' . $programName . '" dan data terkait berhasil dihapus.');
+            }
         } catch (\Throwable $e) {
             DB::rollBack();
 

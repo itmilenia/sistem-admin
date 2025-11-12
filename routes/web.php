@@ -259,6 +259,7 @@ Route::middleware('auth')->group(function () {
             Route::prefix('map')->group(function () {
                 Route::get('/', [PromotionProgramController::class, 'indexMap'])->middleware('permission:lihat_program_promo_map')->name('map.index');
                 Route::get('/{id}/detail', [PromotionProgramController::class, 'showMap'])->middleware('permission:lihat_program_promo_map')->name('map.show');
+                Route::get('/search-items', [PromotionProgramController::class, 'searchItemsMap'])->name('map.searchItems');
                 Route::get('/tambah', [PromotionProgramController::class, 'createMap'])->middleware('permission:buat_program_promo_map')->name('map.create');
                 Route::get('/{id}/edit', [PromotionProgramController::class, 'editMap'])->middleware('permission:ubah_program_promo_map')->name('map.edit');
             });
