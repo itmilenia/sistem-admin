@@ -41,7 +41,8 @@
 
                     </li>
 
-                    <li class="nxl-item nxl-hasmenu {{ request()->routeIs(['master-customer-network.*', 'master-product-brand.*']) ? 'active' : '' }}">
+                    <li
+                        class="nxl-item nxl-hasmenu {{ request()->routeIs(['master-customer-network.*', 'master-product-brand.*']) ? 'active' : '' }}">
                         <a href="#" class="nxl-link">
                             <span class="nxl-micon"><i class="feather-settings"></i></span>
                             <span class="nxl-mtext">Manajemen Fitur</span><span class="nxl-arrow"><i
@@ -50,7 +51,8 @@
                         <ul class="nxl-submenu">
                             @can('kelola_data_master')
                                 <li class="nxl-item {{ request()->routeIs(['master-customer-network.*']) ? 'active' : '' }}">
-                                    <a class="nxl-link" href="{{ route('master-customer-network.index') }}">Jaringan Customer</a>
+                                    <a class="nxl-link" href="{{ route('master-customer-network.index') }}">Jaringan
+                                        Customer</a>
                                 </li>
                                 <li class="nxl-item {{ request()->routeIs(['master-product-brand.*']) ? 'active' : '' }}">
                                     <a class="nxl-link" href="{{ route('master-product-brand.index') }}">Product Brand</a>
@@ -114,18 +116,22 @@
                         <li class="nxl-item {{ request()->routeIs(['quotation-letter.*']) ? 'active' : '' }}">
                             <a class="nxl-link" href="{{ route('quotation-letter.landing') }}">Surat Penawaran</a>
                         </li>
-                        <li class="nxl-item {{ request()->routeIs(['agreement-letter.*']) ? 'active' : '' }}"><a class="nxl-link" href="{{ route('agreement-letter.landing') }}">Surat Agreement</a></li>
+                        <li class="nxl-item {{ request()->routeIs(['agreement-letter.*']) ? 'active' : '' }}"><a
+                                class="nxl-link" href="{{ route('agreement-letter.landing') }}">Surat Agreement</a>
+                        </li>
                     </ul>
                 </li>
                 <li
-                    class="nxl-item nxl-hasmenu {{ request()->routeIs(['pricelist-produk.*', 'pricelist-produk-milenia.*', 'pricelist-produk-map.*']) ? 'active' : '' }}">
+                    class="nxl-item nxl-hasmenu {{ request()->routeIs(['pricelist-produk.*', 'pricelist-produk-milenia.*', 'pricelist-produk-map.*', 'promotion-program.*']) ? 'active' : '' }}">
                     <a href="javascript:void(0);" class="nxl-link">
                         <span class="nxl-micon"><i class="feather-gift"></i></span>
                         <span class="nxl-mtext">Promo & Produk</span><span class="nxl-arrow"><i
                                 class="feather-chevron-right"></i></span>
                     </a>
                     <ul class="nxl-submenu">
-                        <li class="nxl-item"><a class="nxl-link" href="#">Program Promo</a></li>
+                        <li class="nxl-item {{ request()->routeIs(['promotion-program.*']) ? 'active' : '' }}"><a
+                                class="nxl-link" href="{{ route('promotion-program.landing') }}">Program Promo</a>
+                        </li>
                         <li
                             class="nxl-item {{ request()->routeIs(['pricelist-produk.*', 'pricelist-produk-milenia.*', 'pricelist-produk-map.*']) ? 'active' : '' }}">
                             <a class="nxl-link" href="{{ route('pricelist-produk.landing') }}">Pricelist Produk</a>

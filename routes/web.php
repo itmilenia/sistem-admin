@@ -1,7 +1,5 @@
 <?php
 
-use App\Models\CustomerNetwork;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Master\RoleController;
@@ -12,6 +10,7 @@ use App\Http\Controllers\Master\ProductBrandController;
 use App\Http\Controllers\Feat\AgreementLetterController;
 use App\Http\Controllers\Feat\QuotationLetterController;
 use App\Http\Controllers\Feat\ProductPricelistController;
+use App\Http\Controllers\Feat\PromotionProgramController;
 use App\Http\Controllers\Feat\SalespersonSalesController;
 use App\Http\Controllers\Master\CustomerNetworkController;
 use App\Http\Controllers\Feat\CustomerTransactionController;
@@ -239,6 +238,29 @@ Route::middleware('auth')->group(function () {
 
             Route::prefix('map')->middleware('permission:lihat_data_pricelist_produk_map')->group(function () {
                 Route::get('/', [ProductPricelistController::class, 'indexMap'])->name('pricelist-produk-map.index');
+            });
+        });
+
+        // Route Menampilkan Data Promo Produk
+        Route::prefix('program-promo')->name('promotion-program.')->group(function () {
+            Route::get('/landing', [PromotionProgramController::class, 'landing'])->name('landing');
+            Route::post('/store', [PromotionProgramController::class, 'store'])->name('store');
+            Route::put('/{id}/update', [PromotionProgramController::class, 'update'])->name('update');
+            Route::delete('/{id}/delete', [PromotionProgramController::class, 'destroy'])->name('destroy');
+
+            Route::prefix('milenia')->group(function () {
+                Route::get('/', [PromotionProgramController::class, 'indexMilenia'])->middleware('permission:lihat_program_promo_milenia')->name('milenia.index');
+                Route::get('/{id}/detail', [PromotionProgramController::class, 'showMilenia'])->middleware('permission:lihat_program_promo_milenia')->name('milenia.show');
+                Route::get('/search-items', [PromotionProgramController::class, 'searchItemsMilenia'])->name('milenia.searchItems');
+                Route::get('/tambah', [PromotionProgramController::class, 'createMilenia'])->middleware('permission:buat_program_promo_milenia')->name('milenia.create');
+                Route::get('/{id}/edit', [PromotionProgramController::class, 'editMilenia'])->middleware('permission:ubah_program_promo_milenia')->name('milenia.edit');
+            });
+
+            Route::prefix('map')->group(function () {
+                Route::get('/', [PromotionProgramController::class, 'indexMap'])->middleware('permission:lihat_program_promo_map')->name('map.index');
+                Route::get('/{id}/detail', [PromotionProgramController::class, 'showMap'])->middleware('permission:lihat_program_promo_map')->name('map.show');
+                Route::get('/tambah', [PromotionProgramController::class, 'createMap'])->middleware('permission:buat_program_promo_map')->name('map.create');
+                Route::get('/{id}/edit', [PromotionProgramController::class, 'editMap'])->middleware('permission:ubah_program_promo_map')->name('map.edit');
             });
         });
     });

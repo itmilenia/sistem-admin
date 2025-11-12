@@ -41,6 +41,14 @@ class RolePermissionSeeder extends Seeder
             'ubah_surat_agreement_map',
             'hapus_surat_agreement_milenia',
             'hapus_surat_agreement_map',
+            'lihat_program_promo_milenia',
+            'lihat_program_promo_map',
+            'buat_program_promo_milenia',
+            'buat_program_promo_map',
+            'ubah_program_promo_milenia',
+            'ubah_program_promo_map',
+            'hapus_program_promo_milenia',
+            'hapus_program_promo_map',
             'kelola_peran',
             'kelola_hak_akses',
             'kelola_data_master',
@@ -91,6 +99,14 @@ class RolePermissionSeeder extends Seeder
             'ubah_surat_agreement_map',
             'hapus_surat_agreement_milenia',
             'hapus_surat_agreement_map',
+            'lihat_program_promo_milenia',
+            'lihat_program_promo_map',
+            'buat_program_promo_milenia',
+            'buat_program_promo_map',
+            'ubah_program_promo_milenia',
+            'ubah_program_promo_map',
+            'hapus_program_promo_milenia',
+            'hapus_program_promo_map',
         ]);
 
         $adminCabang_milenia->syncPermissions([
@@ -107,6 +123,10 @@ class RolePermissionSeeder extends Seeder
             'buat_surat_agreement_milenia',
             'ubah_surat_agreement_milenia',
             'hapus_surat_agreement_milenia',
+            'lihat_program_promo_milenia',
+            'buat_program_promo_milenia',
+            'ubah_program_promo_milenia',
+            'hapus_program_promo_milenia',
         ]);
 
         $adminPusat_map->syncPermissions([
@@ -125,6 +145,10 @@ class RolePermissionSeeder extends Seeder
             'buat_surat_agreement_map',
             'ubah_surat_agreement_map',
             'hapus_surat_agreement_map',
+            'lihat_program_promo_map',
+            'buat_program_promo_map',
+            'ubah_program_promo_map',
+            'hapus_program_promo_map',
         ]);
 
         $this->command->info('✅ RolePermissionSeeder selesai dijalankan.');
