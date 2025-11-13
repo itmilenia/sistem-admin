@@ -19,6 +19,12 @@ class UserSeeder extends Seeder
         $admin_pusat_map  = Role::firstOrCreate(['name' => 'admin_pusat_map', 'guard_name' => 'web']);
         $admin_cabang_milenia = Role::firstOrCreate(['name' => 'admin_cabang_milenia', 'guard_name' => 'web']);
         $admin_cabang_map = Role::firstOrCreate(['name' => 'admin_cabang_map', 'guard_name' => 'web']);
+        $trainer_milenia = Role::firstOrCreate(['name' => 'trainer_milenia', 'guard_name' => 'web']);
+        $trainer_map = Role::firstOrCreate(['name' => 'trainer_map', 'guard_name' => 'web']);
+        $sales_milenia = Role::firstOrCreate(['name' => 'sales_milenia', 'guard_name' => 'web']);
+        $sales_map = Role::firstOrCreate(['name' => 'sales_map', 'guard_name' => 'web']);
+        $head_sales_milenia = Role::firstOrCreate(['name' => 'head_sales_milenia', 'guard_name' => 'web']);
+        $head_sales_map = Role::firstOrCreate(['name' => 'head_sales_map', 'guard_name' => 'web']);
 
 
         // 1) Buat Super Admin lokal
@@ -40,11 +46,17 @@ class UserSeeder extends Seeder
         $superAdmin->syncRoles([$owner->name]);
 
         // 2) Target ID dari HRD
-        $targetIds = [7605, 42, 7432, 7743];
+        $targetIds = [7605, 42, 7432, 7743, 7311, 332, 7713, 7752, 7755, 1064, 7178, 7735, 7758];
 
         $adminPusatIds  = [7605];
         $adminPusatMap = [42];
         $adminCabangMilenia = [7432, 7743];
+        $trainerMilenia = [332];
+        $trainerMap = [7311];
+        $salesMilenia = [7713, 7752, 7755];
+        $salesMap = [7735, 7758];
+        $headSalesMilenia = [7178];
+        $headSalesMap = [1064];
 
         $karyawans = DB::connection('dbhrd')
             ->table('trkaryawan')
@@ -98,6 +110,18 @@ class UserSeeder extends Seeder
                 $user->syncRoles([$admin_cabang_milenia->name]);
             } elseif (in_array($k->ID, $adminPusatMap)) {
                 $user->syncRoles([$admin_pusat_map->name]);
+            } elseif (in_array($k->ID, $salesMilenia)) {
+                $user->syncRoles([$sales_milenia->name]);
+            } elseif (in_array($k->ID, $trainerMilenia)) {
+                $user->syncRoles([$trainer_milenia->name]);
+            } elseif (in_array($k->ID, $trainerMap)) {
+                $user->syncRoles([$trainer_map->name]);
+            } elseif (in_array($k->ID, $salesMap)) {
+                $user->syncRoles([$sales_map->name]);
+            } elseif (in_array($k->ID, $headSalesMilenia)) {
+                $user->syncRoles([$head_sales_milenia->name]);
+            } elseif (in_array($k->ID, $headSalesMap)) {
+                $user->syncRoles([$head_sales_map->name]);
             }
 
             // cek langsung apakah pivot terisi

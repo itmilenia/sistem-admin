@@ -122,7 +122,7 @@
                     </ul>
                 </li>
                 <li
-                    class="nxl-item nxl-hasmenu {{ request()->routeIs(['pricelist-produk.*', 'pricelist-produk-milenia.*', 'pricelist-produk-map.*', 'promotion-program.*']) ? 'active' : '' }}">
+                    class="nxl-item nxl-hasmenu {{ request()->routeIs(['pricelist-produk.*', 'pricelist-produk-milenia.*', 'pricelist-produk-map.*', 'promotion-program.*', 'product-claim-form.*']) ? 'active' : '' }}">
                     <a href="javascript:void(0);" class="nxl-link">
                         <span class="nxl-micon"><i class="feather-gift"></i></span>
                         <span class="nxl-mtext">Promo & Produk</span><span class="nxl-arrow"><i
@@ -136,7 +136,11 @@
                             class="nxl-item {{ request()->routeIs(['pricelist-produk.*', 'pricelist-produk-milenia.*', 'pricelist-produk-map.*']) ? 'active' : '' }}">
                             <a class="nxl-link" href="{{ route('pricelist-produk.landing') }}">Pricelist Produk</a>
                         </li>
-                        <li class="nxl-item"><a class="nxl-link" href="#">Form Klaim Produk</a></li>
+                        <li class="nxl-item {{ request()->routeIs(['product-claim-form.*']) ? 'active' : '' }}">
+                            <a class="nxl-link" href="{{ route('product-claim-form.landing') }}">Form Klaim
+                                Produk
+                            </a>
+                        </li>
                 </li>
             </ul>
         </div>

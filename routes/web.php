@@ -9,6 +9,7 @@ use App\Http\Controllers\Master\PermissionController;
 use App\Http\Controllers\Master\ProductBrandController;
 use App\Http\Controllers\Feat\AgreementLetterController;
 use App\Http\Controllers\Feat\QuotationLetterController;
+use App\Http\Controllers\Feat\ClaimProductFormController;
 use App\Http\Controllers\Feat\ProductPricelistController;
 use App\Http\Controllers\Feat\PromotionProgramController;
 use App\Http\Controllers\Feat\SalespersonSalesController;
@@ -262,6 +263,35 @@ Route::middleware('auth')->group(function () {
                 Route::get('/search-items', [PromotionProgramController::class, 'searchItemsMap'])->name('map.searchItems');
                 Route::get('/tambah', [PromotionProgramController::class, 'createMap'])->middleware('permission:buat_program_promo_map')->name('map.create');
                 Route::get('/{id}/edit', [PromotionProgramController::class, 'editMap'])->middleware('permission:ubah_program_promo_map')->name('map.edit');
+            });
+        });
+
+        // Route Menampilkam Form Claim Produk
+        Route::prefix('form-klaim-produk')->name('product-claim-form.')->group(function () {
+            Route::get('/landing', [ClaimProductFormController::class, 'landing'])->name('landing');
+            Route::post('/store', [ClaimProductFormController::class, 'store'])->name('store');
+            Route::get('/{id}/verifikasi-kerusakan', [ClaimProductFormController::class, 'showVerifyForm'])->name('verify');
+            Route::post('/{id}/verifikasi-kerusakan', [ClaimProductFormController::class, 'storeVerification'])->name('verify.store');
+            Route::get('/{id}/tandatangan-sales', [ClaimProductFormController::class, 'showSalesSignature'])->name('sales-signature');
+            Route::post('/{id}/tandatangan-sales', [ClaimProductFormController::class, 'storeSalesSignature'])->name('sales-signature.store');
+            Route::get('/{id}/tandatangan-sales-head', [ClaimProductFormController::class, 'showSalesHeadSignature'])->name('sales-head-signature');
+            Route::post('/{id}/tandatangan-sales-head', [ClaimProductFormController::class, 'storeSalesHeadSignature'])->name('sales-head-signature.store');
+            Route::get('/{id}/export-pdf', [ClaimProductFormController::class, 'exportPDF'])->name('export-pdf');
+            Route::put('/{id}/update', [ClaimProductFormController::class, 'update'])->name('update');
+            Route::delete('/{id}/delete', [ClaimProductFormController::class, 'destroy'])->name('destroy');
+
+            Route::prefix('milenia')->group(function () {
+                Route::get('/', [ClaimProductFormController::class, 'indexMilenia'])->middleware('permission:lihat_klaim_produk_milenia')->name('milenia.index');
+                Route::get('/{id}/detail', [ClaimProductFormController::class, 'showMilenia'])->middleware('permission:lihat_klaim_produk_milenia')->name('milenia.show');
+                Route::get('/tambah', [ClaimProductFormController::class, 'createMilenia'])->middleware('permission:buat_klaim_produk_milenia')->name('milenia.create');
+                Route::get('/{id}/edit', [ClaimProductFormController::class, 'editMilenia'])->middleware('permission:ubah_klaim_produk_milenia')->name('milenia.edit');
+            });
+
+            Route::prefix('map')->group(function () {
+                Route::get('/', [ClaimProductFormController::class, 'indexMap'])->middleware('permission:lihat_klaim_produk_map')->name('map.index');
+                Route::get('/{id}/detail', [ClaimProductFormController::class, 'showMap'])->middleware('permission:lihat_klaim_produk_map')->name('map.show');
+                Route::get('/tambah', [ClaimProductFormController::class, 'createMap'])->middleware('permission:buat_klaim_produk_map')->name('map.create');
+                Route::get('/{id}/edit', [ClaimProductFormController::class, 'editMap'])->middleware('permission:ubah_klaim_produk_map')->name('map.edit');
             });
         });
     });

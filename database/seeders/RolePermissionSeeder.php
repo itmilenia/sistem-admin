@@ -49,6 +49,20 @@ class RolePermissionSeeder extends Seeder
             'ubah_program_promo_map',
             'hapus_program_promo_milenia',
             'hapus_program_promo_map',
+            'lihat_klaim_produk_milenia',
+            'lihat_klaim_produk_map',
+            'buat_klaim_produk_milenia',
+            'buat_klaim_produk_map',
+            'ubah_klaim_produk_milenia',
+            'ubah_klaim_produk_map',
+            'hapus_klaim_produk_milenia',
+            'hapus_klaim_produk_map',
+            'verifikasi_klaim_produk_milenia',
+            'verifikasi_klaim_produk_map',
+            'tanda_tangan_sales_klaim_produk_milenia',
+            'tanda_tangan_sales_klaim_produk_map',
+            'tanda_tangan_head_sales_klaim_produk_milenia',
+            'tanda_tangan_head_sales_klaim_produk_map',
             'kelola_peran',
             'kelola_hak_akses',
             'kelola_data_master',
@@ -64,6 +78,12 @@ class RolePermissionSeeder extends Seeder
         $adminPusat_map = Role::firstOrCreate(['name' => 'admin_pusat_map', 'guard_name' => 'web']);
         $adminCabang_milenia = Role::firstOrCreate(['name' => 'admin_cabang_milenia', 'guard_name' => 'web']);
         $adminCabang_map = Role::firstOrCreate(['name' => 'admin_cabang_map', 'guard_name' => 'web']);
+        $trainer_milenia = Role::firstOrCreate(['name' => 'trainer_milenia', 'guard_name' => 'web']);
+        $trainer_map = Role::firstOrCreate(['name' => 'trainer_map', 'guard_name' => 'web']);
+        $sales_milenia = Role::firstOrCreate(['name' => 'sales_milenia', 'guard_name' => 'web']);
+        $sales_map = Role::firstOrCreate(['name' => 'sales_map', 'guard_name' => 'web']);
+        $head_sales_milenia = Role::firstOrCreate(['name' => 'head_sales_milenia', 'guard_name' => 'web']);
+        $head_sales_map = Role::firstOrCreate(['name' => 'head_sales_map', 'guard_name' => 'web']);
 
         // Assign permissions
         $owner->syncPermissions(Permission::all());
@@ -107,6 +127,14 @@ class RolePermissionSeeder extends Seeder
             'ubah_program_promo_map',
             'hapus_program_promo_milenia',
             'hapus_program_promo_map',
+            'lihat_klaim_produk_milenia',
+            'lihat_klaim_produk_map',
+            'buat_klaim_produk_milenia',
+            'buat_klaim_produk_map',
+            'ubah_klaim_produk_milenia',
+            'ubah_klaim_produk_map',
+            'hapus_klaim_produk_milenia',
+            'hapus_klaim_produk_map',
         ]);
 
         $adminCabang_milenia->syncPermissions([
@@ -127,6 +155,10 @@ class RolePermissionSeeder extends Seeder
             'buat_program_promo_milenia',
             'ubah_program_promo_milenia',
             'hapus_program_promo_milenia',
+            'lihat_klaim_produk_milenia',
+            'buat_klaim_produk_milenia',
+            'ubah_klaim_produk_milenia',
+            'hapus_klaim_produk_milenia',
         ]);
 
         $adminPusat_map->syncPermissions([
@@ -149,6 +181,39 @@ class RolePermissionSeeder extends Seeder
             'buat_program_promo_map',
             'ubah_program_promo_map',
             'hapus_program_promo_map',
+            'lihat_klaim_produk_map',
+            'buat_klaim_produk_map',
+            'ubah_klaim_produk_map',
+            'hapus_klaim_produk_map',
+        ]);
+
+        $trainer_milenia->syncPermissions([
+            'lihat_klaim_produk_milenia',
+            'verifikasi_klaim_produk_milenia',
+        ]);
+
+        $trainer_map->syncPermissions([
+            'lihat_klaim_produk_map',
+            'verifikasi_klaim_produk_map',
+        ]);
+
+        $head_sales_milenia->syncPermissions([
+            'lihat_klaim_produk_milenia',
+            'tanda_tangan_head_sales_klaim_produk_milenia',
+        ]);
+
+        $head_sales_map->syncPermissions([
+            'lihat_klaim_produk_map',
+            'tanda_tangan_head_sales_klaim_produk_map',
+        ]);
+
+        $sales_milenia->syncPermissions([
+            'lihat_klaim_produk_milenia',
+            'tanda_tangan_sales_klaim_produk_milenia',        ]);
+
+        $sales_map->syncPermissions([
+            'lihat_klaim_produk_map',
+            'tanda_tangan_sales_klaim_produk_map',
         ]);
 
         $this->command->info('✅ RolePermissionSeeder selesai dijalankan.');
