@@ -36,9 +36,17 @@
                 <h5 class="m-b-10">@yield('title')</h5>
             </div>
             <ul class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{{ route('product-claim-form.landing') }}">Data Klaim Produk</a></li>
-                <li class="breadcrumb-item"><a href="#">Detail Klaim</a></li>
-                <li class="breadcrumb-item">Verifikasi</li>
+                <li class="breadcrumb-item"><a href="{{ route('product-claim-form.landing') }}">Form Klaim Produk</a></li>
+                @if ($claim->company_type == 'PT Milenia Mega Mandiri')
+                    <li class="breadcrumb-item"><a href="{{ route('product-claim-form.milenia.index') }}">Data Klaim Produk
+                            Milenia</a>
+                    </li>
+                    @else
+                    <li class="breadcrumb-item"><a href="{{ route('product-claim-form.map.index') }}">Data Klaim Produk
+                            MAP</a>
+                    </li>
+                @endif
+                <li class="breadcrumb-item active">@yield('title')</li>
             </ul>
         </div>
         <div class="page-header-right ms-auto">

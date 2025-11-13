@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Feat;
 
 use Exception;
 use App\Models\User;
+use App\Models\ItemMap;
 use App\Models\ItemMilenia;
 use App\Models\ClaimProduct;
 use Illuminate\Http\Request;
@@ -110,6 +111,77 @@ class ClaimProductFormController extends Controller
         return view('pages.feat.promo-produk.claim-product-form.milenia.edit', compact('claim', 'salesUsers', 'salesHeads', 'checkers', 'products'));
     }
 
+    public function indexMap()
+    {
+        $claims = ClaimProduct::with('sales', 'salesHead', 'checker')
+            ->where('company_type', 'PT Mega Auto Prima')
+            ->latest()
+            ->get();
+
+        return view('pages.feat.promo-produk.claim-product-form.map.index', compact('claims'));
+    }
+
+    public function showMap($id)
+    {
+        $claim = ClaimProduct::findOrFail($id);
+
+        $this->authorizeClaimAction($claim, 'lihat');
+
+        $productIds = $claim->claimDetails->pluck('product_id')->unique();
+
+        $products = ItemMap::on('sqlsrv_snx')
+            ->whereIn('MFIMA_ItemID', $productIds)
+            ->get()
+            ->keyBy('MFIMA_ItemID');
+
+        $claim->load(
+            'claimDetails',
+            'sales',
+            'salesHead',
+            'checker',
+            'createdBy',
+            'updatedBy'
+        );
+
+        return view('pages.feat.promo-produk.claim-product-form.map.detail', compact('claim', 'products'));
+    }
+
+    public function createMap()
+    {
+        $salesUsers = User::role('sales_map')->orderBy('Nama')->get();
+        $salesHeads = User::role('head_sales_map')->orderBy('Nama')->get();
+        $checkers = User::role('trainer_map')->orderBy('Nama')->get();
+
+        $products = ItemMap::where('MFIMA_Active', 1)
+            ->orderBy('MFIMA_Description', 'asc')
+            ->get();
+
+        return view('pages.feat.promo-produk.claim-product-form.map.create', compact('salesUsers', 'salesHeads', 'checkers', 'products'));
+    }
+
+    public function editMap($id)
+    {
+        $claim = ClaimProduct::findOrFail($id);
+
+        $this->authorizeClaimAction($claim, 'ubah');
+
+        if ($claim->checker_signature_path && $claim->sales_signature_path && $claim->sales_head_signature_path) {
+            return back()->with('warning', 'Klaim ini sudah Anda tandatangani sebelumnya.');
+        }
+
+        $claim->load('claimDetails');
+
+        $salesUsers = User::role('sales_map')->orderBy('Nama')->get();
+        $salesHeads = User::role('head_sales_map')->orderBy('Nama')->get();
+        $checkers = User::role('trainer_map')->orderBy('Nama')->get();
+
+        $products = ItemMap::where('MFIMA_Active', 1)
+            ->orderBy('MFIMA_Description', 'asc')
+            ->get();
+
+        return view('pages.feat.promo-produk.claim-product-form.map.edit', compact('claim', 'salesUsers', 'salesHeads', 'checkers', 'products'));
+    }
+
     public function store(StoreClaimProductRequest $request)
     {
         // Mulai database transaction
@@ -149,7 +221,7 @@ class ClaimProductFormController extends Controller
             if ($claimHeader->company_type === 'PT Milenia Mega Mandiri') {
                 return redirect()->route('product-claim-form.milenia.index')->with('success', 'Klaim Produk berhasil disimpan.');
             } else {
-                return redirect()->route('product-claim-form.milenia.index')->with('success', 'Klaim Produk berhasil disimpan.');
+                return redirect()->route('product-claim-form.map.index')->with('success', 'Klaim Produk berhasil disimpan.');
             }
         } catch (Exception $e) {
             DB::rollBack();
@@ -202,7 +274,7 @@ class ClaimProductFormController extends Controller
             if ($claim->company_type === 'PT Milenia Mega Mandiri') {
                 return redirect()->route('product-claim-form.milenia.index')->with('success', 'Klaim Produk berhasil diperbarui.');
             } else {
-                return redirect()->route('product-claim-form.milenia.index')->with('success', 'Klaim Produk berhasil diperbarui.');
+                return redirect()->route('product-claim-form.map.index')->with('success', 'Klaim Produk berhasil diperbarui.');
             }
         } catch (Exception $e) {
             DB::rollBack();
@@ -216,6 +288,8 @@ class ClaimProductFormController extends Controller
     public function showVerifyForm($id)
     {
         $claim = ClaimProduct::findOrFail($id);
+
+        $this->authorizeClaimAction($claim, 'verifikasi');
 
         if ($claim->verification_date) {
             return redirect()->route('claims.show', $claim->id)
@@ -236,6 +310,8 @@ class ClaimProductFormController extends Controller
     public function storeVerification(Request $request, $id)
     {
         $claim = ClaimProduct::findOrFail($id);
+
+        $this->authorizeClaimAction($claim, 'verifikasi');
 
         // 1. Validasi input
         $validated = $request->validate([
@@ -295,6 +371,8 @@ class ClaimProductFormController extends Controller
     {
         $claim = ClaimProduct::findOrFail($id);
 
+        $this->authorizeClaimAction($claim, 'tanda_tangan_sales');
+
         // 1. Validasi Keamanan: Hanya sales_id yang berhak
         if (Auth::id() != $claim->sales_id && !Auth::user()->hasRole('owner')) {
             abort(403, 'Anda tidak memiliki wewenang untuk menandatangani klaim ini.');
@@ -331,6 +409,8 @@ class ClaimProductFormController extends Controller
     public function storeSalesSignature(Request $request, $id)
     {
         $claim = ClaimProduct::findOrFail($id);
+
+        $this->authorizeClaimAction($claim, 'tanda_tangan_sales');
 
         // 1. Validasi Keamanan: Hanya sales_id yang berhak
         if (Auth::id() != $claim->sales_id && !Auth::user()->hasRole('owner')) {
@@ -390,6 +470,8 @@ class ClaimProductFormController extends Controller
     {
         $claim = ClaimProduct::findOrFail($id);
 
+        $this->authorizeClaimAction($claim, 'tanda_tangan_head_sales');
+
         // 1. Validasi Keamanan: Hanya sales_head_id yang berhak
         if (Auth::id() != $claim->sales_head_id && !Auth::user()->hasRole('owner')) {
             abort(403, 'Anda tidak memiliki wewenang untuk menandatangani klaim ini.');
@@ -432,6 +514,8 @@ class ClaimProductFormController extends Controller
     public function storeSalesHeadSignature(Request $request, $id)
     {
         $claim = ClaimProduct::findOrFail($id);
+
+        $this->authorizeClaimAction($claim, 'tanda_tangan_head_sales');
 
         // 1. Validasi Keamanan: Hanya sales_head_id yang berhak
         if (Auth::id() != $claim->sales_head_id && !Auth::user()->hasRole('owner')) {
@@ -493,6 +577,8 @@ class ClaimProductFormController extends Controller
     public function exportPDF($id)
     {
         $claim = ClaimProduct::with('claimDetails', 'sales', 'salesHead', 'checker')->findOrFail($id);
+
+        $this->authorizeClaimAction($claim, 'buat');
 
         // Ambil data produk (sama seperti di method show)
         $productIds = $claim->claimDetails->pluck('product_id')->unique();

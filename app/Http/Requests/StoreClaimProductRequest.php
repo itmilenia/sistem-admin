@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\DB;
 
 class StoreClaimProductRequest extends FormRequest
 {
@@ -22,18 +23,45 @@ class StoreClaimProductRequest extends FormRequest
             'retail_name' => 'required|string|max:255',
             'claim_date' => 'required|date',
 
-            // Aturan untuk Detail (sebagai array)
+            // Detail
             'details' => 'required|array|min:1',
             'details.*.invoice_id' => 'required|string|max:255',
 
-            // Validasi cross-database ke 'sqlsrv_wh'
-            'details.*.product_id' => 'required|string|exists:sqlsrv_wh.MFIMA,MFIMA_ItemID',
+            // Validasi lintas database (dicek manual di bawah)
+            'details.*.product_id' => 'required|string',
 
             'details.*.quantity' => 'required|integer|min:1',
             'details.*.order_date' => 'required|date',
             'details.*.delivery_date' => 'required|date|after_or_equal:details.*.order_date',
             'details.*.return_reason' => 'required|string|max:255',
         ];
+    }
+
+    public function withValidator($validator)
+    {
+        $validator->after(function ($validator) {
+            $details = $this->input('details', []);
+
+            foreach ($details as $index => $detail) {
+                $productId = $detail['product_id'] ?? null;
+
+                if (!$productId) continue;
+
+                $existsWh = DB::connection('sqlsrv_wh')
+                    ->table('MFIMA')
+                    ->where('MFIMA_ItemID', $productId)
+                    ->exists();
+
+                $existsSnx = DB::connection('sqlsrv_snx')
+                    ->table('MFIMA')
+                    ->where('MFIMA_ItemID', $productId)
+                    ->exists();
+
+                if (!$existsWh && !$existsSnx) {
+                    $validator->errors()->add("details.$index.product_id", "Produk $productId tidak ditemukan di database manapun.");
+                }
+            }
+        });
     }
 
     public function messages(): array
@@ -64,7 +92,6 @@ class StoreClaimProductRequest extends FormRequest
             'details.*.invoice_id.max' => 'Nomor faktur tidak boleh lebih dari 255 karakter.',
 
             'details.*.product_id.required' => 'Produk wajib dipilih.',
-            'details.*.product_id.exists' => 'Produk tidak ditemukan.',
 
             'details.*.quantity.required' => 'Jumlah wajib diisi.',
             'details.*.quantity.integer' => 'Jumlah harus berupa angka.',
@@ -76,7 +103,7 @@ class StoreClaimProductRequest extends FormRequest
             'details.*.delivery_date.required' => 'Tgl. Pengiriman wajib diisi.',
             'details.*.delivery_date.date' => 'Format Tgl. Pengiriman tidak valid.',
             'details.*.delivery_date.after_or_equal' => 'Tgl. Pengiriman harus setelah Tgl. Order.',
-            
+
             'details.*.return_reason.required' => 'Alasan pengembalian wajib diisi.',
             'details.*.return_reason.max' => 'Alasan pengembalian tidak boleh lebih dari 255 karakter.',
         ];
