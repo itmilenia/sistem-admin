@@ -33,7 +33,7 @@ return new class extends Migration
             $table->timestamp('TglUpdate')->default(DB::raw('CURRENT_TIMESTAMP'))->useCurrent()->onUpdate(DB::raw('CURRENT_TIMESTAMP'));
             $table->integer('Aktif');
             $table->date('TglKeluar')->nullable();
-            $table->string('Jabatan', 20)->nullable();
+            $table->string('Jabatan', 255)->nullable();
             $table->string('Divisi', 50)->nullable();
             $table->string('Dept', 110)->nullable();
             $table->string('Cabang', 30)->nullable();
