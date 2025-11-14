@@ -56,7 +56,7 @@
                                                         title="Edit Hak Akses">
                                                         <i class="feather-edit-2"></i>
                                                     </a>
-                                                    <form action="{{ route('master-permission.destroy', $permission->id) }}"
+                                                    {{-- <form action="{{ route('master-permission.destroy', $permission->id) }}"
                                                         method="POST" class="d-inline deletePermissionForm">
                                                         @csrf
                                                         @method('DELETE')
@@ -64,7 +64,7 @@
                                                             data-bs-toggle="tooltip" title="Hapus Hak Akses">
                                                             <i class="feather-trash-2"></i>
                                                         </button>
-                                                    </form>
+                                                    </form> --}}
                                                 </div>
                                             </td>
                                         </tr>

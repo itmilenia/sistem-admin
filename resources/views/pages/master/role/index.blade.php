@@ -59,7 +59,7 @@
                                                         title="Edit Role">
                                                         <i class="feather-edit-2"></i>
                                                     </a>
-                                                    <form action="{{ route('master-role.destroy', $role->id) }}"
+                                                    {{-- <form action="{{ route('master-role.destroy', $role->id) }}"
                                                         method="POST" class="d-inline deleteRoleForm">
                                                         @csrf
                                                         @method('DELETE')
@@ -67,7 +67,7 @@
                                                             data-bs-toggle="tooltip" title="Hapus Role">
                                                             <i class="feather-trash-2"></i>
                                                         </button>
-                                                    </form>
+                                                    </form> --}}
                                                 </div>
                                             </td>
                                         </tr>
