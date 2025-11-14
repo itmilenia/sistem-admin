@@ -90,7 +90,8 @@ Route::middleware('auth')->group(function () {
     });
 
     route::prefix('customer')->group(function () {
-        Route::get('/landing', [CustomerController::class, 'landing'])->name('customer-data.landing');
+        Route::get('/landing', [CustomerController::class, 'landing'])
+            ->middleware('permission:lihat_data_customer_map|lihat_data_customer_milenia')->name('customer-data.landing');
 
         // Route Data Customer
         Route::prefix('data-customer-milenia')->middleware('permission:lihat_data_customer_milenia')->group(function () {
@@ -105,7 +106,9 @@ Route::middleware('auth')->group(function () {
 
         // Route Transaksi Customer
         Route::prefix(('transaksi-pembelian-customer'))->group(function () {
-            Route::get('/landing', [CustomerTransactionController::class, 'landing'])->name('customer-transaction.landing');
+            Route::get('/landing', [CustomerTransactionController::class, 'landing'])
+                ->middleware('permission:lihat_transaksi_customer_milenia_pusat|lihat_transaksi_customer_milenia_cabang|lihat_transaksi_customer_map_pusat|lihat_transaksi_customer_map_cabang')
+                ->name('customer-transaction.landing');
 
             // Route Menampilkan Data Transaksi Customer Milenia
             Route::prefix('milenia')->middleware('permission:lihat_transaksi_customer_milenia_pusat')->group(function () {
@@ -137,7 +140,9 @@ Route::middleware('auth')->group(function () {
 
     Route::prefix('sales')->group(function () {
         Route::prefix('data-penjualan-sales')->name('salesperson-sales.')->group(function () {
-            Route::get('/landing', [SalespersonSalesController::class, 'landing'])->name('landing');
+            Route::get('/landing', [SalespersonSalesController::class, 'landing'])
+                ->middleware('permission:lihat_penjualan_sales_milenia_pusat|lihat_penjualan_sales_milenia_cabang|lihat_penjualan_sales_map_pusat|lihat_penjualan_sales_map_cabang')
+                ->name('landing');
 
             // Route Menampilkan Data Penjualan Sales
             Route::prefix('milenia')->middleware('permission:lihat_penjualan_sales_milenia_pusat')->group(function () {
@@ -181,7 +186,9 @@ Route::middleware('auth')->group(function () {
         // Route Menampilkan Data Surat Penawaran (Quotation Letter)
         Route::prefix('surat-penawaran')->name('quotation-letter.')->group(function () {
 
-            Route::get('/landing', [QuotationLetterController::class, 'landing'])->name('landing');
+            Route::get('/landing', [QuotationLetterController::class, 'landing'])
+                ->middleware('permission:lihat_surat_penawaran_milenia|lihat_surat_penawaran_map')
+                ->name('landing');
             Route::post('/store', [QuotationLetterController::class, 'store'])->name('store');
             Route::put('/{id}/update', [QuotationLetterController::class, 'update'])->name('update');
             Route::delete('/{id}/delete', [QuotationLetterController::class, 'destroy'])->name('destroy');
@@ -205,7 +212,9 @@ Route::middleware('auth')->group(function () {
 
         // Route Menampilkan Data Surat Agreement (Agreement Letter)
         Route::prefix('surat-agreement')->name('agreement-letter.')->group(function () {
-            Route::get('/landing', [AgreementLetterController::class, 'landing'])->name('landing');
+            Route::get('/landing', [AgreementLetterController::class, 'landing'])
+                ->middleware('permission:lihat_surat_agreement_milenia|lihat_surat_agreement_map')
+                ->name('landing');
             Route::post('/store', [AgreementLetterController::class, 'store'])->name('store');
             Route::put('/{id}/update', [AgreementLetterController::class, 'update'])->name('update');
             Route::delete('/{id}/delete', [AgreementLetterController::class, 'destroy'])->name('destroy');
@@ -231,7 +240,9 @@ Route::middleware('auth')->group(function () {
     Route::prefix('promo-produk')->group(function () {
         // Route Menampilkan Data Pricelist Produk
         Route::prefix('pricelist-produk')->group(function () {
-            Route::get('/landing', [ProductPricelistController::class, 'landing'])->name('pricelist-produk.landing');
+            Route::get('/landing', [ProductPricelistController::class, 'landing'])
+                ->middleware('permission:lihat_data_pricelist_produk_milenia|lihat_data_pricelist_produk_map')
+                ->name('pricelist-produk.landing');
 
             Route::prefix('milenia')->middleware('permission:lihat_data_pricelist_produk_milenia')->group(function () {
                 Route::get('/', [ProductPricelistController::class, 'indexMilenia'])->name('pricelist-produk-milenia.index');
@@ -244,7 +255,9 @@ Route::middleware('auth')->group(function () {
 
         // Route Menampilkan Data Promo Produk
         Route::prefix('program-promo')->name('promotion-program.')->group(function () {
-            Route::get('/landing', [PromotionProgramController::class, 'landing'])->name('landing');
+            Route::get('/landing', [PromotionProgramController::class, 'landing'])
+                ->middleware('permission:lihat_program_promo_milenia|lihat_program_promo_map')
+                ->name('landing');
             Route::post('/store', [PromotionProgramController::class, 'store'])->name('store');
             Route::put('/{id}/update', [PromotionProgramController::class, 'update'])->name('update');
             Route::delete('/{id}/delete', [PromotionProgramController::class, 'destroy'])->name('destroy');
@@ -268,7 +281,10 @@ Route::middleware('auth')->group(function () {
 
         // Route Menampilkam Form Claim Produk
         Route::prefix('form-klaim-produk')->name('product-claim-form.')->group(function () {
-            Route::get('/landing', [ClaimProductFormController::class, 'landing'])->name('landing');
+            Route::get('/landing', [ClaimProductFormController::class, 'landing'])
+                ->middleware('permission:lihat_klaim_produk_milenia|lihat_klaim_produk_map')
+                ->name('landing');
+
             Route::post('/store', [ClaimProductFormController::class, 'store'])->name('store');
             Route::get('/{id}/verifikasi-kerusakan', [ClaimProductFormController::class, 'showVerifyForm'])->name('verify');
             Route::post('/{id}/verifikasi-kerusakan', [ClaimProductFormController::class, 'storeVerification'])->name('verify.store');
