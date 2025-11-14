@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Master\RoleController;
 use App\Http\Controllers\Master\UserController;
 use App\Http\Controllers\Feat\CustomerController;
@@ -27,10 +28,30 @@ Route::middleware('guest')->group(function () {
     Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 });
 
+Route::get('/dashboard-sales-summary', function () {
+
+    $data = \App\Models\SalesOrderDetailMileniaBranch::with('salesManMileniaBranch')
+        ->join('SOIVH_Cabang', 'SOIVD_Cabang.SOIVD_InvoiceID', '=', 'SOIVH_Cabang.SOIVH_InvoiceID')
+        ->whereMonth('SOIVH_Cabang.SOIVH_InvoiceDate', now()->month)
+        ->whereYear('SOIVH_Cabang.SOIVH_InvoiceDate', now()->year)
+        ->selectRaw('
+            SOIVD_Cabang.SOIVD_SalesmanID,
+            COUNT(*) as total_transaksi,
+            SUM(SOIVD_Cabang.SOIVD_OrderQty) as total_qty,
+            SUM(SOIVD_Cabang.SOIVD_LineInvoiceAmount) as total_amount
+        ')
+        ->groupBy('SOIVD_Cabang.SOIVD_SalesmanID')
+        ->orderByDesc('total_amount')
+        ->get();
+
+    return response()->json([
+        'status' => $data->isNotEmpty() ? 'success' : 'empty',
+        'data'   => $data
+    ]);
+});
+
 Route::middleware('auth')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('welcome');
-    })->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::prefix('manajemen-fitur')->group(function () {
         // Route Jaringan Customer
