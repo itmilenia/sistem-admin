@@ -68,7 +68,7 @@ class AgreementLetterController extends Controller
                         ->orWhere('Divisi', 'WHOLASALES');
                 })
                     ->orWhere(function ($q3) {
-                        $q3->where('Jabatan', 'NATIONAL PRODUCT EXP')
+                        $q3->where('Jabatan', 'NATIONAL PRODUCT EXPERT')
                             ->orWhere('Jabatan', 'Trainer');
                     });
             })
@@ -98,7 +98,7 @@ class AgreementLetterController extends Controller
                         ->orWhere('Divisi', 'WHOLASALES');
                 })
                     ->orWhere(function ($q3) {
-                        $q3->where('Jabatan', 'NATIONAL PRODUCT EXP')
+                        $q3->where('Jabatan', 'NATIONAL PRODUCT EXPERT')
                             ->orWhere('Jabatan', 'Trainer');
                     });
             })
@@ -143,7 +143,7 @@ class AgreementLetterController extends Controller
                         ->orWhere('Divisi', 'WHOLASALES');
                 })
                     ->orWhere(function ($q3) {
-                        $q3->where('Jabatan', 'NATIONAL PRODUCT EXP')
+                        $q3->where('Jabatan', 'NATIONAL PRODUCT EXPERT')
                             ->orWhere('Jabatan', 'Trainer');
                     });
             })
@@ -173,7 +173,7 @@ class AgreementLetterController extends Controller
                         ->orWhere('Divisi', 'WHOLASALES');
                 })
                     ->orWhere(function ($q3) {
-                        $q3->where('Jabatan', 'NATIONAL PRODUCT EXP')
+                        $q3->where('Jabatan', 'NATIONAL PRODUCT EXPERT')
                             ->orWhere('Jabatan', 'Trainer');
                     });
             })
