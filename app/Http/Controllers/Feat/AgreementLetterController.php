@@ -62,7 +62,16 @@ class AgreementLetterController extends Controller
             ->select('Nama')
             ->where('Aktif', 1)
             ->where('statuskar', 'MILENIA')
-            ->where('Divisi', 'Sales')
+            ->where(function ($q) {
+                $q->where(function ($q2) {
+                    $q2->where('Divisi', 'SALES')
+                        ->orWhere('Divisi', 'WHOLASALES');
+                })
+                    ->orWhere(function ($q3) {
+                        $q3->where('Jabatan', 'NATIONAL PRODUCT EXP')
+                            ->orWhere('Jabatan', 'Trainer');
+                    });
+            })
             ->pluck('Nama');
 
         return view('pages.feat.sales.agreement-letter.milenia.create', compact('customers', 'salesNames'));
@@ -83,7 +92,16 @@ class AgreementLetterController extends Controller
             ->select('Nama')
             ->where('Aktif', 1)
             ->where('statuskar', 'MILENIA')
-            ->where('Divisi', 'Sales')
+            ->where(function ($q) {
+                $q->where(function ($q2) {
+                    $q2->where('Divisi', 'SALES')
+                        ->orWhere('Divisi', 'WHOLASALES');
+                })
+                    ->orWhere(function ($q3) {
+                        $q3->where('Jabatan', 'NATIONAL PRODUCT EXP')
+                            ->orWhere('Jabatan', 'Trainer');
+                    });
+            })
             ->pluck('Nama');
 
         return view('pages.feat.sales.agreement-letter.milenia.edit', compact('agreementLetter', 'customers', 'salesNames'));
@@ -119,7 +137,16 @@ class AgreementLetterController extends Controller
             ->select('Nama')
             ->where('Aktif', 1)
             ->where('statuskar', 'MAP')
-            ->where('Divisi', 'Sales')
+            ->where(function ($q) {
+                $q->where(function ($q2) {
+                    $q2->where('Divisi', 'SALES')
+                        ->orWhere('Divisi', 'WHOLASALES');
+                })
+                    ->orWhere(function ($q3) {
+                        $q3->where('Jabatan', 'NATIONAL PRODUCT EXP')
+                            ->orWhere('Jabatan', 'Trainer');
+                    });
+            })
             ->pluck('Nama');
 
         return view('pages.feat.sales.agreement-letter.map.create', compact('customers', 'salesNames'));
@@ -140,7 +167,16 @@ class AgreementLetterController extends Controller
             ->select('Nama')
             ->where('Aktif', 1)
             ->where('statuskar', 'MAP')
-            ->where('Divisi', 'Sales')
+            ->where(function ($q) {
+                $q->where(function ($q2) {
+                    $q2->where('Divisi', 'SALES')
+                        ->orWhere('Divisi', 'WHOLASALES');
+                })
+                    ->orWhere(function ($q3) {
+                        $q3->where('Jabatan', 'NATIONAL PRODUCT EXP')
+                            ->orWhere('Jabatan', 'Trainer');
+                    });
+            })
             ->pluck('Nama');
 
         return view('pages.feat.sales.agreement-letter.map.edit', compact('agreementLetter', 'customers', 'salesNames'));
