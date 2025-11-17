@@ -21,14 +21,16 @@ class CustomerController extends Controller
                 'MFCUS_Description',
                 'MFCUS_Contact',
                 'MFCUS_Telephone',
-                'MFCUS_Mobilephone'
+                'MFCUS_Mobilephone',
+                'MFCUS_Active'
             )
-            ->where('MFCUS_Active', 1)
-            ->orderBy('MFCUS_Description', 'asc')
+            ->orderBy('MFCUS_Active', 'desc')       // aktif duluan
+            ->orderBy('MFCUS_Description', 'asc')   // baru urut nama
             ->get();
 
         return view('pages.feat.customer.customer-data.index-milenia', compact('customers'));
     }
+
     public function indexMega()
     {
         $customers = DB::connection('sqlsrv_snx')->table('MFCUS')
@@ -37,10 +39,11 @@ class CustomerController extends Controller
                 'MFCUS_Description',
                 'MFCUS_Contact',
                 'MFCUS_Telephone',
-                'MFCUS_Mobilephone'
+                'MFCUS_Mobilephone',
+                'MFCUS_Active'
             )
-            ->where('MFCUS_Active', 1)
-            ->orderBy('MFCUS_Description', 'asc')
+            ->orderBy('MFCUS_Active', 'desc')       // aktif duluan
+            ->orderBy('MFCUS_Description', 'asc')   // baru urut nama
             ->get();
 
         return view('pages.feat.customer.customer-data.index-mega', compact('customers'));
@@ -60,11 +63,11 @@ class CustomerController extends Controller
                 'MFCUS_Mobilephone',
                 'MFSRM.MFSRM_Description as region_name',
                 'MFSSM.MFSSM_Description as salesman_name',
-                'MFCUS_LASTBUY'
+                'MFCUS_LASTBUY',
+                'MFCUS_Active'
             )
             ->leftJoin('MFSRM', 'MFCUS.MFCUS_RegionID', '=', 'MFSRM.MFSRM_RegionalID')
             ->leftJoin('MFSSM', 'MFCUS.MFCUS_SalesmanID', '=', 'MFSSM.MFSSM_SalesmanID')
-            ->where('MFCUS_Active', 1)
             ->where('MFCUS_CustomerID', $id)
             ->first();
 
@@ -89,11 +92,11 @@ class CustomerController extends Controller
                 'MFCUS_Mobilephone',
                 'MFSRM.MFSRM_Description as region_name',
                 'MFSSM.MFSSM_Description as salesman_name',
-                'MFCUS_LASTBUY'
+                'MFCUS_LASTBUY',
+                'MFCUS_Active'
             )
             ->leftJoin('MFSRM', 'MFCUS.MFCUS_RegionID', '=', 'MFSRM.MFSRM_RegionalID')
             ->leftJoin('MFSSM', 'MFCUS.MFCUS_SalesmanID', '=', 'MFSSM.MFSSM_SalesmanID')
-            ->where('MFCUS_Active', 1)
             ->where('MFCUS_CustomerID', $id)
             ->first();
 

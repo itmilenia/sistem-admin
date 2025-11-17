@@ -34,6 +34,16 @@
                         <h5 class="card-title">Daftar Semua Customer Milenia Mega Mandiri</h5>
                     </div>
                     <div class="card-body custom-card-action p-0">
+                        <div class="row p-3">
+                            <div class="col-md-3">
+                                <label for="status_filter" class="form-label">Filter Status:</label>
+                                <select id="status_filter" class="form-select">
+                                    <option value="">Tampilkan Semua</option>
+                                    <option value="Aktif">Hanya Aktif</option>
+                                    <option value="Tidak aktif">Hanya Tidak aktif</option>
+                                </select>
+                            </div>
+                        </div>
                         <div class="table-responsive">
                             <table class="table table-hover table-bordered" id="customer-table" style="width:100%">
                                 <thead>
@@ -44,6 +54,7 @@
                                         <th class="text-center">Kontak Person</th>
                                         <th class="text-center">Telepon</th>
                                         <th class="text-center">No.Handphone</th>
+                                        <th class="text-center">Status</th>
                                         <th style="width: 10%;" class="text-center">Aksi</th>
                                     </tr>
                                 </thead>
@@ -56,6 +67,13 @@
                                             <td>{{ $customer->MFCUS_Contact ?? '-' }}</td>
                                             <td>{{ $customer->MFCUS_Telephone ?? '-' }}</td>
                                             <td>{{ $customer->MFCUS_Mobilephone ?? '-' }}</td>
+                                            <td class="text-center">
+                                                @if ($customer->MFCUS_Active == 1)
+                                                    <span class="badge bg-success">Aktif</span>
+                                                @else
+                                                    <span class="badge bg-danger">Tidak aktif</span>
+                                                @endif
+                                            </td>
                                             <td>
                                                 <div class="hstack gap-2 justify-content-center">
                                                     <a href="{{ route('customer-data-milenia.show', $customer->MFCUS_CustomerID) }}"
@@ -85,9 +103,25 @@
 
     <script>
         $(document).ready(function() {
-            $('#customer-table').DataTable({
+            // 1. Simpan instance DataTable ke dalam variabel 'table'
+            var table = $('#customer-table').DataTable({
                 language: {
                     url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json'
+                }
+            });
+
+            // 2. Tambahkan event listener untuk dropdown
+            $('#status_filter').on('change', function() {
+                var status = $(this).val();
+
+                if (status) {
+                    table.column(6)
+                        .search('^' + status + '$', true, false)
+                        .draw();
+                } else {
+                    table.column(6)
+                        .search('', false, false)
+                        .draw();
                 }
             });
         });
