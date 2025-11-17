@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Master\TaxController;
 use App\Http\Controllers\Master\RoleController;
 use App\Http\Controllers\Master\UserController;
 use App\Http\Controllers\Feat\CustomerController;
@@ -28,28 +29,6 @@ Route::middleware('guest')->group(function () {
     Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 });
 
-Route::get('/dashboard-sales-summary', function () {
-
-    $data = \App\Models\SalesOrderDetailMileniaBranch::with('salesManMileniaBranch')
-        ->join('SOIVH_Cabang', 'SOIVD_Cabang.SOIVD_InvoiceID', '=', 'SOIVH_Cabang.SOIVH_InvoiceID')
-        ->whereMonth('SOIVH_Cabang.SOIVH_InvoiceDate', now()->month)
-        ->whereYear('SOIVH_Cabang.SOIVH_InvoiceDate', now()->year)
-        ->selectRaw('
-            SOIVD_Cabang.SOIVD_SalesmanID,
-            COUNT(*) as total_transaksi,
-            SUM(SOIVD_Cabang.SOIVD_OrderQty) as total_qty,
-            SUM(SOIVD_Cabang.SOIVD_LineInvoiceAmount) as total_amount
-        ')
-        ->groupBy('SOIVD_Cabang.SOIVD_SalesmanID')
-        ->orderByDesc('total_amount')
-        ->get();
-
-    return response()->json([
-        'status' => $data->isNotEmpty() ? 'success' : 'empty',
-        'data'   => $data
-    ]);
-});
-
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -73,6 +52,16 @@ Route::middleware('auth')->group(function () {
                 Route::post('/', [ProductBrandController::class, 'store'])->name('store');
                 Route::get('/{id}/edit', [ProductBrandController::class, 'edit'])->name('edit');
                 Route::put('/{id}/update', [ProductBrandController::class, 'update'])->name('update');
+            });
+
+            // Route Master Tax
+            Route::prefix('pajak')->name('master-tax.')->group(function () {
+                Route::get('/', [TaxController::class, 'index'])->name('index');
+                Route::get('/{id}/detail', [TaxController::class, 'detail'])->name('detail');
+                Route::get('/tambah', [TaxController::class, 'create'])->name('create');
+                Route::post('/', [TaxController::class, 'store'])->name('store');
+                Route::get('/{id}/edit', [TaxController::class, 'edit'])->name('edit');
+                Route::put('/{id}/update', [TaxController::class, 'update'])->name('update');
             });
         });
     });

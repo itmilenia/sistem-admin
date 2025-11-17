@@ -42,7 +42,7 @@
                     </li>
 
                     <li
-                        class="nxl-item nxl-hasmenu {{ request()->routeIs(['master-customer-network.*', 'master-product-brand.*']) ? 'active' : '' }}">
+                        class="nxl-item nxl-hasmenu {{ request()->routeIs(['master-customer-network.*', 'master-product-brand.*', 'master-tax.*']) ? 'active' : '' }}">
                         <a href="#" class="nxl-link">
                             <span class="nxl-micon"><i class="feather-settings"></i></span>
                             <span class="nxl-mtext">Manajemen Fitur</span><span class="nxl-arrow"><i
@@ -56,6 +56,9 @@
                                 </li>
                                 <li class="nxl-item {{ request()->routeIs(['master-product-brand.*']) ? 'active' : '' }}">
                                     <a class="nxl-link" href="{{ route('master-product-brand.index') }}">Product Brand</a>
+                                </li>
+                                <li class="nxl-item {{ request()->routeIs(['master-tax.*']) ? 'active' : '' }}">
+                                    <a class="nxl-link" href="{{ route('master-tax.index') }}">Pajak</a>
                                 </li>
                             @endcan
                         </ul>

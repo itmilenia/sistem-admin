@@ -65,9 +65,15 @@
                                                 {{ number_format($item->SOMPD_PriceAmount, 0, ',', '.') }}
                                             </td>
 
-                                            {{-- Harga Setelah PPN (11%) --}}
+                                            {{-- Harga Setelah PPN --}}
                                             <td class="text-end">
-                                                {{ number_format($item->SOMPD_PriceAmount * 1.11, 0, ',', '.') }}
+                                                @php
+                                                    $taxRate = $taxActive->tax_rate ?? 0;
+                                                    $taxRate = $taxRate / 100;
+                                                    $total = $item->SOMPD_PriceAmount * (1 + $taxRate);
+                                                @endphp
+
+                                                {{ number_format($total, 0, ',', '.') }}
                                             </td>
                                         </tr>
                                     @endforeach

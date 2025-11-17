@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Feat;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Models\Tax;
 
 class ProductPricelistController extends Controller
 {
@@ -28,18 +29,21 @@ class ProductPricelistController extends Controller
                 'SOMPD.SOMPD_UPDATE'
             )
             ->where('MFIMA.MFIMA_Active', 1)
-            ->orderBy('SOMPD.SOMPD_LineItem', 'asc')
+            ->orderBy('SOMPD.SOMPD_LineItem', 'desc')
             ->get();
+
+        $taxActive = Tax::where('is_active', 1)->first();
 
         return view('pages.feat.promo-produk.produk-pricelist.milenia.index', [
             'pricelists' => $pricelists,
+            'taxActive' => $taxActive
         ]);
     }
 
 
     public function indexMap()
     {
-        $pricelists = DB::connection('sqlsrv_wh')
+        $pricelists = DB::connection('sqlsrv_snx')
             ->table('SOMPD')
             ->join('MFIMA', 'SOMPD.SOMPD_ItemID', '=', 'MFIMA.MFIMA_ItemID')
             ->select(
@@ -52,11 +56,14 @@ class ProductPricelistController extends Controller
                 'SOMPD.SOMPD_UPDATE'
             )
             ->where('MFIMA.MFIMA_Active', 1)
-            ->orderBy('SOMPD.SOMPD_LineItem', 'asc')
+            ->orderBy('SOMPD.SOMPD_LineItem', 'desc')
             ->get();
 
+        $taxActive = Tax::where('is_active', 1)->first();
+
         return view('pages.feat.promo-produk.produk-pricelist.map.index', [
-            'pricelists' => $pricelists
+            'pricelists' => $pricelists,
+            'taxActive' => $taxActive
         ]);
     }
 }

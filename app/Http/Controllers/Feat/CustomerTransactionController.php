@@ -48,7 +48,7 @@ class CustomerTransactionController extends Controller
                 'SOIVH.SOIVH_DueDate',
                 'SOIVH.SOIVH_InvoiceAmount'
             )
-            ->orderBy('SOIVH.SOIVH_InvoiceID', 'desc');
+            ->orderBy('SOIVH.SOIVH_InvoiceDate', 'desc');
 
         // filter (No. Invoice dan Nama Customer)
         if ($request->filled('search_invoice')) {
@@ -93,7 +93,7 @@ class CustomerTransactionController extends Controller
                 'SOIVH_CABANG.SOIVH_DueDate',
                 'SOIVH_CABANG.SOIVH_InvoiceAmount'
             )
-            ->orderBy('SOIVH_CABANG.SOIVH_InvoiceID', 'desc');
+            ->orderBy('SOIVH_CABANG.SOIVH_InvoiceDate', 'desc');
 
         // filter (No. Invoice dan Nama Customer)
         if ($request->filled('search_invoice')) {
@@ -138,7 +138,7 @@ class CustomerTransactionController extends Controller
                 'SOIVH.SOIVH_DueDate',
                 'SOIVH.SOIVH_InvoiceAmount'
             )
-            ->orderBy('SOIVH.SOIVH_InvoiceID', 'desc');
+            ->orderBy('SOIVH.SOIVH_InvoiceDate', 'desc');
 
         // filter (No. Invoice dan Nama Customer)
         if ($request->filled('search_invoice')) {
@@ -183,7 +183,7 @@ class CustomerTransactionController extends Controller
                 'SOIVH_CABANG.SOIVH_DueDate',
                 'SOIVH_CABANG.SOIVH_InvoiceAmount'
             )
-            ->orderBy('SOIVH_CABANG.SOIVH_InvoiceID', 'desc');
+            ->orderBy('SOIVH_CABANG.SOIVH_InvoiceDate', 'desc');
 
         // filter (No. Invoice dan Nama Customer)
         if ($request->filled('search_invoice')) {
