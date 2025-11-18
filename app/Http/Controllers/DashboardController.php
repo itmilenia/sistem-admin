@@ -8,6 +8,7 @@ use App\Models\PricelistMap;
 use Illuminate\Http\Request;
 use App\Models\CustomerNetwork;
 use App\Models\PricelistMilenia;
+use Illuminate\Support\Facades\DB;
 use App\Models\SalesOrderDetailMap;
 use App\Models\SalesOrderDetailMilenia;
 use App\Models\SalesOrderDetailMapBranch;
@@ -106,6 +107,148 @@ class DashboardController extends Controller
             ->orderByRaw('SOMPD_UPDATE DESC')
             ->get();
 
+        $brandTransactionMilenia = SalesOrderDetailMilenia::query()
+            ->select(
+                'MFIB.MFIB_BrandID',
+                'MFIB.MFIB_Description as brand_name',
+                DB::raw('SUM(SOIVD.SOIVD_LineInvoiceAmount) as total_sales')
+            )
+            ->join('SOIVH', 'SOIVD.SOIVD_InvoiceID', '=', 'SOIVH.SOIVH_InvoiceID')
+            ->join('MFIMA', 'SOIVD.SOIVD_ItemID', '=', 'MFIMA.MFIMA_ItemID')
+            ->join('MFIB', 'MFIMA.MFIMA_Brand', '=', 'MFIB.MFIB_BrandID')
+            ->whereMonth('SOIVH.SOIVH_InvoiceDate', now()->month)
+            ->whereYear('SOIVH.SOIVH_InvoiceDate', now()->year)
+            ->groupBy('MFIB.MFIB_BrandID', 'MFIB.MFIB_Description')
+            ->orderBy('total_sales', 'desc')
+            ->get();
+
+        $brandTransactionMap = SalesOrderDetailMap::query()
+            ->select(
+                'MFIB.MFIB_BrandID',
+                'MFIB.MFIB_Description as brand_name',
+                DB::raw('SUM(SOIVD.SOIVD_LineInvoiceAmount) as total_sales')
+            )
+            ->join('SOIVH', 'SOIVD.SOIVD_InvoiceID', '=', 'SOIVH.SOIVH_InvoiceID')
+            ->join('MFIMA', 'SOIVD.SOIVD_ItemID', '=', 'MFIMA.MFIMA_ItemID')
+            ->join('MFIB', 'MFIMA.MFIMA_Brand', '=', 'MFIB.MFIB_BrandID')
+            ->whereMonth('SOIVH.SOIVH_InvoiceDate', now()->month)
+            ->whereYear('SOIVH.SOIVH_InvoiceDate', now()->year)
+            ->groupBy('MFIB.MFIB_BrandID', 'MFIB.MFIB_Description')
+            ->orderBy('total_sales', 'desc')
+            ->get();
+
+        $brandTransactionMileniaBranch = SalesOrderDetailMileniaBranch::query()
+            ->select(
+                'MFIB.MFIB_BrandID',
+                'MFIB.MFIB_Description as brand_name',
+                DB::raw('SUM(SOIVD_Cabang.SOIVD_LineInvoiceAmount) as total_sales')
+            )
+            ->join('SOIVH_Cabang', 'SOIVD_Cabang.SOIVD_InvoiceID', '=', 'SOIVH_Cabang.SOIVH_InvoiceID')
+            ->join('MFIMA', 'SOIVD_Cabang.SOIVD_ItemID', '=', 'MFIMA.MFIMA_ItemID')
+            ->join('MFIB', 'MFIMA.MFIMA_Brand', '=', 'MFIB.MFIB_BrandID')
+            ->whereMonth('SOIVH_Cabang.SOIVH_InvoiceDate', now()->month)
+            ->whereYear('SOIVH_Cabang.SOIVH_InvoiceDate', now()->year)
+            ->groupBy('MFIB.MFIB_BrandID', 'MFIB.MFIB_Description')
+            ->orderBy('total_sales', 'desc')
+            ->get();
+
+        $brandTransactionMapBranch = SalesOrderDetailMapBranch::query()
+            ->select(
+                'MFIB.MFIB_BrandID',
+                'MFIB.MFIB_Description as brand_name',
+                DB::raw('SUM(SOIVD_Cabang.SOIVD_LineInvoiceAmount) as total_sales')
+            )
+            ->join('SOIVH_Cabang', 'SOIVD_Cabang.SOIVD_InvoiceID', '=', 'SOIVH_Cabang.SOIVH_InvoiceID')
+            ->join('MFIMA', 'SOIVD_Cabang.SOIVD_ItemID', '=', 'MFIMA.MFIMA_ItemID')
+            ->join('MFIB', 'MFIMA.MFIMA_Brand', '=', 'MFIB.MFIB_BrandID')
+            ->whereMonth('SOIVH_Cabang.SOIVH_InvoiceDate', now()->month)
+            ->whereYear('SOIVH_Cabang.SOIVH_InvoiceDate', now()->year)
+            ->groupBy('MFIB.MFIB_BrandID', 'MFIB.MFIB_Description')
+            ->orderBy('total_sales', 'desc')
+            ->get();
+
+        // Transaksi per Customer Network
+        // --- Kueri 1: Penjualan dari SOIVD (Tabel Utama) ---
+        $salesMainMileniaperCustomer = DB::connection('sqlsrv_wh')->table('SOIVD')
+            ->select(
+                'MFCUS.MFCUS_CustomerID',
+                'MFCUS.MFCUS_Description',
+                'SOIVD.SOIVD_LineInvoiceAmount'
+            )
+            ->join('SOIVH', 'SOIVD.SOIVD_InvoiceID', '=', 'SOIVH.SOIVH_InvoiceID')
+            ->join('MFCUS', 'SOIVH.SOIVH_CustomerID', '=', 'MFCUS.MFCUS_CustomerID')
+            ->whereMonth('SOIVH.SOIVH_InvoiceDate', now()->month)
+            ->whereYear('SOIVH.SOIVH_InvoiceDate', now()->year);
+
+        // --- Kueri 2: Penjualan dari SOIVD_Cabang (Tabel Cabang) ---
+        $salesBranchMileniaperCustomer = DB::connection('sqlsrv_wh')->table('SOIVD_Cabang')
+            ->select(
+                'MFCUS.MFCUS_CustomerID',
+                'MFCUS.MFCUS_Description',
+                'SOIVD_Cabang.SOIVD_LineInvoiceAmount'
+            )
+            ->join('SOIVH_Cabang', 'SOIVD_Cabang.SOIVD_InvoiceID', '=', 'SOIVH_Cabang.SOIVH_InvoiceID')
+            ->join('MFCUS', 'SOIVH_Cabang.SOIVH_CustomerID', '=', 'MFCUS.MFCUS_CustomerID')
+            ->whereMonth('SOIVH_Cabang.SOIVH_InvoiceDate', now()->month)
+            ->whereYear('SOIVH_Cabang.SOIVH_InvoiceDate', now()->year);
+
+
+        // --- Gabungkan kedua kueri ---
+        $salesMainMileniaperCustomer->unionAll($salesBranchMileniaperCustomer);
+
+        $finalReportMilenia = DB::connection('sqlsrv_wh')
+            ->query()
+            ->fromSub($salesMainMileniaperCustomer, 'all_sales')
+            ->select(
+                'MFCUS_CustomerID',
+                'MFCUS_Description as customer_name',
+                DB::raw('SUM(SOIVD_LineInvoiceAmount) as total_sales')
+            )
+            ->groupBy('MFCUS_CustomerID', 'MFCUS_Description')
+            ->orderBy('total_sales', 'desc')
+            ->get();
+
+        // Transaksi per Customer Network
+        // --- Kueri 1: Penjualan dari SOIVD (Tabel Utama) ---
+        $salesMainMapperCustomer = DB::connection('sqlsrv_snx')->table('SOIVD')
+            ->select(
+                'MFCUS.MFCUS_CustomerID',
+                'MFCUS.MFCUS_Description',
+                'SOIVD.SOIVD_LineInvoiceAmount'
+            )
+            ->join('SOIVH', 'SOIVD.SOIVD_InvoiceID', '=', 'SOIVH.SOIVH_InvoiceID')
+            ->join('MFCUS', 'SOIVH.SOIVH_CustomerID', '=', 'MFCUS.MFCUS_CustomerID')
+            ->whereMonth('SOIVH.SOIVH_InvoiceDate', now()->month)
+            ->whereYear('SOIVH.SOIVH_InvoiceDate', now()->year);
+
+        // --- Kueri 2: Penjualan dari SOIVD_Cabang (Tabel Cabang) ---
+        $salesBranchMapperCustomer = DB::connection('sqlsrv_snx')->table('SOIVD_Cabang')
+            ->select(
+                'MFCUS.MFCUS_CustomerID',
+                'MFCUS.MFCUS_Description',
+                'SOIVD_Cabang.SOIVD_LineInvoiceAmount'
+            )
+            ->join('SOIVH_Cabang', 'SOIVD_Cabang.SOIVD_InvoiceID', '=', 'SOIVH_Cabang.SOIVH_InvoiceID')
+            ->join('MFCUS', 'SOIVH_Cabang.SOIVH_CustomerID', '=', 'MFCUS.MFCUS_CustomerID')
+            ->whereMonth('SOIVH_Cabang.SOIVH_InvoiceDate', now()->month)
+            ->whereYear('SOIVH_Cabang.SOIVH_InvoiceDate', now()->year);
+
+
+        // --- Gabungkan kedua kueri ---
+        $salesMainMapperCustomer->unionAll($salesBranchMapperCustomer);
+
+        $finalReportMap = DB::connection('sqlsrv_snx')
+            ->query()
+            ->fromSub($salesMainMapperCustomer, 'all_sales')
+            ->select(
+                'MFCUS_CustomerID',
+                'MFCUS_Description as customer_name',
+                DB::raw('SUM(SOIVD_LineInvoiceAmount) as total_sales')
+            )
+            ->groupBy('MFCUS_CustomerID', 'MFCUS_Description')
+            ->orderBy('total_sales', 'desc')
+            ->get();
+
         return view('pages.dashboard.index', compact(
             'salesManSalesMilenia',
             'salesManSalesMileniaBranch',
@@ -115,7 +258,13 @@ class DashboardController extends Controller
             'totalCustomerNetwork',
             'totalActiveUser',
             'updatedPricelistsMilenia',
-            'updatedPricelistsMap'
+            'updatedPricelistsMap',
+            'brandTransactionMilenia',
+            'brandTransactionMileniaBranch',
+            'brandTransactionMap',
+            'brandTransactionMapBranch',
+            'finalReportMilenia',
+            'finalReportMap'
         ));
     }
 }

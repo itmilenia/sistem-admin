@@ -12,7 +12,7 @@ class SalesOrderHeaderMilenia extends Model
     protected $keyType = 'string';
     public $timestamps = false;
 
-    public function SalesOrderMileniadetail()
+    public function salesOrderDetailMilenia()
     {
         return $this->hasMany(SalesOrderDetailMilenia::class, 'SOIVD_InvoiceID', 'SOIVH_InvoiceID');
     }

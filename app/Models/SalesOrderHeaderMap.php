@@ -12,7 +12,7 @@ class SalesOrderHeaderMap extends Model
     protected $keyType = 'string';
     public $timestamps = false;
 
-    public function SalesOrderMapdetail()
+    public function salesOrderDetailMap()
     {
         return $this->hasMany(SalesOrderDetailMap::class, 'SOIVD_InvoiceID', 'SOIVH_InvoiceID');
     }

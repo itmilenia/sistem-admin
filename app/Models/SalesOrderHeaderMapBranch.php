@@ -12,7 +12,7 @@ class SalesOrderHeaderMapBranch extends Model
     protected $keyType = 'string';
     public $timestamps = false;
 
-    public function SalesOrderMapBranchdetail()
+    public function salesOrderDetailMapBranch()
     {
         return $this->hasMany(SalesOrderDetailMapBranch::class, 'SOIVD_InvoiceID', 'SOIVH_InvoiceID');
     }

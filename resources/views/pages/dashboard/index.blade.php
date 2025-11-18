@@ -9,7 +9,6 @@
                 <h5 class="m-b-10">Dashboard</h5>
             </div>
             <ul class="breadcrumb">
-                <li class="breadcrumb-item"><a href="index.html">Home</a></li>
                 <li class="breadcrumb-item">Dashboard</li>
             </ul>
         </div>
@@ -267,6 +266,268 @@
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-header">
+                        <h5>🏆 Top Transaksi per Brand (Bulan Ini)</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="nav nav-tabs" id="pricelistTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="transaction-milenia-brand-tab" data-bs-toggle="tab"
+                                    data-bs-target="#transaction-milenia-brand" type="button" role="tab"
+                                    aria-controls="transaction-milenia-brand" aria-selected="true">
+                                    MMM Pusat
+                                </button>
+                            </li>
+
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="transaction-milenia-brand-branch-tab" data-bs-toggle="tab"
+                                    data-bs-target="#transaction-milenia-brand-branch" type="button" role="tab"
+                                    aria-controls="transaction-milenia-brand-branch" aria-selected="false">
+                                    MMM Cabang
+                                </button>
+                            </li>
+
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="transaction-map-brand-tab" data-bs-toggle="tab"
+                                    data-bs-target="#transaction-map-brand" type="button" role="tab"
+                                    aria-controls="transaction-map-brand" aria-selected="true">
+                                    MAP Pusat
+                                </button>
+                            </li>
+
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="transaction-map-brand-branch-tab" data-bs-toggle="tab"
+                                    data-bs-target="#transaction-map-brand-branch" type="button" role="tab"
+                                    aria-controls="transaction-map-brand-branch" aria-selected="false">
+                                    MAP Cabang
+                                </button>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content" id="salesmanTabsContent">
+
+                            {{-- TAB 1: MILENIA PUSAT --}}
+                            <div class="tab-pane fade show active" id="transaction-milenia-brand" role="tabpanel"
+                                aria-labelledby="transaction-milenia-brand-tab">
+                                <div class="table-responsive mt-3">
+                                    <table id="table-transaction-milenia-brand" class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-center align-middle">No</th>
+                                                <th class="align-middle">Nama Brand</th>
+                                                <th class="align-middle">Total Amount</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @forelse ($brandTransactionMilenia as $brandTransaction)
+                                                <tr>
+                                                    <td class="text-center">{{ $loop->iteration }}</td>
+                                                    <td>
+                                                        {{ $brandTransaction->brand_name ?? 'N/A' }}
+                                                        <small
+                                                            class="d-block text-muted">{{ $brandTransaction->MFIB_BrandID }}</small>
+                                                    </td>
+                                                    <td>Rp {{ number_format($brandTransaction->total_sales, 0, ',', '.') }}
+                                                    </td>
+                                                </tr>
+                                            @empty
+                                            @endforelse
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            {{-- TAB 2: MILENIA CABANG --}}
+                            <div class="tab-pane fade" id="transaction-milenia-brand-branch" role="tabpanel"
+                                aria-labelledby="transaction-milenia-brand-branch-tab">
+                                <div class="table-responsive mt-3">
+                                    <table id="table-transaction-milenia-brand-branch" class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-center align-middle">No</th>
+                                                <th class="align-middle">Nama Brand</th>
+                                                <th class="align-middle">Total Amount</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @forelse ($brandTransactionMileniaBranch as $brandTransaction)
+                                                <tr>
+                                                    <td class="text-center">{{ $loop->iteration }}</td>
+                                                    <td>
+                                                        {{ $brandTransaction->brand_name ?? 'N/A' }}
+                                                        <small
+                                                            class="d-block text-muted">{{ $brandTransaction->MFIB_BrandID }}</small>
+                                                    </td>
+                                                    <td>Rp {{ number_format($brandTransaction->total_sales, 0, ',', '.') }}
+                                                    </td>
+                                                </tr>
+                                            @empty
+                                            @endforelse
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            {{-- TAB 3: MAP PUSAT --}}
+                            <div class="tab-pane fade" id="transaction-map-brand" role="tabpanel"
+                                aria-labelledby="transaction-map-brand-tab">
+                                <div class="table-responsive mt-3">
+                                    <table id="table-transaction-map-brand" class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-center align-middle">No</th>
+                                                <th class="align-middle">Nama Brand</th>
+                                                <th class="align-middle">Total Amount</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @forelse ($brandTransactionMap as $brandTransaction)
+                                                <tr>
+                                                    <td class="text-center">{{ $loop->iteration }}</td>
+                                                    <td>
+                                                        {{ $brandTransaction->brand_name ?? 'N/A' }}
+                                                        <small
+                                                            class="d-block text-muted">{{ $brandTransaction->MFIB_BrandID }}</small>
+                                                    </td>
+                                                    <td>Rp {{ number_format($brandTransaction->total_sales, 0, ',', '.') }}
+                                                    </td>
+                                                </tr>
+                                            @empty
+                                            @endforelse
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            {{-- TAB 4: MAP CABANG --}}
+                            <div class="tab-pane fade" id="transaction-map-brand-branch" role="tabpanel"
+                                aria-labelledby="transaction-map-brand-branch-tab">
+                                <div class="table-responsive mt-3">
+                                    <table id="table-transaction-map-brand-branch" class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-center align-middle">No</th>
+                                                <th class="align-middle">Nama Brand</th>
+                                                <th class="align-middle">Total Amount</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @forelse ($brandTransactionMapBranch as $brandTransaction)
+                                                <tr>
+                                                    <td class="text-center">{{ $loop->iteration }}</td>
+                                                    <td>
+                                                        {{ $brandTransaction->brand_name ?? 'N/A' }}
+                                                        <small
+                                                            class="d-block text-muted">{{ $brandTransaction->MFIB_BrandID }}</small>
+                                                    </td>
+                                                    <td>Rp {{ number_format($brandTransaction->total_sales, 0, ',', '.') }}
+                                                    </td>
+                                                </tr>
+                                            @empty
+                                            @endforelse
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>🏆 Top Transaksi per Customer Jaringan (Bulan Ini)</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="nav nav-tabs" id="pricelistTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="transaction-milenia-customer-tab" data-bs-toggle="tab"
+                                    data-bs-target="#transaction-milenia-customer" type="button" role="tab"
+                                    aria-controls="transaction-milenia-customer" aria-selected="true">
+                                    Customer MMM
+                                </button>
+                            </li>
+
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="transaction-map-customer-tab" data-bs-toggle="tab"
+                                    data-bs-target="#transaction-map-customer" type="button" role="tab"
+                                    aria-controls="transaction-map-customer" aria-selected="true">
+                                    Customer MAP
+                                </button>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content" id="salesmanTabsContent">
+
+                            {{-- TAB 1: MILENIA PUSAT --}}
+                            <div class="tab-pane fade show active" id="transaction-milenia-customer" role="tabpanel"
+                                aria-labelledby="transaction-milenia-customer-tab">
+                                <div class="table-responsive mt-3">
+                                    <table id="table-transaction-milenia-customer" class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-center align-middle">No</th>
+                                                <th class="align-middle">Nama Customer</th>
+                                                <th class="align-middle">Total Amount</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @forelse ($finalReportMilenia as $report)
+                                                <tr>
+                                                    <td class="text-center">{{ $loop->iteration }}</td>
+                                                    <td>
+                                                        {{ $report->customer_name ?? 'N/A' }}
+                                                        <small
+                                                            class="d-block text-muted">{{ $report->MFCUS_CustomerID }}</small>
+                                                    </td>
+                                                    <td>Rp {{ number_format($report->total_sales, 0, ',', '.') }}
+                                                    </td>
+                                                </tr>
+                                            @empty
+                                            @endforelse
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            {{-- TAB 2: MAP PUSAT --}}
+                            <div class="tab-pane fade" id="transaction-map-customer" role="tabpanel"
+                                aria-labelledby="transaction-map-customer-tab">
+                                <div class="table-responsive mt-3">
+                                    <table id="table-transaction-map-customer" class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-center align-middle">No</th>
+                                                <th class="align-middle">Nama Customer</th>
+                                                <th class="align-middle">Total Amount</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @forelse ($finalReportMap as $report)
+                                                <tr>
+                                                    <td class="text-center">{{ $loop->iteration }}</td>
+                                                    <td>
+                                                        {{ $report->customer_name ?? 'N/A' }}
+                                                        <small
+                                                            class="d-block text-muted">{{ $report->MFCUS_CustomerID }}</small>
+                                                    </td>
+                                                    <td>Rp {{ number_format($report->total_sales, 0, ',', '.') }}
+                                                    </td>
+                                                </tr>
+                                            @empty
+                                            @endforelse
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
                         <h5>📈 Pricelist Terbaru (Bulan Ini)</h5>
                     </div>
                     <div class="card-body">
@@ -466,6 +727,84 @@
                 }
             });
 
+            var tableTransactionBrandMilenia = $('#table-transaction-milenia-brand').DataTable({
+                "width": "100%",
+                'pageLength': 5,
+                "lengthMenu": [
+                    [5, 10, 25, 50, -1],
+                    [5, 10, 25, 50, "Semua"]
+                ],
+                "order": [],
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json"
+                }
+            });
+
+            var tableTransactionBrandMileniaBranch = $('#table-transaction-milenia-brand-branch').DataTable({
+                "width": "100%",
+                'pageLength': 5,
+                "lengthMenu": [
+                    [5, 10, 25, 50, -1],
+                    [5, 10, 25, 50, "Semua"]
+                ],
+                "order": [],
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json"
+                }
+            });
+
+            var tableTransactionBrandMap = $('#table-transaction-map-brand').DataTable({
+                "width": "100%",
+                'pageLength': 5,
+                "lengthMenu": [
+                    [5, 10, 25, 50, -1],
+                    [5, 10, 25, 50, "Semua"]
+                ],
+                "order": [],
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json"
+                }
+            });
+
+            var tableTransactionBrandMapBranch = $('#table-transaction-map-brand-branch').DataTable({
+                "width": "100%",
+                'pageLength': 5,
+                "lengthMenu": [
+                    [5, 10, 25, 50, -1],
+                    [5, 10, 25, 50, "Semua"]
+                ],
+                "order": [],
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json"
+                }
+            });
+
+            var tableTransactionCustomerMilenia = $('#table-transaction-milenia-customer').DataTable({
+                "width": "100%",
+                'pageLength': 5,
+                "lengthMenu": [
+                    [5, 10, 25, 50, -1],
+                    [5, 10, 25, 50, "Semua"]
+                ],
+                "order": [],
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json"
+                }
+            });
+
+             var tableTransactionCustomerMap = $('#table-transaction-map-customer').DataTable({
+                "width": "100%",
+                'pageLength': 5,
+                "lengthMenu": [
+                    [5, 10, 25, 50, -1],
+                    [5, 10, 25, 50, "Semua"]
+                ],
+                "order": [],
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json"
+                }
+            });
+
             // Intersepsi perubahan tab
             $('button[data-bs-toggle="tab"]').on('shown.bs.tab', function(e) {
                 var targetTabId = $(e.target).attr('data-bs-target');
@@ -481,6 +820,18 @@
                     tableSalesmanMap.columns.adjust().draw();
                 } else if (targetTabId === '#salesman-map-branch') {
                     tableSalesmanMapBranch.columns.adjust().draw();
+                } else if (targetTabId === '#transaction-milenia-brand') {
+                    tableTransactionBrandMilenia.columns.adjust().draw();
+                } else if (targetTabId === '#transaction-milenia-brand-branch') {
+                    tableTransactionBrandMileniaBranch.columns.adjust().draw();
+                } else if (targetTabId === '#transaction-map-brand') {
+                    tableTransactionBrandMap.columns.adjust().draw();
+                } else if (targetTabId === '#transaction-map-brand-branch') {
+                    tableTransactionBrandMapBranch.columns.adjust().draw();
+                } else if (targetTabId === '#transaction-milenia-customer') {
+                    tableTransactionCustomerMilenia.columns.adjust().draw();
+                } else if (targetTabId === '#transaction-map-customer') {
+                    tableTransactionCustomerMap.columns.adjust().draw();
                 }
             });
         });

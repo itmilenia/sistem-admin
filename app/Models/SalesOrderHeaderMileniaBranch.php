@@ -12,7 +12,7 @@ class SalesOrderHeaderMileniaBranch extends Model
     protected $keyType = 'string';
     public $timestamps = false;
 
-    public function SalesOrderMileniaBranchdetail()
+    public function salesOrderDetailMileniaBranch()
     {
         return $this->hasMany(SalesOrderDetailMileniaBranch::class, 'SOIVD_InvoiceID', 'SOIVH_InvoiceID');
     }
