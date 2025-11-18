@@ -46,7 +46,8 @@
 
                     <div class="card-body">
                         {{-- Arahkan ke route 'update' dengan method 'PUT' --}}
-                        <form id="edit-claim-form" action="{{ route('product-claim-form.update', $claim->id) }}" method="POST">
+                        <form id="edit-claim-form" action="{{ route('product-claim-form.update', $claim->id) }}"
+                            method="POST" enctype="multipart/form-data">
                             @csrf
                             @method('PUT')
 
@@ -151,21 +152,25 @@
                                 @error('details')
                                     <div class="alert alert-danger py-2">{{ $message }}</div>
                                 @enderror
+                                @error('details.*.product_image')
+                                    <div class="alert alert-danger py-2">{{ $message }}</div>
+                                @enderror
                                 @error('details.*')
                                     <div class="alert alert-danger py-2">{{ $message }}</div>
                                 @enderror
 
                                 <div class="table-responsive">
                                     <table class="table table-bordered" style="min-width: 1000px;">
-                                        <thead class="table-light">
+                                        <thead>
                                             <tr>
                                                 <th style="width: 15%;">No. Invoice <span class="text-danger">*</span></th>
-                                                <th style="width: 25%;">Produk <span class="text-danger">*</span></th>
+                                                <th style="width: 20%;">Produk <span class="text-danger">*</span></th>
+                                                <th style="width: 15%;">Gambar Produk</th>
                                                 <th style="width: 8%;">Qty <span class="text-danger">*</span></th>
-                                                <th style="width: 14%;">Tgl. Order <span class="text-danger">*</span></th>
-                                                <th style="width: 14%;">Tgl. Terima <span class="text-danger">*</span>
+                                                <th style="width: 12%;">Tgl. Order <span class="text-danger">*</span></th>
+                                                <th style="width: 12%;">Tgl. Terima <span class="text-danger">*</span>
                                                 </th>
-                                                <th style="width: 19%;">Alasan Retur <span class="text-danger">*</span>
+                                                <th style="width: 13%;">Alasan Retur <span class="text-danger">*</span>
                                                 </th>
                                                 <th style="width: 5%;" class="text-center">Aksi</th>
                                             </tr>
@@ -197,6 +202,9 @@
                                                         $returnReason = is_array($detail)
                                                             ? $detail['return_reason'] ?? ''
                                                             : $detail->return_reason;
+                                                        $productImage = is_array($detail)
+                                                            ? $detail['old_product_image'] ?? null
+                                                            : $detail->product_image;
                                                     @endphp
                                                     <tr class="detail-row">
                                                         <td><input type="text"
@@ -216,6 +224,21 @@
                                                                     </option>
                                                                 @endforeach
                                                             </select>
+                                                        </td>
+                                                        <td class="text-center">
+                                                            @if ($productImage)
+                                                                <a href="{{ Storage::url($productImage) }}"
+                                                                    target="_blank">
+                                                                    <img src="{{ Storage::url($productImage) }}"
+                                                                        alt="Gambar Produk" class="img-thumbnail" style="max-width: 100px; max-height: 100px;">
+                                                                </a>
+                                                            @endif
+                                                            <input type="file"
+                                                                name="details[{{ $i }}][product_image]"
+                                                                class="form-control form-control-sm mt-1" accept=".jpg,.jpeg,.png">
+                                                            <input type="hidden"
+                                                                name="details[{{ $i }}][old_product_image]"
+                                                                value="{{ $productImage }}">
                                                         </td>
                                                         <td><input type="number"
                                                                 name="details[{{ $i }}][quantity]"
@@ -273,6 +296,9 @@
                             {{ $product->MFIMA_Description }}</option>
                     @endforeach
                 </select>
+            </td>
+             <td>
+                <input type="file" name="details[__INDEX__][product_image]" class="form-control" accept=".jpg,.jpeg,.png">
             </td>
             <td><input type="number" name="details[__INDEX__][quantity]" class="form-control" min="1" required>
             </td>

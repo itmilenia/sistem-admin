@@ -8,6 +8,7 @@ use App\Models\ItemMap;
 use App\Models\ItemMilenia;
 use App\Models\ClaimProduct;
 use Illuminate\Http\Request;
+use App\Traits\FileUploadTrait;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\ClaimProductDetail;
 use Illuminate\Support\Facades\DB;
@@ -21,6 +22,7 @@ use App\Http\Requests\StoreClaimProductRequest;
 class ClaimProductFormController extends Controller
 {
     use SignatureUploadTrait;
+    use FileUploadTrait;
 
     private function authorizeClaimAction(ClaimProduct $claim, string $action)
     {
@@ -208,8 +210,23 @@ class ClaimProductFormController extends Controller
             $claimHeader = ClaimProduct::create($headerData);
 
             $detailsData = [];
-            foreach ($request->details as $detail) {
-                $detailsData[] = new ClaimProductDetail($detail);
+            foreach ($request->details as $index => $detail) {
+
+                $detailRowData = $detail;
+                $imagePath = null;
+
+                if ($request->hasFile("details.{$index}.product_image")) {
+                    $file = $request->file("details.{$index}.product_image");
+
+                    $imagePath = $this->uploadFile($file, 'claim_images', 'public');
+
+                    if ($imagePath === false) {
+                        throw new Exception("Gagal mengunggah gambar untuk baris " . ($index + 1));
+                    }
+                }
+                $detailRowData['product_image'] = $imagePath;
+
+                $detailsData[] = new ClaimProductDetail($detailRowData);
             }
 
             if (!empty($detailsData)) {
@@ -244,6 +261,10 @@ class ClaimProductFormController extends Controller
             return back()->with('warning', 'Klaim ini sudah Anda tandatangani sebelumnya.');
         }
 
+        // Ambil koleksi detail LAMA sebelum diapa-apakan
+        $oldDetails = $claim->claimDetails;
+        $oldImagePaths = $oldDetails->pluck('product_image')->filter();
+
         DB::beginTransaction();
         try {
             $headerData = $request->only([
@@ -260,13 +281,40 @@ class ClaimProductFormController extends Controller
 
             $claim->claimDetails()->delete();
 
-            $detailsData = [];
-            foreach ($request->details as $detail) {
-                $detailsData[] = new ClaimProductDetail($detail);
+            $newDetailsData = [];
+            $newImagePaths = [];
+
+            foreach ($request->details as $index => $detailInput) {
+
+                $imagePath = null;
+                $oldImagePath = $detailInput['old_product_image'] ?? null;
+
+                if ($request->hasFile("details.{$index}.product_image")) {
+                    $file = $request->file("details.{$index}.product_image");
+
+                    $imagePath = $this->uploadFile($file, 'claim_images', 'public');
+                    if ($imagePath === false) {
+                        throw new Exception("Gagal mengunggah gambar baru untuk baris " . ($index + 1));
+                    }
+                } else if (!empty($oldImagePath)) {
+                    $imagePath = $oldImagePath;
+                }
+
+                $detailInput['product_image'] = $imagePath;
+                $newDetailsData[] = new ClaimProductDetail($detailInput);
+
+                if ($imagePath) {
+                    $newImagePaths[] = $imagePath;
+                }
             }
 
-            if (!empty($detailsData)) {
-                $claim->claimDetails()->saveMany($detailsData);
+            if (!empty($newDetailsData)) {
+                $claim->claimDetails()->saveMany($newDetailsData);
+            }
+
+            $pathsToDelete = $oldImagePaths->diff($newImagePaths);
+            foreach ($pathsToDelete as $path) {
+                $this->deleteFile($path, 'public');
             }
 
             DB::commit();
@@ -626,6 +674,7 @@ class ClaimProductFormController extends Controller
     public function destroy($id)
     {
         $claim = ClaimProduct::findOrFail($id);
+        $claimDetail = ClaimProductDetail::where('product_claim_id', $claim->id)->first();
 
         $this->authorizeClaimAction($claim, 'hapus');
 
@@ -639,7 +688,14 @@ class ClaimProductFormController extends Controller
             $claim->checker_signature_path,
             $claim->sales_signature_path,
             $claim->sales_head_signature_path,
+            $claimDetail->product_image
         ];
+
+        // Ambil SEMUA path gambar dari relasi claimDetails
+        $detailImagePaths = $claim->claimDetails->pluck('product_image')->filter();
+
+        // Gabungkan semua path (header & detail) menjadi satu array
+        $allPaths = $detailImagePaths->merge($pathsToDelete)->all();
 
         $redirectRoute = $this->getRedirectRoute($claim, 'index');
 
@@ -655,10 +711,8 @@ class ClaimProductFormController extends Controller
             DB::commit();
 
             // 4. Hapus file dari storage SETELAH database berhasil
-            foreach ($pathsToDelete as $path) {
-                if ($path && Storage::disk('public')->exists($path)) {
-                    Storage::disk('public')->delete($path);
-                }
+            foreach ($allPaths as $path) {
+                $this->deleteFile($path, 'public');
             }
 
             return redirect()->route($redirectRoute)

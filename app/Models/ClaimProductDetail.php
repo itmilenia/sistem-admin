@@ -14,6 +14,7 @@ class ClaimProductDetail extends Model
         'product_claim_id',
         'invoice_id',
         'product_id',
+        'product_image',
         'quantity',
         'order_date',
         'delivery_date',

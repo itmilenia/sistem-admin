@@ -97,6 +97,7 @@
                                     <tr>
                                         <th>No. Invoice</th>
                                         <th>Produk</th>
+                                        <th>Gambar</th>
                                         <th class="text-center">Qty</th>
                                         <th>Alasan Retur</th>
                                     </tr>
@@ -106,6 +107,18 @@
                                         <tr>
                                             <td>{{ $detail->invoice_id }}</td>
                                             <td>{{ $products[$detail->product_id]->MFIMA_Description ?? 'N/A' }}</td>
+                                            <td class="text-center" style="width: 100px;">
+                                                @if ($detail->product_image)
+                                                    <a href="{{ Storage::url($detail->product_image) }}" target="_blank"
+                                                        title="Klik untuk perbesar">
+                                                        <img src="{{ Storage::url($detail->product_image) }}"
+                                                            alt="Gambar Produk" class="img-thumbnail"
+                                                            style="width: 80px; height: 80px;">
+                                                    </a>
+                                                @else
+                                                    <span class="text-muted">—</span>
+                                                @endif
+                                            </td>
                                             <td class="text-center">{{ $detail->quantity }}</td>
                                             <td>{{ $detail->return_reason }}</td>
                                         </tr>
