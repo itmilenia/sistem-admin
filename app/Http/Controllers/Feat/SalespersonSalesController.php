@@ -379,7 +379,7 @@ class SalespersonSalesController extends Controller
                 );
 
             if ($request->filled('start_date') && $request->filled('end_date')) {
-                $query->whereBetween('SOIVH.SOIVH_InvoiceDate', [$request->start_date, $request->end_date]);
+                $query->whereBetween('SOIVD.SOIVD_OrderDate', [$request->start_date, $request->end_date]);
             }
 
             $invoiceSub = DB::connection('sqlsrv_wh')->table('SOIVD')
@@ -393,7 +393,7 @@ class SalespersonSalesController extends Controller
                 ->groupBy('SOIVD.SOIVD_SalesmanID', 'SOIVH.SOIVH_InvoiceID');
 
             if ($request->filled('start_date') && $request->filled('end_date')) {
-                $invoiceSub->whereBetween('SOIVH.SOIVH_InvoiceDate', [$request->start_date, $request->end_date]);
+                $invoiceSub->whereBetween('SOIVD.SOIVD_OrderDate', [$request->start_date, $request->end_date]);
             }
 
             $queryForTotal = DB::connection('sqlsrv_wh')
@@ -479,7 +479,7 @@ class SalespersonSalesController extends Controller
                 );
 
             if ($request->filled('start_date') && $request->filled('end_date')) {
-                $query->whereBetween('SOIVH_CABANG.SOIVH_InvoiceDate', [$request->start_date, $request->end_date]);
+                $query->whereBetween('SOIVD_CABANG.SOIVD_OrderDate', [$request->start_date, $request->end_date]);
             }
 
             $invoiceSub = DB::connection('sqlsrv_wh')->table('SOIVD_CABANG')
@@ -493,7 +493,7 @@ class SalespersonSalesController extends Controller
                 ->groupBy('SOIVD_CABANG.SOIVD_SalesmanID', 'SOIVH_CABANG.SOIVH_InvoiceID');
 
             if ($request->filled('start_date') && $request->filled('end_date')) {
-                $invoiceSub->whereBetween('SOIVH_CABANG.SOIVH_InvoiceDate', [$request->start_date, $request->end_date]);
+                $invoiceSub->whereBetween('SOIVD_CABANG.SOIVD_OrderDate', [$request->start_date, $request->end_date]);
             }
 
             $queryForTotal = DB::connection('sqlsrv_wh')
@@ -579,7 +579,7 @@ class SalespersonSalesController extends Controller
                 );
 
             if ($request->filled('start_date') && $request->filled('end_date')) {
-                $query->whereBetween('SOIVH.SOIVH_InvoiceDate', [$request->start_date, $request->end_date]);
+                $query->whereBetween('SOIVD.SOIVD_OrderDate', [$request->start_date, $request->end_date]);
             }
 
             $invoiceSub = DB::connection('sqlsrv_snx')->table('SOIVD')
@@ -593,7 +593,7 @@ class SalespersonSalesController extends Controller
                 ->groupBy('SOIVD.SOIVD_SalesmanID', 'SOIVH.SOIVH_InvoiceID');
 
             if ($request->filled('start_date') && $request->filled('end_date')) {
-                $invoiceSub->whereBetween('SOIVH.SOIVH_InvoiceDate', [$request->start_date, $request->end_date]);
+                $invoiceSub->whereBetween('SOIVD.SOIVD_OrderDate', [$request->start_date, $request->end_date]);
             }
 
             $queryForTotal = DB::connection('sqlsrv_snx')
@@ -679,7 +679,7 @@ class SalespersonSalesController extends Controller
                 );
 
             if ($request->filled('start_date') && $request->filled('end_date')) {
-                $query->whereBetween('SOIVH_CABANG.SOIVH_InvoiceDate', [$request->start_date, $request->end_date]);
+                $query->whereBetween('SOIVD_CABANG.SOIVD_OrderDate', [$request->start_date, $request->end_date]);
             }
 
             $invoiceSub = DB::connection('sqlsrv_snx')->table('SOIVD_CABANG')
@@ -693,7 +693,7 @@ class SalespersonSalesController extends Controller
                 ->groupBy('SOIVD_CABANG.SOIVD_SalesmanID', 'SOIVH_CABANG.SOIVH_InvoiceID');
 
             if ($request->filled('start_date') && $request->filled('end_date')) {
-                $invoiceSub->whereBetween('SOIVH_CABANG.SOIVH_InvoiceDate', [$request->start_date, $request->end_date]);
+                $invoiceSub->whereBetween('SOIVD_CABANG.SOIVD_OrderDate', [$request->start_date, $request->end_date]);
             }
 
             $queryForTotal = DB::connection('sqlsrv_snx')
