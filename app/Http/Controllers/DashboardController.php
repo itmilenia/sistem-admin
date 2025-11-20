@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Carbon\Carbon;
+use App\Models\Tax;
 use App\Models\User;
 use App\Models\PricelistMap;
 use Illuminate\Http\Request;
@@ -16,67 +17,172 @@ use App\Models\SalesOrderDetailMileniaBranch;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $salesManSalesMilenia = SalesOrderDetailMilenia::query()
-            ->join('MFSSM', 'SOIVD.SOIVD_SalesmanID', '=', 'MFSSM.MFSSM_SalesmanID')
-            ->whereMonth('SOIVD.SOIVD_OrderDate', now()->month)
-            ->whereYear('SOIVD.SOIVD_OrderDate', now()->year)
+        // 1. Ambil input tanggal, set default jika kosong
+        $startDate = $request->input('start_date', now()->startOfMonth()->format('Y-m-d'));
+        $endDate = $request->input('end_date', now()->format('Y-m-d'));
+
+        // 2. Konversi ke format DateTime SQL agar akurat (00:00:00 s/d 23:59:59)
+        $startDateTime = $startDate . ' 00:00:00';
+        $endDateTime = $endDate . ' 23:59:59';
+
+        // --- MILENIA ---
+        $subSalesMilenia = DB::connection('sqlsrv_wh')
+            ->table('SOIVD')
+            ->select(
+                'SOIVD_SalesmanID',
+                DB::raw('COUNT(DISTINCT SOIVD_InvoiceID) AS total_transaksi'),
+                DB::raw('SUM(SOIVD_OrderQty) AS total_qty'),
+                DB::raw('SUM(SOIVD_LineInvoiceAmount) AS total_amount')
+            )
+            // Ubah filter tanggal
+            ->whereBetween('SOIVD_OrderDate', [$startDateTime, $endDateTime])
+            ->groupBy('SOIVD_SalesmanID');
+
+        $subReturnMilenia = DB::connection('sqlsrv_wh')
+            ->table('SOORH')
+            ->select(
+                'SOORH_SalesmanID',
+                DB::raw('SUM(SOORH_ReturnAmount - SOORH_TaxAmount) AS total_return_amount')
+            )
+            // Ubah filter tanggal
+            ->whereBetween('SOORH_ReturnDate', [$startDateTime, $endDateTime])
+            ->groupBy('SOORH_SalesmanID');
+
+        $salesManSalesMilenia = DB::connection('sqlsrv_wh')
+            ->table(DB::raw("({$subSalesMilenia->toSql()}) as s"))
+            ->mergeBindings($subSalesMilenia)
+            ->leftJoin(DB::raw("({$subReturnMilenia->toSql()}) as r"), 'r.SOORH_SalesmanID', '=', 's.SOIVD_SalesmanID')
+            ->mergeBindings($subReturnMilenia)
+            ->join('MFSSM as m', 'm.MFSSM_SalesmanID', '=', 's.SOIVD_SalesmanID')
             ->selectRaw("
-                SOIVD.SOIVD_SalesmanID,
-                MFSSM.MFSSM_Description as salesman_name,
-                COUNT(DISTINCT SOIVD.SOIVD_InvoiceID) as total_transaksi,
-                SUM(SOIVD.SOIVD_OrderQty) as total_qty,
-                SUM(SOIVD.SOIVD_LineInvoiceAmount) as total_amount
-            ")
-            ->groupBy('SOIVD.SOIVD_SalesmanID', 'MFSSM.MFSSM_Description')
-            ->orderByDesc('total_amount')
+            s.SOIVD_SalesmanID,
+            m.MFSSM_Description AS salesman_name,
+            s.total_transaksi,
+            s.total_qty,
+            s.total_amount,
+            COALESCE(r.total_return_amount, 0) AS total_return_amount,
+            (ISNULL(s.total_amount, 0) - ISNULL(r.total_return_amount, 0)) AS net_amount
+        ")
+            ->orderByDesc('s.total_amount')
             ->get();
 
-        $salesManSalesMileniaBranch = SalesOrderDetailMileniaBranch::query()
-            ->join('MFSSM', 'SOIVD_Cabang.SOIVD_SalesmanID', '=', 'MFSSM.MFSSM_SalesmanID')
-            ->whereMonth('SOIVD_Cabang.SOIVD_OrderDate', now()->month)
-            ->whereYear('SOIVD_Cabang.SOIVD_OrderDate', now()->year)
+        // --- MILENIA BRANCH ---
+        $subSalesMileniaBranch = DB::connection('sqlsrv_wh')
+            ->table('SOIVD_Cabang')
+            ->select(
+                'SOIVD_SalesmanID',
+                DB::raw('COUNT(DISTINCT SOIVD_InvoiceID) AS total_transaksi'),
+                DB::raw('SUM(SOIVD_OrderQty) AS total_qty'),
+                DB::raw('SUM(SOIVD_LineInvoiceAmount) AS total_amount')
+            )
+            ->whereBetween('SOIVD_OrderDate', [$startDateTime, $endDateTime])
+            ->groupBy('SOIVD_SalesmanID');
+
+        $subReturnMileniaBranch = DB::connection('sqlsrv_wh')
+            ->table('SOORH_Cabang')
+            ->select(
+                'SOORH_SalesmanID',
+                DB::raw('SUM(SOORH_ReturnAmount - SOORH_TaxAmount) AS total_return_amount')
+            )
+            ->whereBetween('SOORH_ReturnDate', [$startDateTime, $endDateTime])
+            ->groupBy('SOORH_SalesmanID');
+
+        $salesManSalesMileniaBranch = DB::connection('sqlsrv_wh')
+            ->table(DB::raw("({$subSalesMileniaBranch->toSql()}) as s"))
+            ->mergeBindings($subSalesMileniaBranch)
+            ->leftJoin(DB::raw("({$subReturnMileniaBranch->toSql()}) as r"), 'r.SOORH_SalesmanID', '=', 's.SOIVD_SalesmanID')
+            ->mergeBindings($subReturnMileniaBranch)
+            ->join('MFSSM as m', 'm.MFSSM_SalesmanID', '=', 's.SOIVD_SalesmanID')
             ->selectRaw("
-                SOIVD_Cabang.SOIVD_SalesmanID,
-                MFSSM.MFSSM_Description as salesman_name,
-                COUNT(DISTINCT SOIVD_Cabang.SOIVD_InvoiceID) as total_transaksi,
-                SUM(SOIVD_Cabang.SOIVD_OrderQty) as total_qty,
-                SUM(SOIVD_Cabang.SOIVD_LineInvoiceAmount) as total_amount
-            ")
-            ->groupBy('SOIVD_Cabang.SOIVD_SalesmanID', 'MFSSM.MFSSM_Description')
-            ->orderByDesc('total_amount')
+            s.SOIVD_SalesmanID,
+            m.MFSSM_Description AS salesman_name,
+            s.total_transaksi,
+            s.total_qty,
+            s.total_amount,
+            COALESCE(r.total_return_amount, 0) AS total_return_amount,
+            (ISNULL(s.total_amount, 0) - ISNULL(r.total_return_amount, 0)) AS net_amount
+        ")
+            ->orderByDesc('s.total_amount')
             ->get();
 
+        // --- MAP ---
+        $subSalesMap = DB::connection('sqlsrv_snx')
+            ->table('SOIVD')
+            ->select(
+                'SOIVD_SalesmanID',
+                DB::raw('COUNT(DISTINCT SOIVD_InvoiceID) AS total_transaksi'),
+                DB::raw('SUM(SOIVD_OrderQty) AS total_qty'),
+                DB::raw('SUM(SOIVD_LineInvoiceAmount) AS total_amount')
+            )
+            ->whereBetween('SOIVD_OrderDate', [$startDateTime, $endDateTime])
+            ->groupBy('SOIVD_SalesmanID');
 
-        $salesManSalesMap = SalesOrderDetailMap::query()
-            ->join('MFSSM', 'SOIVD.SOIVD_SalesmanID', '=', 'MFSSM.MFSSM_SalesmanID')
-            ->whereMonth('SOIVD.SOIVD_OrderDate', now()->month)
-            ->whereYear('SOIVD.SOIVD_OrderDate', now()->year)
+        $subReturnMap = DB::connection('sqlsrv_snx')
+            ->table('SOORH')
+            ->select(
+                'SOORH_SalesmanID',
+                DB::raw('SUM(SOORH_ReturnAmount - SOORH_TaxAmount) AS total_return_amount')
+            )
+            ->whereBetween('SOORH_ReturnDate', [$startDateTime, $endDateTime])
+            ->groupBy('SOORH_SalesmanID');
+
+        $salesManSalesMap = DB::connection('sqlsrv_snx')
+            ->table(DB::raw("({$subSalesMap->toSql()}) as s"))
+            ->mergeBindings($subSalesMap)
+            ->leftJoin(DB::raw("({$subReturnMap->toSql()}) as r"), 'r.SOORH_SalesmanID', '=', 's.SOIVD_SalesmanID')
+            ->mergeBindings($subReturnMap)
+            ->join('MFSSM as m', 'm.MFSSM_SalesmanID', '=', 's.SOIVD_SalesmanID')
             ->selectRaw("
-                SOIVD.SOIVD_SalesmanID,
-                MFSSM.MFSSM_Description as salesman_name,
-                COUNT(DISTINCT SOIVD.SOIVD_InvoiceID) as total_transaksi,
-                SUM(SOIVD.SOIVD_OrderQty) as total_qty,
-                SUM(SOIVD.SOIVD_LineInvoiceAmount) as total_amount
-            ")
-            ->groupBy('SOIVD.SOIVD_SalesmanID', 'MFSSM.MFSSM_Description')
-            ->orderByDesc('total_amount')
+            s.SOIVD_SalesmanID,
+            m.MFSSM_Description AS salesman_name,
+            s.total_transaksi,
+            s.total_qty,
+            s.total_amount,
+            COALESCE(r.total_return_amount, 0) AS total_return_amount,
+            (ISNULL(s.total_amount, 0) - ISNULL(r.total_return_amount, 0)) AS net_amount
+        ")
+            ->orderByDesc('s.total_amount')
             ->get();
 
-        $salesManSalesMapBranch = SalesOrderDetailMapBranch::query()
-            ->join('MFSSM', 'SOIVD_Cabang.SOIVD_SalesmanID', '=', 'MFSSM.MFSSM_SalesmanID')
-            ->whereMonth('SOIVD_Cabang.SOIVD_OrderDate', now()->month)
-            ->whereYear('SOIVD_Cabang.SOIVD_OrderDate', now()->year)
+        // --- MAP BRANCH ---
+        $subSalesMapBranch = DB::connection('sqlsrv_snx')
+            ->table('SOIVD_Cabang')
+            ->select(
+                'SOIVD_SalesmanID',
+                DB::raw('COUNT(DISTINCT SOIVD_InvoiceID) AS total_transaksi'),
+                DB::raw('SUM(SOIVD_OrderQty) AS total_qty'),
+                DB::raw('SUM(SOIVD_LineInvoiceAmount) AS total_amount')
+            )
+            ->whereBetween('SOIVD_OrderDate', [$startDateTime, $endDateTime])
+            ->groupBy('SOIVD_SalesmanID');
+
+        $subReturnMapBranch = DB::connection('sqlsrv_snx')
+            ->table('SOORH_Cabang')
+            ->select(
+                'SOORH_SalesmanID',
+                DB::raw('SUM(SOORH_ReturnAmount - SOORH_TaxAmount) AS total_return_amount')
+            )
+            ->whereBetween('SOORH_ReturnDate', [$startDateTime, $endDateTime])
+            ->groupBy('SOORH_SalesmanID');
+
+        $salesManSalesMapBranch = DB::connection('sqlsrv_snx')
+            ->table(DB::raw("({$subSalesMapBranch->toSql()}) as s"))
+            ->mergeBindings($subSalesMapBranch)
+            ->leftJoin(DB::raw("({$subReturnMapBranch->toSql()}) as r"), 'r.SOORH_SalesmanID', '=', 's.SOIVD_SalesmanID')
+            ->mergeBindings($subReturnMapBranch)
+            ->join('MFSSM as m', 'm.MFSSM_SalesmanID', '=', 's.SOIVD_SalesmanID')
             ->selectRaw("
-                SOIVD_Cabang.SOIVD_SalesmanID,
-                MFSSM.MFSSM_Description as salesman_name,
-                COUNT(DISTINCT SOIVD_Cabang.SOIVD_InvoiceID) as total_transaksi,
-                SUM(SOIVD_Cabang.SOIVD_OrderQty) as total_qty,
-                SUM(SOIVD_Cabang.SOIVD_LineInvoiceAmount) as total_amount
-            ")
-            ->groupBy('SOIVD_Cabang.SOIVD_SalesmanID', 'MFSSM.MFSSM_Description')
-            ->orderByDesc('total_amount')
+            s.SOIVD_SalesmanID,
+            m.MFSSM_Description AS salesman_name,
+            s.total_transaksi,
+            s.total_qty,
+            s.total_amount,
+            COALESCE(r.total_return_amount, 0) AS total_return_amount,
+            (ISNULL(s.total_amount, 0) - ISNULL(r.total_return_amount, 0)) AS net_amount
+        ")
+            ->orderByDesc('s.total_amount')
             ->get();
 
         $totalSummary = [
@@ -87,10 +193,10 @@ class DashboardController extends Controller
                 $salesManSalesMapBranch->sum('total_qty'),
 
             'total_amount' =>
-            $salesManSalesMilenia->sum('total_amount') +
-                $salesManSalesMileniaBranch->sum('total_amount') +
-                $salesManSalesMap->sum('total_amount') +
-                $salesManSalesMapBranch->sum('total_amount'),
+            $salesManSalesMilenia->sum('net_amount') +
+                $salesManSalesMileniaBranch->sum('net_amount') +
+                $salesManSalesMap->sum('net_amount') +
+                $salesManSalesMapBranch->sum('net_amount'),
         ];
 
         $totalCustomerNetwork = CustomerNetwork::where('is_active', 1)
@@ -100,157 +206,30 @@ class DashboardController extends Controller
             ->where('ID', '!=', 1)
             ->count();
 
+        $taxActive = Tax::where('is_active', 1)->first();
+
+        // Filter Pricelist juga diupdate ke Date Range
         $updatedPricelistsMilenia = PricelistMilenia::with('ItemMilenia')
-            ->whereMonth('SOMPD_UPDATE', now()->month)
-            ->whereYear('SOMPD_UPDATE', now()->year)
+            ->whereBetween('SOMPD_UPDATE', [$startDateTime, $endDateTime])
             ->orderByRaw('SOMPD_UPDATE DESC')
             ->get();
 
         $updatedPricelistsMap = PricelistMap::with('ItemMap')
-            ->whereMonth('SOMPD_UPDATE', now()->month)
-            ->whereYear('SOMPD_UPDATE', now()->year)
+            ->whereBetween('SOMPD_UPDATE', [$startDateTime, $endDateTime])
             ->orderByRaw('SOMPD_UPDATE DESC')
             ->get();
 
-        $brandTransactionMilenia = SalesOrderDetailMilenia::query()
-            ->select(
-                'MFIB.MFIB_BrandID',
-                'MFIB.MFIB_Description as brand_name',
-                DB::raw('SUM(SOIVD.SOIVD_LineInvoiceAmount) as total_sales')
-        )
-            ->join('MFIMA', 'SOIVD.SOIVD_ItemID', '=', 'MFIMA.MFIMA_ItemID')
-            ->join('MFIB', 'MFIMA.MFIMA_Brand', '=', 'MFIB.MFIB_BrandID')
-            ->whereMonth('SOIVD.SOIVD_OrderDate', now()->month)
-            ->whereYear('SOIVD.SOIVD_OrderDate', now()->year)
-            ->groupBy('MFIB.MFIB_BrandID', 'MFIB.MFIB_Description')
-            ->orderBy('total_sales', 'desc')
-            ->get();
+        // brand performance milenia and map
+        $brandTransactionMilenia = SalesOrderDetailMilenia::getBrandPerformanceDashboard($startDateTime, $endDateTime);
+        $brandTransactionMap = SalesOrderDetailMap::getBrandPerformanceDashboard($startDateTime, $endDateTime);
 
-        $brandTransactionMap = SalesOrderDetailMap::query()
-            ->select(
-                'MFIB.MFIB_BrandID',
-                'MFIB.MFIB_Description as brand_name',
-                DB::raw('SUM(SOIVD.SOIVD_LineInvoiceAmount) as total_sales')
-        )
-            ->join('MFIMA', 'SOIVD.SOIVD_ItemID', '=', 'MFIMA.MFIMA_ItemID')
-            ->join('MFIB', 'MFIMA.MFIMA_Brand', '=', 'MFIB.MFIB_BrandID')
-            ->whereMonth('SOIVD.SOIVD_OrderDate', now()->month)
-            ->whereYear('SOIVD.SOIVD_OrderDate', now()->year)
-            ->groupBy('MFIB.MFIB_BrandID', 'MFIB.MFIB_Description')
-            ->orderBy('total_sales', 'desc')
-            ->get();
-
-        $brandTransactionMileniaBranch = SalesOrderDetailMileniaBranch::query()
-            ->select(
-                'MFIB.MFIB_BrandID',
-                'MFIB.MFIB_Description as brand_name',
-                DB::raw('SUM(SOIVD_Cabang.SOIVD_LineInvoiceAmount) as total_sales')
-        )
-            ->join('MFIMA', 'SOIVD_Cabang.SOIVD_ItemID', '=', 'MFIMA.MFIMA_ItemID')
-            ->join('MFIB', 'MFIMA.MFIMA_Brand', '=', 'MFIB.MFIB_BrandID')
-            ->whereMonth('SOIVD_Cabang.SOIVD_OrderDate', now()->month)
-            ->whereYear('SOIVD_Cabang.SOIVD_OrderDate', now()->year)
-            ->groupBy('MFIB.MFIB_BrandID', 'MFIB.MFIB_Description')
-            ->orderBy('total_sales', 'desc')
-            ->get();
-
-        $brandTransactionMapBranch = SalesOrderDetailMapBranch::query()
-            ->select(
-                'MFIB.MFIB_BrandID',
-                'MFIB.MFIB_Description as brand_name',
-                DB::raw('SUM(SOIVD_Cabang.SOIVD_LineInvoiceAmount) as total_sales')
-        )
-            ->join('MFIMA', 'SOIVD_Cabang.SOIVD_ItemID', '=', 'MFIMA.MFIMA_ItemID')
-            ->join('MFIB', 'MFIMA.MFIMA_Brand', '=', 'MFIB.MFIB_BrandID')
-            ->whereMonth('SOIVD_Cabang.SOIVD_OrderDate', now()->month)
-            ->whereYear('SOIVD_Cabang.SOIVD_OrderDate', now()->year)
-            ->groupBy('MFIB.MFIB_BrandID', 'MFIB.MFIB_Description')
-            ->orderBy('total_sales', 'desc')
-            ->get();
-
+        // brand performance milenia and map branch
+        $brandTransactionMileniaBranch = SalesOrderDetailMileniaBranch::getBrandPerformanceDashboard($startDateTime, $endDateTime);
+        $brandTransactionMapBranch = SalesOrderDetailMapBranch::getBrandPerformanceDashboard($startDateTime, $endDateTime);
 
         // sales per customer
-        // Query Sales Main Milenia
-        $salesMainMileniaperCustomer = DB::connection('sqlsrv_wh')->table('SOIVD')
-            ->select(
-            'SOIVH.SOIVH_CustomerID',
-            DB::raw('SUM(SOIVD.SOIVD_LineInvoiceAmount) as total_sales')
-            )
-            ->leftJoin('SOIVH', 'SOIVD.SOIVD_InvoiceID', '=', 'SOIVH.SOIVH_InvoiceID')
-            ->whereMonth('SOIVH.SOIVH_InvoiceDate', now()->month)
-            ->whereYear('SOIVH.SOIVH_InvoiceDate', now()->year)
-            ->groupBy('SOIVH.SOIVH_CustomerID');
-
-        // Query Sales Branch Milenia
-        $salesBranchMileniaperCustomer = DB::connection('sqlsrv_wh')->table('SOIVD_Cabang')
-            ->select(
-            'SOIVH_Cabang.SOIVH_CustomerID',
-            DB::raw('SUM(SOIVD_Cabang.SOIVD_LineInvoiceAmount) as total_sales')
-            )
-            ->leftJoin('SOIVH_Cabang', 'SOIVD_Cabang.SOIVD_InvoiceID', '=', 'SOIVH_Cabang.SOIVH_InvoiceID')
-            ->whereMonth('SOIVH_Cabang.SOIVH_InvoiceDate', now()->month)
-            ->whereYear('SOIVH_Cabang.SOIVH_InvoiceDate', now()->year)
-            ->groupBy('SOIVH_Cabang.SOIVH_CustomerID');
-
-
-        // Merge Milenia Query
-        $salesMainMileniaperCustomer = $salesMainMileniaperCustomer
-            ->unionAll($salesBranchMileniaperCustomer);
-
-        // Final Report Milenia
-        $finalReportMilenia = DB::connection('sqlsrv_wh')
-            ->table(DB::raw("({$salesMainMileniaperCustomer->toSql()}) as all_sales"))
-            ->mergeBindings($salesMainMileniaperCustomer)
-            ->join('MFCUS', 'all_sales.SOIVH_CustomerID', '=', 'MFCUS.MFCUS_CustomerID')
-            ->select(
-            'all_sales.SOIVH_CustomerID as MFCUS_CustomerID',
-            'MFCUS.MFCUS_Description as customer_name',
-            DB::raw('SUM(all_sales.total_sales) as total_sales')
-            )
-            ->groupBy('all_sales.SOIVH_CustomerID', 'MFCUS.MFCUS_Description')
-            ->orderByDesc('total_sales')
-            ->get();
-
-        // Query Sales Main Map
-        $salesMainMapperCustomer = DB::connection('sqlsrv_snx')->table('SOIVD')
-            ->select(
-            'SOIVH.SOIVH_CustomerID',
-            DB::raw('SUM(SOIVD.SOIVD_LineInvoiceAmount) as total_sales')
-            )
-            ->leftJoin('SOIVH', 'SOIVD.SOIVD_InvoiceID', '=', 'SOIVH.SOIVH_InvoiceID')
-            ->whereMonth('SOIVH.SOIVH_InvoiceDate', now()->month)
-            ->whereYear('SOIVH.SOIVH_InvoiceDate', now()->year)
-            ->groupBy('SOIVH.SOIVH_CustomerID');
-
-        // Query Sales Branch Map
-        $salesBranchMapperCustomer = DB::connection('sqlsrv_snx')->table('SOIVD_Cabang')
-            ->select(
-            'SOIVH_Cabang.SOIVH_CustomerID',
-            DB::raw('SUM(SOIVD_Cabang.SOIVD_LineInvoiceAmount) as total_sales')
-            )
-            ->leftJoin('SOIVH_Cabang', 'SOIVD_Cabang.SOIVD_InvoiceID', '=', 'SOIVH_Cabang.SOIVH_InvoiceID')
-            ->whereMonth('SOIVH_Cabang.SOIVH_InvoiceDate', now()->month)
-            ->whereYear('SOIVH_Cabang.SOIVH_InvoiceDate', now()->year)
-            ->groupBy('SOIVH_Cabang.SOIVH_CustomerID');
-
-
-        // Merge Map Query
-        $salesMainMapperCustomer = $salesMainMapperCustomer
-            ->unionAll($salesBranchMapperCustomer);
-
-        // Final Report Map
-        $finalReportMap = DB::connection('sqlsrv_snx')
-            ->table(DB::raw("({$salesMainMapperCustomer->toSql()}) as all_sales"))
-            ->mergeBindings($salesMainMapperCustomer)
-            ->join('MFCUS', 'all_sales.SOIVH_CustomerID', '=', 'MFCUS.MFCUS_CustomerID')
-            ->select(
-            'all_sales.SOIVH_CustomerID as MFCUS_CustomerID',
-            'MFCUS.MFCUS_Description as customer_name',
-            DB::raw('SUM(all_sales.total_sales) as total_sales')
-            )
-            ->groupBy('all_sales.SOIVH_CustomerID', 'MFCUS.MFCUS_Description')
-            ->orderByDesc('total_sales')
-            ->get();
+        $finalReportMilenia = SalesOrderDetailMilenia::getCustomerPerformanceDashboard($startDateTime, $endDateTime);
+        $finalReportMap = SalesOrderDetailMap::getCustomerPerformanceDashboard($startDateTime, $endDateTime);
 
         return view('pages.dashboard.index', compact(
             'salesManSalesMilenia',
@@ -267,7 +246,10 @@ class DashboardController extends Controller
             'brandTransactionMap',
             'brandTransactionMapBranch',
             'finalReportMilenia',
-            'finalReportMap'
+            'finalReportMap',
+            'startDate',
+            'endDate',
+            'taxActive'
         ));
     }
 }

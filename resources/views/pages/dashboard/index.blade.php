@@ -2,6 +2,11 @@
 
 @section('title', 'Dashboard')
 
+@php
+    $startDate = \Carbon\Carbon::parse($startDate)->translatedFormat('d M Y');
+    $endDate = \Carbon\Carbon::parse($endDate)->translatedFormat('d M Y');
+@endphp
+
 @section('content')
     <div class="page-header">
         <div class="page-header-left d-flex align-items-center">
@@ -15,6 +20,40 @@
     </div>
 
     <div class="main-content">
+        {{-- =========================== --}}
+        {{-- BAGIAN FILTER TANGGAL --}}
+        {{-- =========================== --}}
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <form action="{{ url()->current() }}" method="GET">
+                            <div class="row align-items-end">
+                                <div class="col-md-4">
+                                    <label for="start_date" class="form-label fw-bold">Dari Tanggal</label>
+                                    <input type="date" class="form-control" id="start_date" name="start_date"
+                                        value="{{ request('start_date', date('Y-m-01')) }}">
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="end_date" class="form-label fw-bold">Sampai Tanggal</label>
+                                    <input type="date" class="form-control" id="end_date" name="end_date"
+                                        value="{{ request('end_date', date('Y-m-d')) }}">
+                                </div>
+                                <div class="col-md-4 d-flex gap-2">
+                                    <button type="submit" class="btn btn-primary w-100">
+                                        <i class="bi bi-filter"></i> Filter
+                                    </button>
+                                    <a href="{{ url()->current() }}" class="btn btn-secondary w-100">
+                                        <i class="bi bi-arrow-clockwise"></i> Reset
+                                    </a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="row">
             {{-- Card 1 --}}
             <div class="col-xl-3 col-md-6 mb-4">
@@ -83,7 +122,7 @@
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-header">
-                        <h5>🏆 Top Salesman (Bulan Ini)</h5>
+                        <h5>🏆 Top Salesman ({{ $startDate }} - {{ $endDate }})</h5>
                     </div>
                     <div class="card-body">
                         <ul class="nav nav-tabs" id="pricelistTabs" role="tablist">
@@ -128,12 +167,12 @@
                                 <div class="table-responsive mt-3">
                                     <table id="table-salesman-milenia" class="table table-hover">
                                         <thead>
-
                                             <tr>
                                                 <th class="text-center align-middle">No</th>
                                                 <th class="align-middle">Nama Sales</th>
-                                                <th class="align-middle">Barang Terjual</th>
-                                                <th class="align-middle">Total Amount</th>
+                                                <th class="align-middle">Sale Amount</th>
+                                                <th class="align-middle">Return Amount</th>
+                                                <th class="align-middle">Net Amount</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -141,14 +180,14 @@
                                                 <tr>
                                                     <td class="text-center">{{ $loop->iteration }}</td>
                                                     <td>
-                                                        {{ $salesman->salesManMilenia->MFSSM_Description ?? 'N/A' }}
+                                                        {{ $salesman->salesman_name ?? 'N/A' }}
                                                         <small
                                                             class="d-block text-muted">{{ $salesman->SOIVD_SalesmanID }}</small>
                                                     </td>
-
-                                                    <td>{{ number_format($salesman->total_qty, 0, ',', '.') }}</td>
-
                                                     <td>Rp {{ number_format($salesman->total_amount, 0, ',', '.') }}</td>
+                                                    <td>Rp {{ number_format($salesman->total_return_amount, 0, ',', '.') }}
+                                                    </td>
+                                                    <td>Rp {{ number_format($salesman->net_amount, 0, ',', '.') }}</td>
                                                 </tr>
                                             @empty
                                             @endforelse
@@ -166,8 +205,9 @@
                                             <tr>
                                                 <th class="text-center align-middle">No</th>
                                                 <th class="align-middle">Nama Sales</th>
-                                                <th class="align-middle">Barang Terjual</th>
-                                                <th class="align-middle">Total Amount</th>
+                                                <th class="align-middle">Sale Amount</th>
+                                                <th class="align-middle">Return Amount</th>
+                                                <th class="align-middle">Net Amount</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -175,14 +215,14 @@
                                                 <tr>
                                                     <td class="text-center">{{ $loop->iteration }}</td>
                                                     <td>
-                                                        {{ $salesman->salesManMileniaBranch->MFSSM_Description ?? 'N/A' }}
+                                                        {{ $salesman->salesman_name ?? 'N/A' }}
                                                         <small
                                                             class="d-block text-muted">{{ $salesman->SOIVD_SalesmanID }}</small>
                                                     </td>
-
-                                                    <td>{{ number_format($salesman->total_qty, 0, ',', '.') }}</td>
-
                                                     <td>Rp {{ number_format($salesman->total_amount, 0, ',', '.') }}</td>
+                                                    <td>Rp {{ number_format($salesman->total_return_amount, 0, ',', '.') }}
+                                                    </td>
+                                                    <td>Rp {{ number_format($salesman->net_amount, 0, ',', '.') }}</td>
                                                 </tr>
                                             @empty
                                             @endforelse
@@ -200,8 +240,9 @@
                                             <tr>
                                                 <th class="text-center align-middle">No</th>
                                                 <th class="align-middle">Nama Sales</th>
-                                                <th class="align-middle">Barang Terjual</th>
-                                                <th class="align-middle">Total Amount</th>
+                                                <th class="align-middle">Sale Amount</th>
+                                                <th class="align-middle">Return Amount</th>
+                                                <th class="align-middle">Net Amount</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -209,14 +250,14 @@
                                                 <tr>
                                                     <td class="text-center">{{ $loop->iteration }}</td>
                                                     <td>
-                                                        {{ $salesman->salesManMap->MFSSM_Description ?? 'N/A' }}
+                                                        {{ $salesman->salesman_name ?? 'N/A' }}
                                                         <small
                                                             class="d-block text-muted">{{ $salesman->SOIVD_SalesmanID }}</small>
                                                     </td>
-
-                                                    <td>{{ number_format($salesman->total_qty, 0, ',', '.') }}</td>
-
                                                     <td>Rp {{ number_format($salesman->total_amount, 0, ',', '.') }}</td>
+                                                    <td>Rp {{ number_format($salesman->total_return_amount, 0, ',', '.') }}
+                                                    </td>
+                                                    <td>Rp {{ number_format($salesman->net_amount, 0, ',', '.') }}</td>
                                                 </tr>
                                             @empty
                                             @endforelse
@@ -234,8 +275,9 @@
                                             <tr>
                                                 <th class="text-center align-middle">No</th>
                                                 <th class="align-middle">Nama Sales</th>
-                                                <th class="align-middle">Barang Terjual</th>
-                                                <th class="align-middle">Total Amount</th>
+                                                <th class="align-middle">Sale Amount</th>
+                                                <th class="align-middle">Return Amount</th>
+                                                <th class="align-middle">Net Amount</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -243,14 +285,14 @@
                                                 <tr>
                                                     <td class="text-center">{{ $loop->iteration }}</td>
                                                     <td>
-                                                        {{ $salesman->salesManMapBranch->MFSSM_Description ?? 'N/A' }}
+                                                        {{ $salesman->salesman_name ?? 'N/A' }}
                                                         <small
                                                             class="d-block text-muted">{{ $salesman->SOIVD_SalesmanID }}</small>
                                                     </td>
-
-                                                    <td>{{ number_format($salesman->total_qty, 0, ',', '.') }}</td>
-
                                                     <td>Rp {{ number_format($salesman->total_amount, 0, ',', '.') }}</td>
+                                                    <td>Rp {{ number_format($salesman->total_return_amount, 0, ',', '.') }}
+                                                    </td>
+                                                    <td>Rp {{ number_format($salesman->net_amount, 0, ',', '.') }}</td>
                                                 </tr>
                                             @empty
                                             @endforelse
@@ -266,7 +308,7 @@
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-header">
-                        <h5>🏆 Top Transaksi per Brand (Bulan Ini)</h5>
+                        <h5>🏆 Top Transaksi per Brand ({{ $startDate }} - {{ $endDate }})</h5>
                     </div>
                     <div class="card-body">
                         <ul class="nav nav-tabs" id="pricelistTabs" role="tablist">
@@ -314,7 +356,9 @@
                                             <tr>
                                                 <th class="text-center align-middle">No</th>
                                                 <th class="align-middle">Nama Brand</th>
-                                                <th class="align-middle">Total Amount</th>
+                                                <th class="align-middle">Sale Amount</th>
+                                                <th class="align-middle">Return Amount</th>
+                                                <th class="align-middle">Net Amount</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -326,7 +370,14 @@
                                                         <small
                                                             class="d-block text-muted">{{ $brandTransaction->MFIB_BrandID }}</small>
                                                     </td>
-                                                    <td>Rp {{ number_format($brandTransaction->total_sales, 0, ',', '.') }}
+                                                    <td>Rp
+                                                        {{ number_format($brandTransaction->sale_amount, 0, ',', '.') }}
+                                                    </td>
+                                                    <td>Rp
+                                                        {{ number_format($brandTransaction->retur_amount, 0, ',', '.') }}
+                                                    </td>
+                                                    <td>Rp
+                                                        {{ number_format($brandTransaction->net_amount, 0, ',', '.') }}
                                                     </td>
                                                 </tr>
                                             @empty
@@ -345,7 +396,9 @@
                                             <tr>
                                                 <th class="text-center align-middle">No</th>
                                                 <th class="align-middle">Nama Brand</th>
-                                                <th class="align-middle">Total Amount</th>
+                                                <th class="align-middle">Sale Amount</th>
+                                                <th class="align-middle">Return Amount</th>
+                                                <th class="align-middle">Net Amount</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -357,7 +410,14 @@
                                                         <small
                                                             class="d-block text-muted">{{ $brandTransaction->MFIB_BrandID }}</small>
                                                     </td>
-                                                    <td>Rp {{ number_format($brandTransaction->total_sales, 0, ',', '.') }}
+                                                    <td>Rp
+                                                        {{ number_format($brandTransaction->sale_amount, 0, ',', '.') }}
+                                                    </td>
+                                                    <td>Rp
+                                                        {{ number_format($brandTransaction->retur_amount, 0, ',', '.') }}
+                                                    </td>
+                                                    <td>Rp
+                                                        {{ number_format($brandTransaction->net_amount, 0, ',', '.') }}
                                                     </td>
                                                 </tr>
                                             @empty
@@ -376,7 +436,9 @@
                                             <tr>
                                                 <th class="text-center align-middle">No</th>
                                                 <th class="align-middle">Nama Brand</th>
-                                                <th class="align-middle">Total Amount</th>
+                                                <th class="align-middle">Sale Amount</th>
+                                                <th class="align-middle">Return Amount</th>
+                                                <th class="align-middle">Net Amount</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -388,7 +450,14 @@
                                                         <small
                                                             class="d-block text-muted">{{ $brandTransaction->MFIB_BrandID }}</small>
                                                     </td>
-                                                    <td>Rp {{ number_format($brandTransaction->total_sales, 0, ',', '.') }}
+                                                    <td>Rp
+                                                        {{ number_format($brandTransaction->sale_amount, 0, ',', '.') }}
+                                                    </td>
+                                                    <td>Rp
+                                                        {{ number_format($brandTransaction->retur_amount, 0, ',', '.') }}
+                                                    </td>
+                                                    <td>Rp
+                                                        {{ number_format($brandTransaction->net_amount, 0, ',', '.') }}
                                                     </td>
                                                 </tr>
                                             @empty
@@ -407,7 +476,9 @@
                                             <tr>
                                                 <th class="text-center align-middle">No</th>
                                                 <th class="align-middle">Nama Brand</th>
-                                                <th class="align-middle">Total Amount</th>
+                                                <th class="align-middle">Sale Amount</th>
+                                                <th class="align-middle">Return Amount</th>
+                                                <th class="align-middle">Net Amount</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -419,7 +490,14 @@
                                                         <small
                                                             class="d-block text-muted">{{ $brandTransaction->MFIB_BrandID }}</small>
                                                     </td>
-                                                    <td>Rp {{ number_format($brandTransaction->total_sales, 0, ',', '.') }}
+                                                    <td>Rp
+                                                        {{ number_format($brandTransaction->sale_amount, 0, ',', '.') }}
+                                                    </td>
+                                                    <td>Rp
+                                                        {{ number_format($brandTransaction->retur_amount, 0, ',', '.') }}
+                                                    </td>
+                                                    <td>Rp
+                                                        {{ number_format($brandTransaction->net_amount, 0, ',', '.') }}
                                                     </td>
                                                 </tr>
                                             @empty
@@ -436,14 +514,14 @@
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-header">
-                        <h5>🏆 Top Transaksi per Customer Jaringan (Bulan Ini)</h5>
+                        <h5>🏆 Top Transaksi per Customer ({{ $startDate }} - {{ $endDate }})</h5>
                     </div>
                     <div class="card-body">
                         <ul class="nav nav-tabs" id="pricelistTabs" role="tablist">
                             <li class="nav-item" role="presentation">
-                                <button class="nav-link active" id="transaction-milenia-customer-tab" data-bs-toggle="tab"
-                                    data-bs-target="#transaction-milenia-customer" type="button" role="tab"
-                                    aria-controls="transaction-milenia-customer" aria-selected="true">
+                                <button class="nav-link active" id="transaction-milenia-customer-tab"
+                                    data-bs-toggle="tab" data-bs-target="#transaction-milenia-customer" type="button"
+                                    role="tab" aria-controls="transaction-milenia-customer" aria-selected="true">
                                     Customer MMM
                                 </button>
                             </li>
@@ -468,7 +546,9 @@
                                             <tr>
                                                 <th class="text-center align-middle">No</th>
                                                 <th class="align-middle">Nama Customer</th>
-                                                <th class="align-middle">Total Amount</th>
+                                                <th class="align-middle">Sale Amount</th>
+                                                <th class="align-middle">Return Amount</th>
+                                                <th class="align-middle">Net Amount</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -480,7 +560,11 @@
                                                         <small
                                                             class="d-block text-muted">{{ $report->MFCUS_CustomerID }}</small>
                                                     </td>
-                                                    <td>Rp {{ number_format($report->total_sales, 0, ',', '.') }}
+                                                    <td>Rp {{ number_format($report->sale_amount, 0, ',', '.') }}
+                                                    </td>
+                                                    <td>Rp {{ number_format($report->retur_amount, 0, ',', '.') }}
+                                                    </td>
+                                                    <td>Rp {{ number_format($report->net_amount, 0, ',', '.') }}
                                                     </td>
                                                 </tr>
                                             @empty
@@ -499,7 +583,9 @@
                                             <tr>
                                                 <th class="text-center align-middle">No</th>
                                                 <th class="align-middle">Nama Customer</th>
-                                                <th class="align-middle">Total Amount</th>
+                                                <th class="align-middle">Sale Amount</th>
+                                                <th class="align-middle">Return Amount</th>
+                                                <th class="align-middle">Net Amount</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -511,7 +597,11 @@
                                                         <small
                                                             class="d-block text-muted">{{ $report->MFCUS_CustomerID }}</small>
                                                     </td>
-                                                    <td>Rp {{ number_format($report->total_sales, 0, ',', '.') }}
+                                                    <td>Rp {{ number_format($report->sale_amount, 0, ',', '.') }}
+                                                    </td>
+                                                    <td>Rp {{ number_format($report->retur_amount, 0, ',', '.') }}
+                                                    </td>
+                                                    <td>Rp {{ number_format($report->net_amount, 0, ',', '.') }}
                                                     </td>
                                                 </tr>
                                             @empty
@@ -528,7 +618,7 @@
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-header">
-                        <h5>📈 Pricelist Terbaru (Bulan Ini)</h5>
+                        <h5>📈 Pricelist Terbaru ({{ $startDate }} - {{ $endDate }})</h5>
                     </div>
                     <div class="card-body">
 
@@ -561,7 +651,10 @@
                                             <tr>
                                                 <th>Price ID</th>
                                                 <th>Nama Item</th>
-                                                <th>Harga (Amount)</th>
+                                                <th>Harga <br> Sebelum PPN
+                                                    ({{ number_format($taxActive->tax_rate, 0, ',', '.') }})%</th>
+                                                <th>Harga <br> Sesudah PPN
+                                                    ({{ number_format($taxActive->tax_rate, 0, ',', '.') }})%</th>
                                                 <th>Terakhir Update</th>
                                             </tr>
                                         </thead>
@@ -578,15 +671,18 @@
                                                         Rp {{ number_format($pricelist->SOMPD_PriceAmount, 0, ',', '.') }}
                                                     </td>
                                                     <td>
+                                                        @php
+                                                            $taxRate = $taxActive->tax_rate ?? 0;
+                                                            $taxRate = $taxRate / 100;
+                                                            $total = $pricelist->SOMPD_PriceAmount * (1 + $taxRate);
+                                                        @endphp
+                                                        Rp {{ number_format($total, 0, ',', '.') }}
+                                                    </td>
+                                                    <td>
                                                         {{ $pricelist->SOMPD_UPDATE->format('d M Y, H:i') }}
                                                     </td>
                                                 </tr>
                                             @empty
-                                                {{-- Tambahkan pesan jika kosong --}}
-                                                <tr>
-                                                    <td colspan="4" class="text-center">Tidak ada data MMM bulan ini.
-                                                    </td>
-                                                </tr>
                                             @endforelse
                                         </tbody>
                                     </table>
@@ -601,7 +697,10 @@
                                             <tr>
                                                 <th>Price ID</th>
                                                 <th>Nama Item</th>
-                                                <th>Harga (Amount)</th>
+                                                <th>Harga <br> Sebelum PPN
+                                                    ({{ number_format($taxActive->tax_rate, 0, ',', '.') }})%</th>
+                                                <th>Harga <br> Sesudah PPN
+                                                    ({{ number_format($taxActive->tax_rate, 0, ',', '.') }})%</th>
                                                 <th>Terakhir Update</th>
                                             </tr>
                                         </thead>
@@ -610,7 +709,7 @@
                                                 <tr>
                                                     <td>{{ $pricelist->SOMPD_PriceID }}</td>
                                                     <td>
-                                                        {{ $pricelist->itemMap->MFIMA_Description ?? $pricelist->SOMPD_ItemDesc }}
+                                                        {{ $pricelist->ItemMilenia->MFIMA_Description ?? $pricelist->SOMPD_ItemDesc }}
                                                         <small
                                                             class="d-block text-muted">{{ $pricelist->SOMPD_ItemID }}</small>
                                                     </td>
@@ -618,15 +717,18 @@
                                                         Rp {{ number_format($pricelist->SOMPD_PriceAmount, 0, ',', '.') }}
                                                     </td>
                                                     <td>
+                                                        @php
+                                                            $taxRate = $taxActive->tax_rate ?? 0;
+                                                            $taxRate = $taxRate / 100;
+                                                            $total = $pricelist->SOMPD_PriceAmount * (1 + $taxRate);
+                                                        @endphp
+                                                        Rp {{ number_format($total, 0, ',', '.') }}
+                                                    </td>
+                                                    <td>
                                                         {{ $pricelist->SOMPD_UPDATE->format('d M Y, H:i') }}
                                                     </td>
                                                 </tr>
                                             @empty
-                                                {{-- Tambahkan pesan jika kosong --}}
-                                                <tr>
-                                                    <td colspan="4" class="text-center">Tidak ada data MAP bulan ini.
-                                                    </td>
-                                                </tr>
                                             @endforelse
                                         </tbody>
                                     </table>
@@ -792,7 +894,7 @@
                 }
             });
 
-             var tableTransactionCustomerMap = $('#table-transaction-map-customer').DataTable({
+            var tableTransactionCustomerMap = $('#table-transaction-map-customer').DataTable({
                 "width": "100%",
                 'pageLength': 5,
                 "lengthMenu": [
