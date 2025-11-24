@@ -164,6 +164,12 @@
                             {{-- TAB 1: MILENIA PUSAT --}}
                             <div class="tab-pane fade show active" id="salesman-milenia" role="tabpanel"
                                 aria-labelledby="salesman-milenia-tab">
+                                <div class="d-flex justify-content-end mt-3">
+                                    <a href="{{ route('dashboard.export.salesman-sales-milenia', ['start_date' => request('start_date'), 'end_date' => request('end_date')]) }}"
+                                        class="btn btn-success shadow-sm">
+                                        <i class="fas fa-file-excel me-1"></i> Export to Excel
+                                    </a>
+                                </div>
                                 <div class="table-responsive mt-3">
                                     <table id="table-salesman-milenia" class="table table-hover">
                                         <thead>
@@ -184,10 +190,10 @@
                                                         <small
                                                             class="d-block text-muted">{{ $salesman->SOIVD_SalesmanID }}</small>
                                                     </td>
-                                                    <td>Rp {{ number_format($salesman->total_amount, 0, ',', '.') }}</td>
-                                                    <td>Rp {{ number_format($salesman->total_return_amount, 0, ',', '.') }}
+                                                    <td>Rp {{ number_format($salesman->total_amount, 2, '.', ',') }}</td>
+                                                    <td>Rp {{ number_format($salesman->total_return_amount, 2, '.', ',') }}
                                                     </td>
-                                                    <td>Rp {{ number_format($salesman->net_amount, 0, ',', '.') }}</td>
+                                                    <td>Rp {{ number_format($salesman->net_amount, 2, '.', ',') }}</td>
                                                 </tr>
                                             @empty
                                             @endforelse
@@ -199,6 +205,12 @@
                             {{-- TAB 2: MILENIA CABANG --}}
                             <div class="tab-pane fade" id="salesman-milenia-branch" role="tabpanel"
                                 aria-labelledby="salesman-milenia-branch-tab">
+                                <div class="d-flex justify-content-end mt-3">
+                                    <a href="{{ route('dashboard.export.salesman-sales-milenia-branch', ['start_date' => request('start_date'), 'end_date' => request('end_date')]) }}"
+                                        class="btn btn-success shadow-sm">
+                                        <i class="fas fa-file-excel me-1"></i> Export to Excel
+                                    </a>
+                                </div>
                                 <div class="table-responsive mt-3">
                                     <table id="table-salesman-milenia-branch" class="table table-hover">
                                         <thead>
@@ -219,10 +231,10 @@
                                                         <small
                                                             class="d-block text-muted">{{ $salesman->SOIVD_SalesmanID }}</small>
                                                     </td>
-                                                    <td>Rp {{ number_format($salesman->total_amount, 0, ',', '.') }}</td>
-                                                    <td>Rp {{ number_format($salesman->total_return_amount, 0, ',', '.') }}
+                                                    <td>Rp {{ number_format($salesman->total_amount, 2, '.', ',') }}</td>
+                                                    <td>Rp {{ number_format($salesman->total_return_amount, 2, '.', ',') }}
                                                     </td>
-                                                    <td>Rp {{ number_format($salesman->net_amount, 0, ',', '.') }}</td>
+                                                    <td>Rp {{ number_format($salesman->net_amount, 2, '.', ',') }}</td>
                                                 </tr>
                                             @empty
                                             @endforelse
@@ -234,6 +246,12 @@
                             {{-- TAB 3: MAP PUSAT --}}
                             <div class="tab-pane fade" id="salesman-map" role="tabpanel"
                                 aria-labelledby="salesman-map-tab">
+                                <div class="d-flex justify-content-end mt-3">
+                                    <a href="{{ route('dashboard.export.salesman-sales-map', ['start_date' => request('start_date'), 'end_date' => request('end_date')]) }}"
+                                        class="btn btn-success shadow-sm">
+                                        <i class="fas fa-file-excel me-1"></i> Export to Excel
+                                    </a>
+                                </div>
                                 <div class="table-responsive mt-3">
                                     <table id="table-salesman-map" class="table table-hover">
                                         <thead>
@@ -254,10 +272,10 @@
                                                         <small
                                                             class="d-block text-muted">{{ $salesman->SOIVD_SalesmanID }}</small>
                                                     </td>
-                                                    <td>Rp {{ number_format($salesman->total_amount, 0, ',', '.') }}</td>
-                                                    <td>Rp {{ number_format($salesman->total_return_amount, 0, ',', '.') }}
+                                                    <td>Rp {{ number_format($salesman->total_amount, 2, '.', ',') }}</td>
+                                                    <td>Rp {{ number_format($salesman->total_return_amount, 2, '.', ',') }}
                                                     </td>
-                                                    <td>Rp {{ number_format($salesman->net_amount, 0, ',', '.') }}</td>
+                                                    <td>Rp {{ number_format($salesman->net_amount, 2, '.', ',') }}</td>
                                                 </tr>
                                             @empty
                                             @endforelse
@@ -269,6 +287,12 @@
                             {{-- TAB 4: MAP CABANG --}}
                             <div class="tab-pane fade" id="salesman-map-branch" role="tabpanel"
                                 aria-labelledby="salesman-map-branch-tab">
+                                 <div class="d-flex justify-content-end mt-3">
+                                    <a href="{{ route('dashboard.export.salesman-sales-map-branch', ['start_date' => request('start_date'), 'end_date' => request('end_date')]) }}"
+                                        class="btn btn-success shadow-sm">
+                                        <i class="fas fa-file-excel me-1"></i> Export to Excel
+                                    </a>
+                                </div>
                                 <div class="table-responsive mt-3">
                                     <table id="table-salesman-map-branch" class="table table-hover">
                                         <thead>
@@ -289,10 +313,10 @@
                                                         <small
                                                             class="d-block text-muted">{{ $salesman->SOIVD_SalesmanID }}</small>
                                                     </td>
-                                                    <td>Rp {{ number_format($salesman->total_amount, 0, ',', '.') }}</td>
-                                                    <td>Rp {{ number_format($salesman->total_return_amount, 0, ',', '.') }}
+                                                    <td>Rp {{ number_format($salesman->total_amount, 2, '.', ',') }}</td>
+                                                    <td>Rp {{ number_format($salesman->total_return_amount, 2, '.', ',') }}
                                                     </td>
-                                                    <td>Rp {{ number_format($salesman->net_amount, 0, ',', '.') }}</td>
+                                                    <td>Rp {{ number_format($salesman->net_amount, 2, '.', ',') }}</td>
                                                 </tr>
                                             @empty
                                             @endforelse
@@ -350,6 +374,12 @@
                             {{-- TAB 1: MILENIA PUSAT --}}
                             <div class="tab-pane fade show active" id="transaction-milenia-brand" role="tabpanel"
                                 aria-labelledby="transaction-milenia-brand-tab">
+                                <div class="d-flex justify-content-end mt-3">
+                                    <a href="{{ route('dashboard.export.brand-milenia', ['start_date' => request('start_date'), 'end_date' => request('end_date')]) }}"
+                                        class="btn btn-success shadow-sm">
+                                        <i class="fas fa-file-excel me-1"></i> Export to Excel
+                                    </a>
+                                </div>
                                 <div class="table-responsive mt-3">
                                     <table id="table-transaction-milenia-brand" class="table table-hover">
                                         <thead>
@@ -371,13 +401,13 @@
                                                             class="d-block text-muted">{{ $brandTransaction->MFIB_BrandID }}</small>
                                                     </td>
                                                     <td>Rp
-                                                        {{ number_format($brandTransaction->sale_amount, 0, ',', '.') }}
+                                                        {{ number_format($brandTransaction->sale_amount, 2, '.', ',') }}
                                                     </td>
                                                     <td>Rp
-                                                        {{ number_format($brandTransaction->retur_amount, 0, ',', '.') }}
+                                                        {{ number_format($brandTransaction->retur_amount, 2, '.', ',') }}
                                                     </td>
                                                     <td>Rp
-                                                        {{ number_format($brandTransaction->net_amount, 0, ',', '.') }}
+                                                        {{ number_format($brandTransaction->net_amount, 2, '.', ',') }}
                                                     </td>
                                                 </tr>
                                             @empty
@@ -390,6 +420,12 @@
                             {{-- TAB 2: MILENIA CABANG --}}
                             <div class="tab-pane fade" id="transaction-milenia-brand-branch" role="tabpanel"
                                 aria-labelledby="transaction-milenia-brand-branch-tab">
+                                <div class="d-flex justify-content-end mt-3">
+                                    <a href="{{ route('dashboard.export.brand-milenia-branch', ['start_date' => request('start_date'), 'end_date' => request('end_date')]) }}"
+                                        class="btn btn-success shadow-sm">
+                                        <i class="fas fa-file-excel me-1"></i> Export to Excel
+                                    </a>
+                                </div>
                                 <div class="table-responsive mt-3">
                                     <table id="table-transaction-milenia-brand-branch" class="table table-hover">
                                         <thead>
@@ -411,13 +447,13 @@
                                                             class="d-block text-muted">{{ $brandTransaction->MFIB_BrandID }}</small>
                                                     </td>
                                                     <td>Rp
-                                                        {{ number_format($brandTransaction->sale_amount, 0, ',', '.') }}
+                                                        {{ number_format($brandTransaction->sale_amount, 2, '.', ',') }}
                                                     </td>
                                                     <td>Rp
-                                                        {{ number_format($brandTransaction->retur_amount, 0, ',', '.') }}
+                                                        {{ number_format($brandTransaction->retur_amount, 2, '.', ',') }}
                                                     </td>
                                                     <td>Rp
-                                                        {{ number_format($brandTransaction->net_amount, 0, ',', '.') }}
+                                                        {{ number_format($brandTransaction->net_amount, 2, '.', ',') }}
                                                     </td>
                                                 </tr>
                                             @empty
@@ -430,6 +466,12 @@
                             {{-- TAB 3: MAP PUSAT --}}
                             <div class="tab-pane fade" id="transaction-map-brand" role="tabpanel"
                                 aria-labelledby="transaction-map-brand-tab">
+                                <div class="d-flex justify-content-end mt-3">
+                                    <a href="{{ route('dashboard.export.brand-map', ['start_date' => request('start_date'), 'end_date' => request('end_date')]) }}"
+                                        class="btn btn-success shadow-sm">
+                                        <i class="fas fa-file-excel me-1"></i> Export to Excel
+                                    </a>
+                                </div>
                                 <div class="table-responsive mt-3">
                                     <table id="table-transaction-map-brand" class="table table-hover">
                                         <thead>
@@ -451,13 +493,13 @@
                                                             class="d-block text-muted">{{ $brandTransaction->MFIB_BrandID }}</small>
                                                     </td>
                                                     <td>Rp
-                                                        {{ number_format($brandTransaction->sale_amount, 0, ',', '.') }}
+                                                        {{ number_format($brandTransaction->sale_amount, 2, '.', ',') }}
                                                     </td>
                                                     <td>Rp
-                                                        {{ number_format($brandTransaction->retur_amount, 0, ',', '.') }}
+                                                        {{ number_format($brandTransaction->retur_amount, 2, '.', ',') }}
                                                     </td>
                                                     <td>Rp
-                                                        {{ number_format($brandTransaction->net_amount, 0, ',', '.') }}
+                                                        {{ number_format($brandTransaction->net_amount, 2, '.', ',') }}
                                                     </td>
                                                 </tr>
                                             @empty
@@ -470,6 +512,12 @@
                             {{-- TAB 4: MAP CABANG --}}
                             <div class="tab-pane fade" id="transaction-map-brand-branch" role="tabpanel"
                                 aria-labelledby="transaction-map-brand-branch-tab">
+                                 <div class="d-flex justify-content-end mt-3">
+                                    <a href="{{ route('dashboard.export.brand-map-branch', ['start_date' => request('start_date'), 'end_date' => request('end_date')]) }}"
+                                        class="btn btn-success shadow-sm">
+                                        <i class="fas fa-file-excel me-1"></i> Export to Excel
+                                    </a>
+                                </div>
                                 <div class="table-responsive mt-3">
                                     <table id="table-transaction-map-brand-branch" class="table table-hover">
                                         <thead>
@@ -491,13 +539,13 @@
                                                             class="d-block text-muted">{{ $brandTransaction->MFIB_BrandID }}</small>
                                                     </td>
                                                     <td>Rp
-                                                        {{ number_format($brandTransaction->sale_amount, 0, ',', '.') }}
+                                                        {{ number_format($brandTransaction->sale_amount, 2, '.', ',') }}
                                                     </td>
                                                     <td>Rp
-                                                        {{ number_format($brandTransaction->retur_amount, 0, ',', '.') }}
+                                                        {{ number_format($brandTransaction->retur_amount, 2, '.', ',') }}
                                                     </td>
                                                     <td>Rp
-                                                        {{ number_format($brandTransaction->net_amount, 0, ',', '.') }}
+                                                        {{ number_format($brandTransaction->net_amount, 2, '.', ',') }}
                                                     </td>
                                                 </tr>
                                             @empty
@@ -540,6 +588,12 @@
                             {{-- TAB 1: MILENIA PUSAT --}}
                             <div class="tab-pane fade show active" id="transaction-milenia-customer" role="tabpanel"
                                 aria-labelledby="transaction-milenia-customer-tab">
+                                <div class="d-flex justify-content-end mt-3">
+                                    <a href="{{ route('dashboard.export.customer-milenia', ['start_date' => request('start_date'), 'end_date' => request('end_date')]) }}"
+                                        class="btn btn-success shadow-sm">
+                                        <i class="fas fa-file-excel me-1"></i> Export to Excel
+                                    </a>
+                                </div>
                                 <div class="table-responsive mt-3">
                                     <table id="table-transaction-milenia-customer" class="table table-hover">
                                         <thead>
@@ -560,11 +614,11 @@
                                                         <small
                                                             class="d-block text-muted">{{ $report->MFCUS_CustomerID }}</small>
                                                     </td>
-                                                    <td>Rp {{ number_format($report->sale_amount, 0, ',', '.') }}
+                                                    <td>Rp {{ number_format($report->sale_amount, 2, '.', ',') }}
                                                     </td>
-                                                    <td>Rp {{ number_format($report->retur_amount, 0, ',', '.') }}
+                                                    <td>Rp {{ number_format($report->retur_amount, 2, '.', ',') }}
                                                     </td>
-                                                    <td>Rp {{ number_format($report->net_amount, 0, ',', '.') }}
+                                                    <td>Rp {{ number_format($report->net_amount, 2, '.', ',') }}
                                                     </td>
                                                 </tr>
                                             @empty
@@ -577,6 +631,12 @@
                             {{-- TAB 2: MAP PUSAT --}}
                             <div class="tab-pane fade" id="transaction-map-customer" role="tabpanel"
                                 aria-labelledby="transaction-map-customer-tab">
+                                <div class="d-flex justify-content-end mt-3">
+                                    <a href="{{ route('dashboard.export.customer-map', ['start_date' => request('start_date'), 'end_date' => request('end_date')]) }}"
+                                        class="btn btn-success shadow-sm">
+                                        <i class="fas fa-file-excel me-1"></i> Export to Excel
+                                    </a>
+                                </div>
                                 <div class="table-responsive mt-3">
                                     <table id="table-transaction-map-customer" class="table table-hover">
                                         <thead>
@@ -597,11 +657,11 @@
                                                         <small
                                                             class="d-block text-muted">{{ $report->MFCUS_CustomerID }}</small>
                                                     </td>
-                                                    <td>Rp {{ number_format($report->sale_amount, 0, ',', '.') }}
+                                                    <td>Rp {{ number_format($report->sale_amount, 2, '.', ',') }}
                                                     </td>
-                                                    <td>Rp {{ number_format($report->retur_amount, 0, ',', '.') }}
+                                                    <td>Rp {{ number_format($report->retur_amount, 2, '.', ',') }}
                                                     </td>
-                                                    <td>Rp {{ number_format($report->net_amount, 0, ',', '.') }}
+                                                    <td>Rp {{ number_format($report->net_amount, 2, '.', ',') }}
                                                     </td>
                                                 </tr>
                                             @empty
@@ -652,9 +712,9 @@
                                                 <th>Price ID</th>
                                                 <th>Nama Item</th>
                                                 <th>Harga <br> Sebelum PPN
-                                                    ({{ number_format($taxActive->tax_rate, 0, ',', '.') }})%</th>
+                                                    ({{ number_format($taxActive->tax_rate, 2, '.', ',') }})%</th>
                                                 <th>Harga <br> Sesudah PPN
-                                                    ({{ number_format($taxActive->tax_rate, 0, ',', '.') }})%</th>
+                                                    ({{ number_format($taxActive->tax_rate, 2, '.', ',') }})%</th>
                                                 <th>Terakhir Update</th>
                                             </tr>
                                         </thead>
@@ -668,7 +728,7 @@
                                                             class="d-block text-muted">{{ $pricelist->SOMPD_ItemID }}</small>
                                                     </td>
                                                     <td>
-                                                        Rp {{ number_format($pricelist->SOMPD_PriceAmount, 0, ',', '.') }}
+                                                        Rp {{ number_format($pricelist->SOMPD_PriceAmount, 2, '.', ',') }}
                                                     </td>
                                                     <td>
                                                         @php
@@ -676,7 +736,7 @@
                                                             $taxRate = $taxRate / 100;
                                                             $total = $pricelist->SOMPD_PriceAmount * (1 + $taxRate);
                                                         @endphp
-                                                        Rp {{ number_format($total, 0, ',', '.') }}
+                                                        Rp {{ number_format($total, 2, '.', ',') }}
                                                     </td>
                                                     <td>
                                                         {{ $pricelist->SOMPD_UPDATE->format('d M Y, H:i') }}
@@ -698,9 +758,9 @@
                                                 <th>Price ID</th>
                                                 <th>Nama Item</th>
                                                 <th>Harga <br> Sebelum PPN
-                                                    ({{ number_format($taxActive->tax_rate, 0, ',', '.') }})%</th>
+                                                    ({{ number_format($taxActive->tax_rate, 2, '.', ',') }})%</th>
                                                 <th>Harga <br> Sesudah PPN
-                                                    ({{ number_format($taxActive->tax_rate, 0, ',', '.') }})%</th>
+                                                    ({{ number_format($taxActive->tax_rate, 2, '.', ',') }})%</th>
                                                 <th>Terakhir Update</th>
                                             </tr>
                                         </thead>
@@ -714,7 +774,7 @@
                                                             class="d-block text-muted">{{ $pricelist->SOMPD_ItemID }}</small>
                                                     </td>
                                                     <td>
-                                                        Rp {{ number_format($pricelist->SOMPD_PriceAmount, 0, ',', '.') }}
+                                                        Rp {{ number_format($pricelist->SOMPD_PriceAmount, 2, '.', ',') }}
                                                     </td>
                                                     <td>
                                                         @php
@@ -722,7 +782,7 @@
                                                             $taxRate = $taxRate / 100;
                                                             $total = $pricelist->SOMPD_PriceAmount * (1 + $taxRate);
                                                         @endphp
-                                                        Rp {{ number_format($total, 0, ',', '.') }}
+                                                        Rp {{ number_format($total, 2, '.', ',') }}
                                                     </td>
                                                     <td>
                                                         {{ $pricelist->SOMPD_UPDATE->format('d M Y, H:i') }}

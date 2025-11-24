@@ -1,7 +1,7 @@
 <nav class="nxl-navigation">
     <div class="navbar-wrapper">
         <div class="m-header">
-            <a href="{{ route('dashboard') }}" class="b-brand" style="display: flex; align-items: center; gap: 8px;">
+            <a href="{{ route('dashboard.home') }}" class="b-brand" style="display: flex; align-items: center; gap: 8px;">
                 <div class="logo logo-lg">
                     <img src="{{ asset('assets/images/logo/logo.jpeg') }}" alt="Logo" class="logo logo-lg"
                         style="height: 80px; width: auto;">
@@ -69,7 +69,7 @@
                 </li>
 
                 <li class="nxl-item nxl-hasmenu {{ request()->routeIs(['dashboard']) ? 'active' : '' }}">
-                    <a href="{{ route('dashboard') }}" class="nxl-link">
+                    <a href="{{ route('dashboard.home') }}" class="nxl-link">
                         <span class="nxl-micon"><i class="feather-airplay"></i></span>
                         <span class="nxl-mtext">Dashboard</span>
                     </a>

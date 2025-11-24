@@ -55,7 +55,7 @@
                                     Periksa kembali alamat URL atau coba kembali ke halaman utama.
                                 </p>
                                 <div class="mt-5">
-                                    <a href="{{ route('dashboard') }}" class="btn btn-light-brand w-100">Kembali ke
+                                    <a href="{{ route('dashboard.home') }}" class="btn btn-light-brand w-100">Kembali ke
                                         Beranda</a>
                                 </div>
                             </div>

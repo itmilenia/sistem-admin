@@ -22,52 +22,58 @@ class SalesOrderDetailMileniaBranch extends Model
     {
         $sql = "
             SELECT
-                COALESCE(SalesTable.MFIB_BrandID, ReturnTable.MFIB_BrandID) AS MFIB_BrandID,
-                COALESCE(SalesTable.MFIB_Description, (SELECT TOP 1 MFIB_Description FROM MFIB WHERE MFIB_BrandID = ReturnTable.MFIB_BrandID)) AS brand_name,
-                ISNULL(SalesTable.GrossSales, 0) AS sale_amount,
-                ISNULL(ReturnTable.TotalReturn, 0) AS retur_amount,
-                ISNULL(SalesTable.GrossSales, 0) - ISNULL(ReturnTable.TotalReturn, 0) AS net_amount
+                S.MFIB_BrandID,
+                S.brand_name,
+                S.sale_amount,
+                ISNULL(R.retur_amount, 0) AS retur_amount,
+                (S.sale_amount - ISNULL(R.retur_amount, 0)) AS net_amount
             FROM
                 (
+                    -- 1. BASE: SALES DATA
+                    -- Ambil semua penjualan yang invoicenya terjadi di range tanggal ini
                     SELECT
                         MFIB.MFIB_BrandID,
-                        MFIB.MFIB_Description,
-                        SUM(SOIVD_Cabang.SOIVD_LineInvoiceAmount) AS GrossSales
+                        MAX(MFIB.MFIB_Description) as brand_name, -- Pakai MAX biar group by aman
+                        SUM(SOIVD_Cabang.SOIVD_LineInvoiceAmount) AS sale_amount
                     FROM
                         SOIVD_Cabang
+                    INNER JOIN SOIVH_Cabang ON SOIVD_Cabang.SOIVD_InvoiceID = SOIVH_Cabang.SOIVH_InvoiceID
                     INNER JOIN MFIMA ON SOIVD_Cabang.SOIVD_ItemID = MFIMA.MFIMA_ItemID
                     INNER JOIN MFIB ON MFIMA.MFIMA_Brand = MFIB.MFIB_BrandID
-                    -- Optional: Join ke SOIVH_Cabang jika ingin memfilter berdasarkan Tanggal Invoice Header
-                    -- INNER JOIN SOIVH_Cabang ON SOIVD_Cabang.SOIVD_InvoiceID = SOIVH_Cabang.SOIVH_InvoiceID
                     WHERE
-                        SOIVD_Cabang.SOIVD_OrderDate BETWEEN ? AND ?
+                        SOIVH_Cabang.SOIVH_InvoiceDate BETWEEN ? AND ?
                     GROUP BY
-                        MFIB.MFIB_BrandID, MFIB.MFIB_Description
-                ) AS SalesTable
-            FULL OUTER JOIN
+                        MFIB.MFIB_BrandID
+                ) AS S
+            LEFT JOIN
                 (
+                    -- 2. LINKED: RETURN DATA (Clawback Logic)
+                    -- Cari retur yang memiliki InvoiceID dari range tanggal yang sama
                     SELECT
                         MFIB.MFIB_BrandID,
-                        SUM(SOORD_Cabang.SOORD_LineReturnAmount - SOORD_Cabang.SOORD_TaxAmount) AS TotalReturn
+                        -- Rumus: IncTax - Tax = Net
+                        SUM(SOORD_Cabang.SOORD_LineReturnAmount - ISNULL(SOORD_Cabang.SOORD_TaxAmount, 0)) AS retur_amount
                     FROM
                         SOORD_Cabang
-                    INNER JOIN SOORH_Cabang ON SOORD_Cabang.SOORD_ReturnID = SOORH_Cabang.SOORH_ReturnID
+                    -- PENTING: Join ke SOIVH_Cabang menggunakan SOORD_InvoiceID
+                    INNER JOIN SOIVH_Cabang ON SOORD_Cabang.SOORD_InvoiceID = SOIVH_Cabang.SOIVH_InvoiceID
                     INNER JOIN MFIMA ON SOORD_Cabang.SOORD_ItemID = MFIMA.MFIMA_ItemID
                     INNER JOIN MFIB ON MFIMA.MFIMA_Brand = MFIB.MFIB_BrandID
                     WHERE
-                        SOORH_Cabang.SOORH_ReturnDate BETWEEN ? AND ?
+                        -- Filter Tanggal INVOICE (bukan tanggal retur)
+                        SOIVH_Cabang.SOIVH_InvoiceDate BETWEEN ? AND ?
                     GROUP BY
                         MFIB.MFIB_BrandID
-                ) AS ReturnTable ON SalesTable.MFIB_BrandID = ReturnTable.MFIB_BrandID
+                ) AS R ON S.MFIB_BrandID = R.MFIB_BrandID
             ORDER BY
-                net_amount DESC
+                (S.sale_amount - ISNULL(R.retur_amount, 0)) DESC
         ";
 
         return DB::connection('sqlsrv_wh')->select($sql, [
             $startDateTime,
             $endDateTime,
             $startDateTime,
-            $endDateTime,
+            $endDateTime
         ]);
     }
 }

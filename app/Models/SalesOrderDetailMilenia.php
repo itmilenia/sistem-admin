@@ -22,131 +22,154 @@ class SalesOrderDetailMilenia extends Model
     {
         $sql = "
             SELECT
-                COALESCE(SalesTable.MFIB_BrandID, ReturnTable.MFIB_BrandID) AS MFIB_BrandID,
-                COALESCE(SalesTable.MFIB_Description, (SELECT TOP 1 MFIB_Description FROM MFIB WHERE MFIB_BrandID = ReturnTable.MFIB_BrandID)) AS brand_name,
-                ISNULL(SalesTable.GrossSales, 0) AS sale_amount,
-                ISNULL(ReturnTable.TotalReturn, 0) AS retur_amount,
-                ISNULL(SalesTable.GrossSales, 0) - ISNULL(ReturnTable.TotalReturn, 0) AS net_amount
+                S.MFIB_BrandID,
+                S.brand_name,
+                S.sale_amount,
+                ISNULL(R.retur_amount, 0) AS retur_amount,
+                (S.sale_amount - ISNULL(R.retur_amount, 0)) AS net_amount
             FROM
                 (
+                    -- 1. BASE: SALES DATA
+                    -- Ambil semua penjualan yang invoicenya terjadi di range tanggal ini
                     SELECT
                         MFIB.MFIB_BrandID,
-                        MFIB.MFIB_Description,
-                        SUM(SOIVD.SOIVD_LineInvoiceAmount) AS GrossSales
+                        MAX(MFIB.MFIB_Description) as brand_name, -- Pakai MAX biar group by aman
+                        SUM(SOIVD.SOIVD_LineInvoiceAmount) AS sale_amount
                     FROM
                         SOIVD
+                    INNER JOIN SOIVH ON SOIVD.SOIVD_InvoiceID = SOIVH.SOIVH_InvoiceID
                     INNER JOIN MFIMA ON SOIVD.SOIVD_ItemID = MFIMA.MFIMA_ItemID
                     INNER JOIN MFIB ON MFIMA.MFIMA_Brand = MFIB.MFIB_BrandID
-                    -- Optional: Join ke SOIVH jika ingin memfilter berdasarkan Tanggal Invoice Header
-                    -- INNER JOIN SOIVH ON SOIVD.SOIVD_InvoiceID = SOIVH.SOIVH_InvoiceID
                     WHERE
-                        SOIVD.SOIVD_OrderDate BETWEEN ? AND ?
+                        SOIVH.SOIVH_InvoiceDate BETWEEN ? AND ?
                     GROUP BY
-                        MFIB.MFIB_BrandID, MFIB.MFIB_Description
-                ) AS SalesTable
-            FULL OUTER JOIN
+                        MFIB.MFIB_BrandID
+                ) AS S
+            LEFT JOIN
                 (
+                    -- 2. LINKED: RETURN DATA (Clawback Logic)
+                    -- Cari retur yang memiliki InvoiceID dari range tanggal yang sama
                     SELECT
                         MFIB.MFIB_BrandID,
-                        SUM(SOORD.SOORD_LineReturnAmount - SOORD.SOORD_TaxAmount) AS TotalReturn
+                        -- Rumus: IncTax - Tax = Net
+                        SUM(SOORD.SOORD_LineReturnAmount - ISNULL(SOORD.SOORD_TaxAmount, 0)) AS retur_amount
                     FROM
                         SOORD
-                    INNER JOIN SOORH ON SOORD.SOORD_ReturnID = SOORH.SOORH_ReturnID
+                    -- PENTING: Join ke SOIVH menggunakan SOORD_InvoiceID
+                    INNER JOIN SOIVH ON SOORD.SOORD_InvoiceID = SOIVH.SOIVH_InvoiceID
                     INNER JOIN MFIMA ON SOORD.SOORD_ItemID = MFIMA.MFIMA_ItemID
                     INNER JOIN MFIB ON MFIMA.MFIMA_Brand = MFIB.MFIB_BrandID
                     WHERE
-                        SOORH.SOORH_ReturnDate BETWEEN ? AND ?
+                        -- Filter Tanggal INVOICE (bukan tanggal retur)
+                        SOIVH.SOIVH_InvoiceDate BETWEEN ? AND ?
                     GROUP BY
                         MFIB.MFIB_BrandID
-                ) AS ReturnTable ON SalesTable.MFIB_BrandID = ReturnTable.MFIB_BrandID
+                ) AS R ON S.MFIB_BrandID = R.MFIB_BrandID
             ORDER BY
-                net_amount DESC
+                (S.sale_amount - ISNULL(R.retur_amount, 0)) DESC
         ";
 
         return DB::connection('sqlsrv_wh')->select($sql, [
             $startDateTime,
             $endDateTime,
             $startDateTime,
-            $endDateTime,
+            $endDateTime
         ]);
     }
 
     public static function getCustomerPerformanceDashboard($startDateTime, $endDateTime)
     {
         $sql = "
-                WITH
-                    AllSales AS (
-                        -- 1. SALES PUSAT (MAIN)
-                        SELECT
-                            SOIVH.SOIVH_CustomerID,
-                            SUM(SOIVD.SOIVD_LineInvoiceAmount) AS SalesAmount
-                        FROM SOIVD
-                        INNER JOIN SOIVH ON SOIVD.SOIVD_InvoiceID = SOIVH.SOIVH_InvoiceID
-                        WHERE
-                            SOIVD.SOIVD_OrderDate BETWEEN ? AND ?
-                        GROUP BY SOIVH.SOIVH_CustomerID
+            WITH
+            -- 1. CTE SALES (GABUNGAN PUSAT & CABANG)
+            AllSalesRaw AS (
+                -- A. SALES PUSAT
+                SELECT
+                    SOIVH.SOIVH_CustomerID,
+                    SUM(SOIVD.SOIVD_LineInvoiceAmount) AS SalesAmount
+                FROM SOIVD
+                INNER JOIN SOIVH ON SOIVD.SOIVD_InvoiceID = SOIVH.SOIVH_InvoiceID
+                WHERE SOIVH.SOIVH_InvoiceDate BETWEEN ? AND ?
+                GROUP BY SOIVH.SOIVH_CustomerID
 
-                        UNION ALL
+                UNION ALL
 
-                        -- 2. SALES CABANG (BRANCH)
-                        SELECT
-                            SOIVH_Cabang.SOIVH_CustomerID,
-                            SUM(SOIVD_Cabang.SOIVD_LineInvoiceAmount) AS SalesAmount
-                        FROM SOIVD_Cabang
-                        INNER JOIN SOIVH_Cabang ON SOIVD_Cabang.SOIVD_InvoiceID = SOIVH_Cabang.SOIVH_InvoiceID
-                        WHERE
-                            SOIVD_Cabang.SOIVD_OrderDate BETWEEN ? AND ?
-                        GROUP BY SOIVH_Cabang.SOIVH_CustomerID
-                    ),
+                -- B. SALES CABANG
+                SELECT
+                    SOIVH_Cabang.SOIVH_CustomerID,
+                    SUM(SOIVD_Cabang.SOIVD_LineInvoiceAmount) AS SalesAmount
+                FROM SOIVD_Cabang
+                INNER JOIN SOIVH_Cabang ON SOIVD_Cabang.SOIVD_InvoiceID = SOIVH_Cabang.SOIVH_InvoiceID
+                WHERE SOIVH_Cabang.SOIVH_InvoiceDate BETWEEN ? AND ?
+                GROUP BY SOIVH_Cabang.SOIVH_CustomerID
+            ),
 
-                    AllReturns AS (
-                        -- RETURN tetap pakai ReturnDate (INI BENAR)
-                        SELECT
-                            SOIVH.SOIVH_CustomerID,
-                            SUM(SOORD.SOORD_LineReturnAmount - SOORD.SOORD_TaxAmount) AS ReturnAmount
-                        FROM SOORD
-                        INNER JOIN SOIVH ON SOORD.SOORD_InvoiceID = SOIVH.SOIVH_InvoiceID
-                        INNER JOIN SOORH ON SOORD.SOORD_ReturnID = SOORH.SOORH_ReturnID
-                        WHERE
-                            SOORH.SOORH_ReturnDate BETWEEN ? AND ?
-                        GROUP BY SOIVH.SOIVH_CustomerID
+            -- 2. CTE RETURNS (GABUNGAN PUSAT & CABANG)
+            -- Mengambil Nominal dari SOORH (Header), tapi Filter via SOORD -> SOIVH (Clawback)
+            AllReturnsRaw AS (
+                -- A. RETUR PUSAT
+                SELECT
+                    R.SOORH_CustomerID,
+                    SUM(R.NetReturnAmount) AS ReturnAmount
+                FROM (
+                    -- Subquery: Ambil DISTINCT ReturnID yang valid sesuai Invoice Date
+                    -- Agar nominal Header tidak terhitung berkali-kali jika barangnya banyak
+                    SELECT DISTINCT
+                        SOORH.SOORH_ReturnID,
+                        SOORH.SOORH_CustomerID,
+                        (SOORH.SOORH_ReturnAmount - ISNULL(SOORH.SOORH_TaxAmount, 0)) AS NetReturnAmount
+                    FROM SOORH
+                    INNER JOIN SOORD ON SOORH.SOORH_ReturnID = SOORD.SOORD_ReturnID
+                    INNER JOIN SOIVH ON SOORD.SOORD_InvoiceID = SOIVH.SOIVH_InvoiceID
+                    WHERE
+                        -- LOGIKA CLAWBACK: Filter Tanggal Invoice
+                        SOIVH.SOIVH_InvoiceDate BETWEEN ? AND ?
+                ) AS R
+                GROUP BY R.SOORH_CustomerID
 
-                        UNION ALL
+                UNION ALL
 
-                        SELECT
-                            SOIVH_Cabang.SOIVH_CustomerID,
-                            SUM(SOORD_Cabang.SOORD_LineReturnAmount - SOORD_Cabang.SOORD_TaxAmount) AS ReturnAmount
-                        FROM SOORD_Cabang
-                        INNER JOIN SOIVH_Cabang ON SOORD_Cabang.SOORD_InvoiceID = SOIVH_Cabang.SOIVH_InvoiceID
-                        INNER JOIN SOORH_Cabang ON SOORD_Cabang.SOORD_ReturnID = SOORH_Cabang.SOORH_ReturnID
-                        WHERE
-                            SOORH_Cabang.SOORH_ReturnDate BETWEEN ? AND ?
-                        GROUP BY SOIVH_Cabang.SOIVH_CustomerID
-                    ),
+                -- B. RETUR CABANG
+                SELECT
+                    R_Cab.SOORH_CustomerID,
+                    SUM(R_Cab.NetReturnAmount) AS ReturnAmount
+                FROM (
+                    SELECT DISTINCT
+                        SOORH_Cabang.SOORH_ReturnID,
+                        SOORH_Cabang.SOORH_CustomerID,
+                        (SOORH_Cabang.SOORH_ReturnAmount - ISNULL(SOORH_Cabang.SOORH_TaxAmount, 0)) AS NetReturnAmount
+                    FROM SOORH_Cabang
+                    INNER JOIN SOORD_Cabang ON SOORH_Cabang.SOORH_ReturnID = SOORD_Cabang.SOORD_ReturnID
+                    INNER JOIN SOIVH_Cabang ON SOORD_Cabang.SOORD_InvoiceID = SOIVH_Cabang.SOIVH_InvoiceID
+                    WHERE
+                        SOIVH_Cabang.SOIVH_InvoiceDate BETWEEN ? AND ?
+                ) AS R_Cab
+                GROUP BY R_Cab.SOORH_CustomerID
+            ),
 
-                    TotalSalesGrouped AS (
-                        SELECT SOIVH_CustomerID, SUM(SalesAmount) as TotalSales
-                        FROM AllSales GROUP BY SOIVH_CustomerID
-                    ),
+            -- 3. GROUPING FINAL
+            FinalSales AS (
+                SELECT SOIVH_CustomerID, SUM(SalesAmount) as TotalSales
+                FROM AllSalesRaw GROUP BY SOIVH_CustomerID
+            ),
+            FinalReturns AS (
+                SELECT SOORH_CustomerID, SUM(ReturnAmount) as TotalReturn
+                FROM AllReturnsRaw GROUP BY SOORH_CustomerID
+            )
 
-                    TotalReturnsGrouped AS (
-                        SELECT SOIVH_CustomerID, SUM(ReturnAmount) as TotalReturn
-                        FROM AllReturns GROUP BY SOIVH_CustomerID
-                    )
-
-                    SELECT
-                        COALESCE(S.SOIVH_CustomerID, R.SOIVH_CustomerID) AS MFCUS_CustomerID,
-                        MFCUS.MFCUS_Description AS customer_name,
-                        ISNULL(S.TotalSales, 0) AS sale_amount,
-                        ISNULL(R.TotalReturn, 0) AS retur_amount,
-                        ISNULL(S.TotalSales, 0) - ISNULL(R.TotalReturn, 0) AS net_amount
-                    FROM TotalSalesGrouped S
-                    FULL OUTER JOIN TotalReturnsGrouped R
-                        ON S.SOIVH_CustomerID = R.SOIVH_CustomerID
-                    LEFT JOIN MFCUS
-                        ON COALESCE(S.SOIVH_CustomerID, R.SOIVH_CustomerID) = MFCUS.MFCUS_CustomerID
-                    ORDER BY net_amount DESC;
-                ";
+            -- 4. FINAL SELECT
+            SELECT
+                S.SOIVH_CustomerID AS MFCUS_CustomerID,
+                ISNULL(M.MFCUS_Description, 'Unknown Customer') AS customer_name,
+                ISNULL(S.TotalSales, 0) AS sale_amount,
+                ISNULL(R.TotalReturn, 0) AS retur_amount,
+                (ISNULL(S.TotalSales, 0) - ISNULL(R.TotalReturn, 0)) AS net_amount
+            FROM FinalSales S
+            -- LEFT JOIN: Basis data adalah Penjualan Bulan Tersebut
+            LEFT JOIN FinalReturns R ON S.SOIVH_CustomerID = R.SOORH_CustomerID
+            LEFT JOIN MFCUS M ON S.SOIVH_CustomerID = M.MFCUS_CustomerID
+            ORDER BY net_amount DESC
+        ";
 
         return DB::connection('sqlsrv_wh')->select($sql, [
             $startDateTime,

@@ -30,7 +30,22 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::prefix('dashboard')->name('dashboard.')->group(function () {
+        Route::get('/', [DashboardController::class, 'index'])->name('home');
+        Route::get('/sales/export/milenia', [DashboardController::class, 'exportSalesmanSalesMilenia'])->name('export.salesman-sales-milenia');
+        Route::get('/sales/export/map', [DashboardController::class, 'exportSalesmanSalesMap'])->name('export.salesman-sales-map');
+        Route::get('/sales/export/milenia-branch', [DashboardController::class, 'exportSalesmanSalesMileniaBranch'])->name('export.salesman-sales-milenia-branch');
+        Route::get('/sales/export/map-branch', [DashboardController::class, 'exportSalesmanSalesMapBranch'])->name('export.salesman-sales-map-branch');
+        Route::get('/brand/export/milenia', [DashboardController::class, 'exportBrandMilenia'])->name('export.brand-milenia');
+        Route::get('/brand/export/milenia-branch', [DashboardController::class, 'exportBrandMileniaBranch'])->name('export.brand-milenia-branch');
+        Route::get('/brand/export/map', [DashboardController::class, 'exportBrandMap'])->name('export.brand-map');
+        Route::get('/brand/export/map-branch', [DashboardController::class, 'exportBrandMapBranch'])->name('export.brand-map-branch');
+        Route::get('/customer/export/milenia', [DashboardController::class, 'exportCustomerMilenia'])->name('export.customer-milenia');
+        Route::get('/customer/export/milenia-branch', [DashboardController::class, 'exportCustomerMileniaBranch'])->name('export.customer-milenia-branch');
+        Route::get('/customer/export/map', [DashboardController::class, 'exportCustomerMap'])->name('export.customer-map');
+        Route::get('/customer/export/map-branch', [DashboardController::class, 'exportCustomerMapBranch'])->name('export.customer-map-branch');
+    });
+
 
     Route::prefix('manajemen-fitur')->group(function () {
         // Route Jaringan Customer
