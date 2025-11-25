@@ -30,6 +30,8 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
+    Route::get('/api/milenia-items/search', [QuotationLetterController::class, 'searchMileniaItems'])->name('api.milenia-items.search');
+
     Route::prefix('dashboard')->name('dashboard.')->group(function () {
         Route::get('/', [DashboardController::class, 'index'])->name('home');
         Route::get('/sales/export/milenia', [DashboardController::class, 'exportSalesmanSalesMilenia'])->name('export.salesman-sales-milenia');
@@ -215,6 +217,7 @@ Route::middleware('auth')->group(function () {
                 ->middleware('permission:lihat_surat_penawaran_milenia|lihat_surat_penawaran_map')
                 ->name('landing');
             Route::post('/store', [QuotationLetterController::class, 'store'])->name('store');
+            Route::get('/{id}/export-pdf', [QuotationLetterController::class, 'exportPdf'])->name('export-pdf');
             Route::put('/{id}/update', [QuotationLetterController::class, 'update'])->name('update');
             Route::delete('/{id}/delete', [QuotationLetterController::class, 'destroy'])->name('destroy');
 

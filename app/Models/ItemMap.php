@@ -16,4 +16,10 @@ class ItemMap extends Model
     {
         return $this->belongsTo(BrandMap::class, 'MFIMA_Brand', 'MFIB_BrandID');
     }
+
+    public function pricelistMap()
+    {
+        return $this->hasOne(PricelistMap::class, 'SOMPD_ItemID', 'MFIMA_ItemID')
+            ->orderBy('SOMPD_UPDATE', 'desc');
+    }
 }

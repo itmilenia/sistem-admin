@@ -16,4 +16,10 @@ class ItemMilenia extends Model
     {
         return $this->belongsTo(BrandMilenia::class, 'MFIMA_Brand', 'MFIB_BrandID');
     }
+
+    public function pricelistMilenia()
+    {
+        return $this->hasOne(PricelistMilenia::class, 'SOMPD_ItemID', 'MFIMA_ItemID')
+            ->orderBy('SOMPD_UPDATE', 'desc');
+    }
 }

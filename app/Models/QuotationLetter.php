@@ -10,15 +10,37 @@ class QuotationLetter extends Model
 
     protected $fillable = [
         'quotation_letter_number',
-        'recipient',
         'letter_date',
         'subject',
-        'quotation_letter_file',
-        'letter_status',
+
+        'recipient_company_name',
+        'recipient_attention_to',
+        'recipient_address_line1',
+        'recipient_address_line2',
+        'recipient_city',
+        'recipient_province',
+        'recipient_postal_code',
+
         'letter_type',
+        'letter_opening',
+        'letter_note',
+        'letter_ending',
+
+        'signature_id',
+        'signature_path',
+
         'created_by',
         'updated_by',
     ];
+
+    protected $casts = [
+        'letter_date' => 'date',
+    ];
+
+    public function details()
+    {
+        return $this->hasMany(QuotationLetterDetail::class, 'quotation_letter_id');
+    }
 
     public function creator()
     {
@@ -28,5 +50,10 @@ class QuotationLetter extends Model
     public function updater()
     {
         return $this->belongsTo(User::class, 'updated_by', 'ID');
+    }
+
+    public function signer()
+    {
+        return $this->belongsTo(User::class, 'signature_id', 'ID');
     }
 }

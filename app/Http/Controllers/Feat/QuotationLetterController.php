@@ -3,11 +3,18 @@
 namespace App\Http\Controllers\Feat;
 
 use Throwable;
+use App\Models\Tax;
+use App\Models\User;
+use App\Models\ItemMap;
+use App\Models\ItemMilenia;
 use Illuminate\Http\Request;
 use App\Models\QuotationLetter;
+use App\Traits\FileUploadTrait;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use App\Traits\SignatureUploadTrait;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\StoreQuotationLetterRequest;
@@ -15,6 +22,8 @@ use App\Http\Requests\UpdateQuotationLetterRequest;
 
 class QuotationLetterController extends Controller
 {
+    use FileUploadTrait, SignatureUploadTrait;
+
     private function authorizeLetterAction(QuotationLetter $letter, string $action)
     {
         $user = auth()->user();
@@ -44,7 +53,13 @@ class QuotationLetterController extends Controller
 
     public function showMilenia($id)
     {
-        $quotationLetter = QuotationLetter::findOrFail($id);
+        $quotationLetter = QuotationLetter::with([
+            'details.itemMilenia',
+            'creator',
+            'updater',
+            'signer'
+        ])
+            ->findOrFail($id);
 
         // Cek permission sesuai tipe surat
         $this->authorizeLetterAction($quotationLetter, 'lihat');
@@ -54,17 +69,30 @@ class QuotationLetterController extends Controller
 
     public function createMilenia()
     {
-        return view('pages.feat.sales.quotation-letter.milenia.create');
+        $users = User::orderBy('Nama')->where('Aktif', 1)->get();
+        $activeTax = Tax::where('is_active', 1)->first();
+        $taxRate = $activeTax ? $activeTax->tax_rate : 0;
+
+        return view('pages.feat.sales.quotation-letter.milenia.create', compact('users', 'taxRate'));
     }
 
     public function editMilenia($id)
     {
-        $quotationLetter = QuotationLetter::findOrFail($id);
+        $quotationLetter = QuotationLetter::with([
+            'details.itemMilenia',
+            'details.pricelistMilenia',
+            'creator',
+            'signer'
+        ])->findOrFail($id);
+
+        $users = User::orderBy('Nama')->where('Aktif', 1)->get();
+        $activeTax = Tax::where('is_active', 1)->first();
+        $taxRate = $activeTax ? $activeTax->tax_rate : 0;
 
         // Cek permission sesuai tipe surat
         $this->authorizeLetterAction($quotationLetter, 'ubah');
 
-        return view('pages.feat.sales.quotation-letter.milenia.edit', compact('quotationLetter'));
+        return view('pages.feat.sales.quotation-letter.milenia.edit', compact('quotationLetter', 'users', 'taxRate'));
     }
 
     public function indexMap()
@@ -101,91 +129,125 @@ class QuotationLetterController extends Controller
         return view('pages.feat.sales.quotation-letter.map.edit', compact('quotationLetter'));
     }
 
+    public function exportPdf($id)
+    {
+        $quotationLetter = QuotationLetter::with([
+            'details.itemMilenia',
+            'signer'
+        ])->findOrFail($id);
+
+        $this->authorizeLetterAction($quotationLetter, 'lihat');
+
+        // Ambil Tax Rate aktif untuk ditampilkan di Note
+        $activeTax = Tax::where('is_active', 1)->first();
+        $taxRate = $activeTax ? $activeTax->tax_rate : 11;
+
+        $pdf = Pdf::loadView('pdf.quotation_letter_milenia', compact('quotationLetter', 'taxRate'));
+        $pdf->setPaper('A4', 'portrait');
+
+        return $pdf->stream('Penawaran-' . $quotationLetter->subject . '.pdf');
+    }
+
     public function store(StoreQuotationLetterRequest $request)
     {
         $validated = $request->validated();
-        $user = auth()->user();
+        $user = Auth::user();
 
-        // Cek permission sesuai tipe
         if ($validated['letter_type'] === 'Milenia' && !$user->can('buat_surat_penawaran_milenia')) {
             abort(403, 'Anda tidak memiliki izin membuat Surat Penawaran Milenia.');
         }
-
         if ($validated['letter_type'] === 'Map' && !$user->can('buat_surat_penawaran_map')) {
             abort(403, 'Anda tidak memiliki izin membuat Surat Penawaran Map.');
         }
 
         $userId = Auth::id() ?? 1;
-
-        $file = $request->file('quotation_letter_file');
-        $fileName = null;
-        $filePath = null;
+        $signaturePath = null;
 
         DB::beginTransaction();
 
         try {
-            // 1. Penyimpanan File
-            if ($file) {
-                $fileExtension = $file->getClientOriginalExtension();
-                $fileName = 'SuratPenawaran-' . $validated['quotation_letter_number'] . '-' . date('Ymd') . '.' . $fileExtension;
 
-                $folderPath = 'quotation_letters';
-                $filePath = $file->storeAs($folderPath, $fileName, 'public');
+            // Opsi 1: Jika user menggambar (Base64)
+            if ($request->filled('signature_base64')) {
+                $fileName = 'sig_' . time() . '_' . uniqid() . '.png';
+                $relativePath = 'signatures/quotation_letters/' . $fileName;
 
-                if (!$filePath) {
-                    throw new \Exception('Gagal menyimpan file surat ke storage.');
+                $signaturePath = $this->saveSignature($validated['signature_base64'], $relativePath);
+            } elseif ($request->hasFile('signature_file')) {
+                $signaturePath = $this->uploadFile($request->file('signature_file'), 'signatures/quotation_letters', 'public');
+
+                if (!$signaturePath) {
+                    throw new \Exception('Gagal mengunggah file tanda tangan.');
                 }
             }
 
-            // 2. Penyimpanan Data Model
             $quotationLetter = QuotationLetter::create([
                 'quotation_letter_number' => $validated['quotation_letter_number'],
-                'recipient' => $validated['recipient'],
-                'letter_date' => $validated['letter_date'],
-                'subject' => $validated['subject'],
-                'quotation_letter_file' => $filePath,
-                'letter_status' => $validated['letter_status'] ?? 'Draft',
-                'letter_type' => $validated['letter_type'],
-                'created_by' => $userId,
-                'updated_by' => null,
+                'letter_date'             => $validated['letter_date'],
+                'subject'                 => $validated['subject'],
+
+                'recipient_company_name'  => $validated['recipient_company_name'],
+                'recipient_attention_to'  => $validated['recipient_attention_to'],
+                'recipient_address_line1' => $validated['recipient_address_line1'],
+                'recipient_address_line2' => $validated['recipient_address_line2'],
+                'recipient_city'          => $validated['recipient_city'],
+                'recipient_province'      => $validated['recipient_province'],
+                'recipient_postal_code'   => $validated['recipient_postal_code'],
+
+                'letter_type'             => $validated['letter_type'],
+                'letter_opening'          => $validated['letter_opening'],
+                'letter_note'             => $validated['letter_note'],
+                'letter_ending'           => $validated['letter_ending'],
+
+                'signature_id'            => $validated['signature_id'],
+                'signature_path'          => $signaturePath,
+
+                'created_by'              => $userId,
+                'updated_by'              => null,
             ]);
 
             if (!$quotationLetter) {
-                throw new \Exception('Gagal menyimpan data surat penawaran.');
+                throw new \Exception('Gagal membuat data header surat.');
             }
 
-            // 3. Commit Transaksi
+            foreach ($validated['items'] as $item) {
+                $quotationLetter->details()->create([
+                    'item_id'             => $item['item_id'],
+                    'item_type'           => $item['item_type'],
+                    'sku_number'          => $item['sku_number'],
+                    'size_number'         => $item['size_number'] ?? null,
+                    'unit_price'          => $item['unit_price'],
+                    'discount_percentage' => $item['discount_percentage'],
+                    'total_price'         => $item['total_price'],
+                ]);
+            }
+
             DB::commit();
 
-            // cek data apakah milenia atau map, dan redirect ke halaman yang sesuai
-            if ($validated['letter_type'] === 'Milenia') {
-                return redirect()->route('quotation-letter.milenia.index')
-                    ->with('success', 'Surat Penawaran Milenia baru berhasil ditambahkan.');
-            } elseif ($validated['letter_type'] === 'Map') {
-                return redirect()->route('quotation-letter.map.index')
-                    ->with('success', 'Surat Penawaran Map baru berhasil ditambahkan.');
-            }
-        } catch (Throwable $e) {
-            // 4. Rollback Transaksi jika terjadi kesalahan
+            // Tentukan route redirect
+            $route = $validated['letter_type'] === 'Milenia'
+                ? 'quotation-letter.milenia.index'
+                : 'quotation-letter.map.index';
+
+            $msg = 'Surat Penawaran ' . $validated['letter_type'] . ' berhasil dibuat.';
+
+            return redirect()->route($route)->with('success', $msg);
+        } catch (\Throwable $e) {
             DB::rollBack();
 
-            // 5. Hapus File yang terlanjur tersimpan (jika ada)
-            if ($filePath && Storage::disk('public')->exists($filePath)) {
-                Storage::disk('public')->delete($filePath);
+            if ($signaturePath) {
+                $this->deleteFile($signaturePath, 'public');
             }
 
-            // Log error untuk debugging
-            Log::error('Gagal menyimpan Quotation Letter: ' . $e->getMessage(), [
-                'trace' => $e->getTraceAsString(),
+            Log::error('Error Store Quotation: ' . $e->getMessage(), [
                 'user_id' => $userId,
-                'input' => $request->all(),
+                'trace'   => $e->getTraceAsString()
             ]);
 
-            // Redirect ke halaman sebelumnya dengan pesan error
             return redirect()
                 ->back()
                 ->withInput()
-                ->with('error', 'Terjadi kesalahan saat menyimpan data. Silakan coba lagi. Detail Error: ' . $e->getMessage());
+                ->with('error', 'Gagal menyimpan data: ' . $e->getMessage());
         }
     }
 
@@ -194,80 +256,94 @@ class QuotationLetterController extends Controller
         $quotationLetter = QuotationLetter::findOrFail($id);
 
         $validated = $request->validated();
+        $userId = Auth::id() ?? 1;
 
-        // Cek permission sesuai tipe surat
         $this->authorizeLetterAction($quotationLetter, 'ubah');
 
-
-        $userId = Auth::id() ?? 1;
-        $file = $request->file('quotation_letter_file');
-        $oldFilePath = $quotationLetter->quotation_letter_file;
-        $newFilePath = $oldFilePath;
+        $newSignaturePath = null;
+        $oldSignaturePath = $quotationLetter->signature_path;
 
         DB::beginTransaction();
 
         try {
-            // 1. Penanganan File Baru
-            if ($file) {
-                if ($oldFilePath) {
-                    Storage::disk('public')->delete($oldFilePath);
-                }
-
-                // Simpan file baru
-                $fileExtension = $file->getClientOriginalExtension();
-                $fileName = 'SuratPenawaran-' . $validated['quotation_letter_number'] . '-' . date('Ymd') . '.' . $fileExtension;
-                $folderPath = 'quotation_letters';
-                $newFilePath = $file->storeAs($folderPath, $fileName, 'public');
-
-                if (!$newFilePath) {
-                    throw new \Exception('Gagal menyimpan file surat baru ke storage.');
-                }
+            if ($request->filled('signature_base64')) {
+                $fileName = 'sig_' . time() . '_' . uniqid() . '.png';
+                $relativePath = 'signatures/quotation_letters/' . $fileName;
+                $newSignaturePath = $this->saveSignature($validated['signature_base64'], $relativePath);
+            } elseif ($request->hasFile('signature_file')) {
+                $newSignaturePath = $this->uploadFile($request->file('signature_file'), 'signatures/quotation_letters', 'public');
+                if (!$newSignaturePath) throw new \Exception('Gagal mengunggah file tanda tangan baru.');
             }
 
-            // 2. Pembaruan Data Model
+            if ($newSignaturePath && $oldSignaturePath) {
+                $this->deleteFile($oldSignaturePath, 'public');
+            }
+
             $quotationLetter->update([
                 'quotation_letter_number' => $validated['quotation_letter_number'],
-                'recipient' => $validated['recipient'],
-                'letter_date' => $validated['letter_date'],
-                'subject' => $validated['subject'],
-                'quotation_letter_file' => $newFilePath,
-                'letter_status' => $validated['letter_status'] ?? $quotationLetter->letter_status,
-                'letter_type' => $validated['letter_type'],
-                'updated_by' => $userId,
+                'letter_date'             => $validated['letter_date'],
+                'subject'                 => $validated['subject'],
+
+                'recipient_company_name'  => $validated['recipient_company_name'],
+                'recipient_attention_to'  => $validated['recipient_attention_to'],
+                'recipient_address_line1' => $validated['recipient_address_line1'],
+                'recipient_address_line2' => $validated['recipient_address_line2'],
+                'recipient_city'          => $validated['recipient_city'],
+                'recipient_province'      => $validated['recipient_province'],
+                'recipient_postal_code'   => $validated['recipient_postal_code'],
+
+                'letter_opening'          => $validated['letter_opening'],
+                'letter_type'             => $validated['letter_type'],
+                'letter_note'             => $validated['letter_note'],
+                'letter_ending'           => $validated['letter_ending'],
+
+                'signature_id'            => $validated['signature_id'],
+                'signature_path'          => $newSignaturePath ?? $oldSignaturePath,
+
+                'updated_by'              => $userId,
             ]);
 
-            // 3. Commit Transaksi
+            $quotationLetter->details()->delete();
+
+            // Insert detail baru
+            foreach ($validated['items'] as $item) {
+                $quotationLetter->details()->create([
+                    'item_id'             => $item['item_id'],
+                    'item_type'           => $item['item_type'],
+                    'sku_number'          => $item['sku_number'],
+                    'size_number'         => $item['size_number'] ?? null,
+                    'unit_price'          => $item['unit_price'],
+                    'discount_percentage' => $item['discount_percentage'],
+                    'total_price'         => $item['total_price'],
+                ]);
+            }
+
             DB::commit();
 
-            // ambil redirect url berdasarkan letter type
-            if ($validated['letter_type'] === 'Milenia') {
-                $redirectUrl = 'quotation-letter.milenia.index';
-            } elseif ($validated['letter_type'] === 'Map') {
-                $redirectUrl = 'quotation-letter.map.index';
-            }
+            $route = $validated['letter_type'] === 'Milenia'
+                ? 'quotation-letter.milenia.index'
+                : 'quotation-letter.map.index';
 
             return redirect()
-                ->route($redirectUrl)
-                ->with('success', 'Surat Penawaran dengan nomor ' . $quotationLetter->quotation_letter_number . ' berhasil diperbarui.');
-        } catch (Throwable $e) {
+                ->route($route)
+                ->with('success', 'Surat Penawaran berhasil diperbarui.');
+        } catch (\Throwable $e) {
             DB::rollBack();
 
-            // 4. Cleanup: Jika file baru sempat diupload tapi update DB gagal, hapus file baru tersebut.
-            // newFilePath akan berbeda dari oldFilePath hanya jika file baru berhasil disimpan.
-            if ($file && $newFilePath && ($newFilePath !== $oldFilePath) && Storage::disk('public')->exists($newFilePath)) {
-                Storage::disk('public')->delete($newFilePath);
+            if ($newSignaturePath) {
+                $this->deleteFile($newSignaturePath, 'public');
             }
 
-            Log::error('Gagal memperbarui Quotation Letter: ' . $e->getMessage(), [
-                'trace' => $e->getTraceAsString(),
+            Log::error('Error Update Quotation: ' . $e->getMessage(), [
                 'user_id' => $userId,
-                'input' => $request->all(),
+                'id' => $id,
+                'trace' => $e->getTraceAsString()
             ]);
 
             return redirect()
                 ->back()
                 ->withInput()
-                ->with('error', 'Terjadi kesalahan saat memperbarui data. Silakan coba lagi. Detail Error: ' . $e->getMessage());
+                ->with('error', 'Gagal memperbarui data: ' . $e->getMessage());
         }
     }
 
@@ -279,7 +355,7 @@ class QuotationLetterController extends Controller
 
         $letterNumber = $quotationLetter->quotation_letter_number;
         $lettey_type = $quotationLetter->letter_type;
-        $filePath = $quotationLetter->quotation_letter_file;
+        $filePath = $quotationLetter->signature_path;
 
         DB::beginTransaction();
 
@@ -326,5 +402,82 @@ class QuotationLetterController extends Controller
                 ->back()
                 ->with('error', 'Terjadi kesalahan saat menghapus data. Silakan coba lagi. Detail Error: ' . $e->getMessage());
         }
+    }
+
+    // Search API (Handle Duplicate ID & Kirim Real ID)
+    public function searchMileniaItems(Request $request)
+    {
+        $search = $request->get('q');
+
+        $items = ItemMilenia::query()
+            ->select(
+                'MFIMA.MFIMA_ItemID',
+                'MFIMA.MFIMA_Description',
+                'SOMPD.SOMPD_PriceAmount',
+                'SOMPD.SOMPD_PriceID'
+            )
+            ->leftJoin('SOMPD', 'MFIMA.MFIMA_ItemID', '=', 'SOMPD.SOMPD_ItemID')
+            ->where('MFIMA_Active', 1)
+            ->where(function ($query) use ($search) {
+                $query->where('MFIMA.MFIMA_ItemID', 'like', "%{$search}%")
+                    ->orWhere('MFIMA.MFIMA_Description', 'like', "%{$search}%");
+            })
+            ->limit(20)
+            ->get();
+
+        $results = [];
+        foreach ($items as $item) {
+            $priceCategory = $item->SOMPD_PriceID ?? 'DEFAULT';
+
+            $uniqueSelect2Id = $item->MFIMA_ItemID . '|' . $priceCategory;
+
+            $results[] = [
+                'id' => $uniqueSelect2Id,
+                'real_item_id' => $item->MFIMA_ItemID,
+                'price_category' => $priceCategory,
+                'text' => $item->MFIMA_ItemID . ' - ' . $item->MFIMA_Description . ' (' . $priceCategory . ')',
+                'price' => (float) ($item->SOMPD_PriceAmount ?? 0)
+            ];
+        }
+
+        return response()->json($results);
+    }
+
+    public function searchMapItems(Request $request)
+    {
+        $search = $request->get('q');
+
+        $items = ItemMap::query()
+            ->select(
+                'MFIMA.MFIMA_ItemID',
+                'MFIMA.MFIMA_Description',
+                'SOMPD.SOMPD_PriceAmount',
+                'SOMPD.SOMPD_PriceID'
+            )
+            ->leftJoin('SOMPD', 'MFIMA.MFIMA_ItemID', '=', 'SOMPD.SOMPD_ItemID')
+            ->where('MFIMA_Active', 1)
+            ->where(function ($query) use ($search) {
+                $query->where('MFIMA.MFIMA_ItemID', 'like', "%{$search}%")
+                    ->orWhere('MFIMA.MFIMA_Description', 'like', "%{$search}%");
+            })
+            ->limit(20)
+            ->get();
+
+        $results = [];
+        foreach ($items as $item) {
+            $priceCategory = $item->SOMPD_PriceID ?? 'DEFAULT';
+
+            $uniqueSelect2Id = $item->MFIMA_ItemID . '|' . $priceCategory;
+
+            $results[] = [
+                'id' => $uniqueSelect2Id,
+                'real_item_id' => $item->MFIMA_ItemID,
+                'price_category' => $priceCategory,
+                'text' => $item->MFIMA_ItemID . ' - ' . $item->MFIMA_Description . ' (' . $priceCategory . ')',
+                'price' => (float) ($item->SOMPD_PriceAmount ?? 0)
+            ];
+        }
+
+        return response()->json($results);
     }
 }
