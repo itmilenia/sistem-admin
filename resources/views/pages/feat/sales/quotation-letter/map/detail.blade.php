@@ -104,6 +104,7 @@
                                         <th class="text-center" width="25%">Item ID</th>
                                         <th class="text-center" width="10%">SKU</th>
                                         <th class="text-center" width="10%">Size</th>
+                                        <th class="text-center" width="10%">Warranty</th>
                                         <th class="text-center" width="10%">Item Type</th>
                                         <th class="text-center" width="15%">Harga Satuan</th>
                                         <th class="text-center" width="10%">Disc (%)</th>
@@ -121,8 +122,10 @@
                                             </td>
                                             <td class="text-center">{{ $item->sku_number }}</td>
                                             <td class="text-center">{{ $item->size_number ?? '-' }}</td>
+                                            <td class="text-center">{{ $item->warranty_period ?? '-' }}</td>
                                             <td class="text-center">{{ $item->item_type ?? '-' }}</td>
-                                            <td class="text-end">Rp {{ number_format($item->unit_price, 0, ',', '.') }}
+                                            <td class="text-end">Rp
+                                                {{ number_format($item->unit_price * (1 + $taxRate / 100), 0, ',', '.') }}
                                             </td>
                                             <td class="text-center">{{ $item->discount_percentage + 0 }}%</td>
                                             {{-- +0 agar desimal .00 hilang --}}
@@ -131,14 +134,14 @@
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="8" class="text-center text-muted py-3">Tidak ada item barang.
+                                            <td colspan="9" class="text-center text-muted py-3">Tidak ada item barang.
                                             </td>
                                         </tr>
                                     @endforelse
                                 </tbody>
                                 <tfoot>
                                     <tr>
-                                        <td colspan="7" class="text-center fw-bold text-uppercase">Total Akhir (Termasuk
+                                        <td colspan="8" class="text-center fw-bold text-uppercase">Total Akhir (Termasuk
                                             PPN)</td>
                                         <td class="text-end fw-bold text-primary fs-6">Rp
                                             {{ number_format($grandTotal, 2, ',', '.') }}</td>

@@ -15,9 +15,10 @@ return new class extends Migration
             $table->id();
             $table->foreignId('quotation_letter_id')->constrained('tt_quotation_letter')->onDelete('cascade');
             $table->string('item_id');
-            $table->string('item_type');
-            $table->string('sku_number');
-            $table->string('size_number');
+            $table->string('item_type')->nullable();
+            $table->string('sku_number')->nullable();
+            $table->string('warranty_period')->nullable();
+            $table->string('size_number')->nullable();
             $table->decimal('unit_price', 18, 2);
             $table->decimal('discount_percentage', 5, 2);
             $table->decimal('total_price', 18, 2);

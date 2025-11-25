@@ -232,7 +232,8 @@
 
                                 <div class="alert alert-info py-2 small d-flex justify-content-between align-items-center">
                                     <span><i class="feather-info me-1"></i> Ketik Kode/Nama Barang. PPN Aktif:
-                                        <strong>{{ $taxRate }}%</strong></span>
+                                        <strong>{{ $taxRate }}%</strong>. Tipe, SKU, Size, dan Warranty bersifat
+                                        opsional.</span>
                                 </div>
 
                                 <div class="table-responsive">
@@ -242,6 +243,7 @@
                                                 <th width="25%">Item</th>
                                                 <th width="12%">SKU Number</th>
                                                 <th width="8%">Size</th>
+                                                <th width="10%">Warranty</th>
                                                 <th width="10%">Item Type</th> {{-- Kolom Baru --}}
                                                 <th width="15%">Harga Satuan (Rp)</th>
                                                 <th width="8%">Disc (%)</th>
@@ -372,15 +374,18 @@
                 <input type="hidden" class="validation-id">
             </td>
             <td>
-                <input type="text" class="form-control" name="items[INDEX][sku_number]" placeholder="SKU" required>
+                <input type="text" class="form-control" name="items[INDEX][sku_number]" placeholder="SKU">
             </td>
             <td>
                 <input type="text" class="form-control" name="items[INDEX][size_number]" placeholder="Size">
             </td>
+            <td>
+                <input type="text" class="form-control" name="items[INDEX][warranty_period]" placeholder="Warranty">
+            </td>
 
             {{-- KOLOM BARU: INPUT MANUAL ITEM TYPE --}}
             <td>
-                <input type="text" class="form-control" name="items[INDEX][item_type]" placeholder="Tipe" required>
+                <input type="text" class="form-control" name="items[INDEX][item_type]" placeholder="Tipe">
             </td>
 
             <td>

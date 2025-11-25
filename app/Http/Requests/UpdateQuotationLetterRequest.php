@@ -45,9 +45,10 @@ class UpdateQuotationLetterRequest extends FormRequest
 
             // --- Detail Items ---
             'items'                       => ['required', 'array', 'min:1'],
-            'items.*.item_type'         => ['required', 'string', 'max:255'],
+            'items.*.item_type'         => ['nullable', 'string', 'max:255'],
             'items.*.item_id'             => ['required', 'string'],
-            'items.*.sku_number'          => ['required', 'string'],
+            'items.*.sku_number'          => ['nullable', 'string'],
+            'items.*.warranty_period'     => ['nullable', 'string'],
             'items.*.size_number'         => ['nullable', 'string'],
             'items.*.unit_price'          => ['required', 'numeric', 'min:0'],
             'items.*.discount_percentage' => ['required', 'numeric', 'min:0', 'max:100'],
@@ -111,14 +112,16 @@ class UpdateQuotationLetterRequest extends FormRequest
             'items.array'    => 'Format daftar barang salah.',
             'items.min'      => 'Minimal harus ada 1 barang dalam penawaran.',
 
-            'items.*.item_type.required' => 'Tipe barang wajib diisi.',
+            // 'items.*.item_type.required' => 'Tipe barang wajib diisi.',
             'items.*.item_type.string'   => 'Tipe barang harus berupa teks.',
             'items.*.item_type.max'      => 'Tipe barang maksimal 255 karakter.',
 
             'items.*.item_id.required' => 'Salah satu Item ID pada daftar barang belum diisi.',
             'items.*.item_id.string'   => 'Item ID harus berupa teks.',
 
-            'items.*.sku_number.required' => 'SKU Number pada daftar barang wajib diisi.',
+            'items.*.item_id.string'   => 'Item ID harus berupa teks.',
+
+            // 'items.*.sku_number.required' => 'SKU Number pada daftar barang wajib diisi.',
 
             'items.*.unit_price.required' => 'Harga Satuan barang wajib diisi.',
             'items.*.unit_price.numeric'  => 'Harga Satuan harus berupa angka.',

@@ -243,8 +243,8 @@
 
                                 <div class="alert alert-info py-2 small d-flex justify-content-between align-items-center">
                                     <span><i class="feather-info me-1"></i> PPN Aktif:
-                                        <strong>{{ $taxRate }}%</strong>. Harga otomatis terhitung ulang saat
-                                        disimpan.</span>
+                                        <strong>{{ $taxRate }}%</strong>. Tipe, SKU, Size, dan Warranty bersifat
+                                        opsional.</span>
                                 </div>
 
                                 <div class="table-responsive">
@@ -255,6 +255,7 @@
                                                     <th width="25%">Item</th>
                                                     <th width="12%">SKU Number</th>
                                                     <th width="8%">Size</th>
+                                                    <th width="10%">Warranty</th>
                                                     <th width="10%">Item Type</th>
                                                     <th width="15%">Harga (Excl. PPN)</th>
                                                     <th width="8%">Disc (%)</th>
@@ -307,18 +308,23 @@
                                                     <td>
                                                         <input type="text" class="form-control"
                                                             name="items[{{ $index }}][sku_number]"
-                                                            value="{{ $detail->sku_number }}" required>
+                                                            value="{{ $detail->sku_number }}" placeholder="SKU">
                                                     </td>
                                                     <td>
                                                         <input type="text" class="form-control"
                                                             name="items[{{ $index }}][size_number]"
-                                                            value="{{ $detail->size_number }}">
+                                                            value="{{ $detail->size_number }}" placeholder="Size">
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" class="form-control"
+                                                            name="items[{{ $index }}][warranty_period]"
+                                                            value="{{ $detail->warranty_period }}" placeholder="Warranty">
                                                     </td>
                                                     <td>
                                                         <input type="text" class="form-control"
                                                             name="items[{{ $index }}][item_type]"
                                                             value="{{ old('items.' . $index . '.item_type', $detail->item_type) }}"
-                                                            placeholder="Tipe" required>
+                                                            placeholder="Tipe">
                                                     </td>
                                                     <td>
                                                         <input type="number"
@@ -486,11 +492,13 @@
                 <input type="hidden" class="real-item-id" name="items[INDEX][item_id]">
                 <input type="hidden" class="validation-id">
             </td>
-            <td><input type="text" class="form-control" name="items[INDEX][sku_number]" required></td>
-            <td><input type="text" class="form-control" name="items[INDEX][size_number]"></td>
+            <td><input type="text" class="form-control" name="items[INDEX][sku_number]" placeholder="SKU"></td>
+            <td><input type="text" class="form-control" name="items[INDEX][size_number]" placeholder="Size"></td>
+            <td><input type="text" class="form-control" name="items[INDEX][warranty_period]" placeholder="Warranty">
+            </td>
 
             {{-- KOLOM BARU DI TEMPLATE --}}
-            <td><input type="text" class="form-control" name="items[INDEX][item_type]" placeholder="Tipe" required>
+            <td><input type="text" class="form-control" name="items[INDEX][item_type]" placeholder="Tipe">
             </td>
             {{-- --------------------- --}}
 

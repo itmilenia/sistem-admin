@@ -232,16 +232,18 @@
 
                                 <div class="alert alert-info py-2 small d-flex justify-content-between align-items-center">
                                     <span><i class="feather-info me-1"></i> Ketik Kode/Nama Barang. PPN Aktif:
-                                        <strong>{{ $taxRate }}%</strong></span>
+                                        <strong>{{ $taxRate }}%</strong>. SKU, Size, dan Warranty bersifat
+                                        opsional.</span>
                                 </div>
 
                                 <div class="table-responsive">
                                     <table class="table table-bordered align-middle" id="items-table">
                                         <thead class="bg-light">
                                             <tr>
-                                                <th width="25%">Item (Cari via AJAX)</th>
+                                                <th width="25%">Item</th>
                                                 <th width="12%">SKU Number</th>
                                                 <th width="8%">Size</th>
+                                                <th width="10%">Warranty</th> {{-- Kolom Baru --}}
                                                 <th width="10%">Item Type</th> {{-- Kolom Baru --}}
                                                 <th width="15%">Harga Satuan (Rp)</th>
                                                 <th width="8%">Disc (%)</th>
@@ -372,15 +374,18 @@
                 <input type="hidden" class="validation-id">
             </td>
             <td>
-                <input type="text" class="form-control" name="items[INDEX][sku_number]" placeholder="SKU" required>
+                <input type="text" class="form-control" name="items[INDEX][sku_number]" placeholder="SKU">
             </td>
             <td>
                 <input type="text" class="form-control" name="items[INDEX][size_number]" placeholder="Size">
             </td>
+            <td>
+                <input type="text" class="form-control" name="items[INDEX][warranty_period]" placeholder="Warranty">
+            </td>
 
             {{-- KOLOM BARU: INPUT MANUAL ITEM TYPE --}}
             <td>
-                <input type="text" class="form-control" name="items[INDEX][item_type]" placeholder="Tipe" required>
+                <input type="text" class="form-control" name="items[INDEX][item_type]" placeholder="Tipe">
             </td>
 
             <td>
@@ -632,7 +637,13 @@
                     "%.",
                 icon: 'question',
                 showCancelButton: true,
-                confirmButtonText: 'Ya, Simpan',
+                confirmButtonText: 'Ya, Simpan!',
+                cancelButtonText: 'Batal',
+                customClass: {
+                    confirmButton: 'btn btn-primary',
+                    cancelButton: 'btn btn-danger'
+                },
+                buttonsStyling: false
             }).then((result) => {
                 if (result.isConfirmed) {
                     form.submit();

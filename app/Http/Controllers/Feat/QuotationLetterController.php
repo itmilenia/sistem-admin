@@ -64,7 +64,10 @@ class QuotationLetterController extends Controller
         // Cek permission sesuai tipe surat
         $this->authorizeLetterAction($quotationLetter, 'lihat');
 
-        return view('pages.feat.sales.quotation-letter.milenia.detail', compact('quotationLetter'));
+        $activeTax = Tax::where('is_active', 1)->first();
+        $taxRate = $activeTax ? $activeTax->tax_rate : 0;
+
+        return view('pages.feat.sales.quotation-letter.milenia.detail', compact('quotationLetter', 'taxRate'));
     }
 
     public function createMilenia()
@@ -116,7 +119,10 @@ class QuotationLetterController extends Controller
         // Cek permission sesuai tipe surat
         $this->authorizeLetterAction($quotationLetter, 'lihat');
 
-        return view('pages.feat.sales.quotation-letter.map.detail', compact('quotationLetter'));
+        $activeTax = Tax::where('is_active', 1)->first();
+        $taxRate = $activeTax ? $activeTax->tax_rate : 0;
+
+        return view('pages.feat.sales.quotation-letter.map.detail', compact('quotationLetter', 'taxRate'));
     }
 
     public function createMap()
@@ -249,8 +255,9 @@ class QuotationLetterController extends Controller
             foreach ($validated['items'] as $item) {
                 $quotationLetter->details()->create([
                     'item_id'             => $item['item_id'],
-                    'item_type'           => $item['item_type'],
-                    'sku_number'          => $item['sku_number'],
+                    'item_type'           => $item['item_type'] ?? null,
+                    'sku_number'          => $item['sku_number'] ?? null,
+                    'warranty_period'     => $item['warranty_period'] ?? null,
                     'size_number'         => $item['size_number'] ?? null,
                     'unit_price'          => $item['unit_price'],
                     'discount_percentage' => $item['discount_percentage'],
@@ -345,8 +352,9 @@ class QuotationLetterController extends Controller
             foreach ($validated['items'] as $item) {
                 $quotationLetter->details()->create([
                     'item_id'             => $item['item_id'],
-                    'item_type'           => $item['item_type'],
-                    'sku_number'          => $item['sku_number'],
+                    'item_type'           => $item['item_type'] ?? null,
+                    'sku_number'          => $item['sku_number'] ?? null,
+                    'warranty_period'     => $item['warranty_period'] ?? null,
                     'size_number'         => $item['size_number'] ?? null,
                     'unit_price'          => $item['unit_price'],
                     'discount_percentage' => $item['discount_percentage'],

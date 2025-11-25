@@ -72,8 +72,8 @@
 
                                                     {{-- Tombol Export Pdf --}}
                                                     <a href="{{ route('quotation-letter.export-pdf', $quotationLetter->id) }}"
-                                                        class="btn btn-sm btn-success" target="_blank">
-                                                        <i class="feather-download me-2"></i> Export PDF
+                                                        class="btn btn-sm btn-primary" target="_blank">
+                                                        <i class="feather-printer me-2"></i> Cetak PDF
                                                     </a>
 
                                                     {{-- Tombol Edit --}}

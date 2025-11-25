@@ -83,7 +83,7 @@
         /* LIST STYLING */
         ul {
             margin: 0;
-            padding-left: 15px;
+            padding-left: 25px;
         }
 
         li {
@@ -182,28 +182,55 @@
         </div>
 
         {{-- TABEL DATA --}}
+        {{-- Logic to check if columns are needed --}}
+        @php
+            $hasSku = $quotationLetter->details->contains(fn($d) => !empty($d->sku_number));
+            $hasSize = $quotationLetter->details->contains(fn($d) => !empty($d->size_number));
+            $hasType = $quotationLetter->details->contains(fn($d) => !empty($d->item_type));
+            $hasWarranty = $quotationLetter->details->contains(fn($d) => !empty($d->warranty_period));
+        @endphp
+
         <table class="data-table mb-2">
             <thead>
                 <tr>
                     <th width="5%">No.</th>
-                    <th width="15%">Sku</th>
-                    <th width="30%">Nama Barang</th>
-                    <th width="8%">Size</th>
-                    <th width="10%">Type</th>
+                    @if ($hasSku)
+                        <th width="10%">SKU</th>
+                    @endif
+                    <th width="auto">Nama Barang</th>
+                    @if ($hasSize)
+                        <th width="8%">Size</th>
+                    @endif
+                    @if ($hasType)
+                        <th width="10%">Type</th>
+                    @endif
+                    @if ($hasWarranty)
+                        <th width="10%">Warranty</th>
+                    @endif
                     <th width="15%">Harga</th>
                     <th width="5%">Disc</th>
-                    <th width="12%">Total</th>
+                    <th width="15%">Total</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach ($quotationLetter->details as $index => $detail)
                     <tr>
                         <td class="text-center">{{ $index + 1 }}</td>
-                        <td class="text-center">{{ $detail->sku_number }}</td>
+                        @if ($hasSku)
+                            <td class="text-center">{{ $detail->sku_number ?? '-' }}</td>
+                        @endif
                         <td>{{ $detail->itemMilenia->MFIMA_Description ?? $detail->item_id }}</td>
-                        <td class="text-center">{{ $detail->size_number ?? '-' }}</td>
-                        <td class="text-center">{{ $detail->item_type }}</td>
-                        <td class="text-right">{{ number_format($detail->unit_price, 0, '.', ',') }}</td>
+                        @if ($hasSize)
+                            <td class="text-center">{{ $detail->size_number ?? '-' }}</td>
+                        @endif
+                        @if ($hasType)
+                            <td class="text-center">{{ $detail->item_type ?? '-' }}</td>
+                        @endif
+                        @if ($hasWarranty)
+                            <td class="text-center">{{ $detail->warranty_period ?? '-' }}</td>
+                        @endif
+                        <td class="text-right">
+                            {{ number_format($detail->unit_price * (1 + $taxRate / 100), 0, '.', ',') }}</td>
                         <td class="text-center">
                             {{ $detail->discount_percentage > 0 ? $detail->discount_percentage + 0 . '%' : '' }}
                         </td>

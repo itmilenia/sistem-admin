@@ -13,6 +13,7 @@ class QuotationLetterDetail extends Model
         'item_id',
         'item_type',
         'sku_number',
+        'warranty_period',
         'size_number',
         'unit_price',
         'discount_percentage',

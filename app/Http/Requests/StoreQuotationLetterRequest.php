@@ -40,8 +40,9 @@ class StoreQuotationLetterRequest extends FormRequest
             // --- Detail Items ---
             'items'                       => ['required', 'array', 'min:1'],
             'items.*.item_id'             => ['required', 'string'],
-            'items.*.item_type'         => ['required', 'string', 'max:255'],
-            'items.*.sku_number'          => ['required', 'string'],
+            'items.*.item_type'         => ['nullable', 'string', 'max:255'],
+            'items.*.sku_number'          => ['nullable', 'string'],
+            'items.*.warranty_period'     => ['nullable', 'string'],
             'items.*.size_number'         => ['nullable', 'string'],
             'items.*.unit_price'          => ['required', 'numeric', 'min:0'],
             'items.*.discount_percentage' => ['required', 'numeric', 'min:0', 'max:100'],
@@ -108,9 +109,11 @@ class StoreQuotationLetterRequest extends FormRequest
             'items.*.item_id.required' => 'Salah satu Item ID pada daftar barang belum diisi.',
             'items.*.item_id.string'   => 'Item ID harus berupa teks.',
 
-            'items.*.sku_number.required' => 'SKU Number pada daftar barang wajib diisi.',
+            'items.*.item_id.string'   => 'Item ID harus berupa teks.',
 
-            'items.*.item_type.required' => 'Item Type pada daftar barang wajib diisi.',
+            // 'items.*.sku_number.required' => 'SKU Number pada daftar barang wajib diisi.',
+
+            // 'items.*.item_type.required' => 'Item Type pada daftar barang wajib diisi.',
             'items.*.item_type.string' => 'Item Type harus berupa teks.',
 
 
