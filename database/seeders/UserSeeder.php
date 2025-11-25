@@ -46,13 +46,13 @@ class UserSeeder extends Seeder
         $superAdmin->syncRoles([$owner->name]);
 
         // 2) Target ID dari HRD
-        $targetIds = [7605, 42, 7432, 7743, 7311, 332, 7713, 7752, 7755, 1064, 7178, 7735, 7758];
+        $targetIds = [7605, 42, 7432, 7743, 7311, 7693, 332, 7713, 7752, 7755, 1064, 7178, 7735, 7758];
 
         $adminPusatIds  = [7605];
         $adminPusatMap = [42];
         $adminCabangMilenia = [7432, 7743];
         $trainerMilenia = [332];
-        $trainerMap = [7311];
+        $trainerMap = [7311, 7693];
         $salesMilenia = [7713, 7752, 7755];
         $salesMap = [7735, 7758];
         $headSalesMilenia = [7178];

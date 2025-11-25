@@ -28,11 +28,6 @@ class UpdateAgreementLetterRequest extends FormRequest
             'sales_name' => ['required', 'string', 'max:255'],
             'effective_start_date' => ['required', 'date'],
             'effective_end_date' => ['required', 'date', 'after_or_equal:effective_start_date'],
-            'letter_status' => [
-                'required',
-                'string',
-                Rule::in(['Sudah Terkirim', 'Belum Terkirim']),
-            ],
             'agreement_letter_file' => [
                 'nullable',
                 'file',
@@ -61,9 +56,6 @@ class UpdateAgreementLetterRequest extends FormRequest
             'effective_end_date.required' => 'Tanggal berakhir harus diisi.',
             'effective_end_date.date' => 'Format tanggal berakhir tidak valid.',
             'effective_end_date.after_or_equal' => 'Tanggal berakhir harus setelah tanggal mulai berlaku.',
-
-            'letter_status.required' => 'Status surat harus dipilih.',
-            'letter_status.in' => 'Status surat yang dipilih tidak valid.',
 
             'agreement_letter_file.file' => 'File Surat harus berupa file.',
             'agreement_letter_file.mimes' => 'File Surat harus berekstensi PDF.',

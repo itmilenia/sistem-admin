@@ -15,7 +15,6 @@ class AgreementLetter extends Model
         'effective_start_date',
         'effective_end_date',
         'agreement_letter_path',
-        'letter_status',
         'is_active',
         'created_by',
         'updated_by',

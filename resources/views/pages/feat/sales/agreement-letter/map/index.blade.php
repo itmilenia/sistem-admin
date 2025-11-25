@@ -45,18 +45,14 @@
                             <table class="table table-hover table-bordered" id="agreement-table" style="width:100%">
                                 <thead>
                                     <tr>
-                                        <th rowspan="2" style="width: 5%;" class="text-center align-middle">#</th>
-                                        <th rowspan="2" class="text-center align-middle">Customer</th>
-                                        <th rowspan="2" class="text-center align-middle">Tipe Perusahaan</th>
-                                        <th rowspan="2" class="text-center align-middle">Sales</th>
-                                        <th rowspan="2" class="text-center align-middle">Periode Efektif</th>
-                                        <th rowspan="2" class="text-center align-middle">Lampiran</th>
-                                        <th colspan="2" class="text-center align-middle">Status</th>
-                                        <th rowspan="2" class="text-center align-middle">Aksi</th>
-                                    </tr>
-                                    <tr>
-                                        <th class="text-center align-middle">Pengiriman</th>
-                                        <th class="text-center align-middle">Berlaku</th>
+                                        <th style="width: 5%;" class="text-center align-middle">#</th>
+                                        <th class="text-center align-middle">Customer</th>
+                                        <th class="text-center align-middle">Tipe Perusahaan</th>
+                                        <th class="text-center align-middle">Sales</th>
+                                        <th class="text-center align-middle">Periode Efektif</th>
+                                        <th class="text-center align-middle">Lampiran</th>
+                                        <th class="text-center align-middle">Status Berlaku</th>
+                                        <th class="text-center align-middle">Aksi</th>
                                     </tr>
                                 </thead>
 
@@ -80,16 +76,6 @@
                                                     </a>
                                                 @else
                                                     <span class="text-muted">Tidak ada file</span>
-                                                @endif
-                                            </td>
-                                            <td class="text-center">
-                                                @if ($agreementLetter->letter_status === 'Sudah Terkirim')
-                                                    <span class="badge bg-success">Sudah Terkirim</span>
-                                                @elseif ($agreementLetter->letter_status === 'Belum Terkirim')
-                                                    <span class="badge bg-warning">Belum Terkirim</span>
-                                                @else
-                                                    <span
-                                                        class="badge bg-secondary">{{ $agreementLetter->letter_status }}</span>
                                                 @endif
                                             </td>
                                             <td class="text-center">

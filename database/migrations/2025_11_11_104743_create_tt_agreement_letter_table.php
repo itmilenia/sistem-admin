@@ -19,7 +19,6 @@ return new class extends Migration
             $table->date('effective_start_date');
             $table->date('effective_end_date');
             $table->string('agreement_letter_path', 512);
-            $table->string('letter_status', 255)->index();
             $table->boolean('is_active');
 
             $table->integer('created_by');

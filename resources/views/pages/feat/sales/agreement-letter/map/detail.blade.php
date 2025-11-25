@@ -58,19 +58,7 @@
                                 {{ \Carbon\Carbon::parse($agreementLetter->effective_end_date)->translatedFormat('d F Y') }}
                             </dd>
 
-                            {{-- Baris 3: Status & File Lampiran --}}
-                            <dt class="col-sm-3">Status Pengiriman Surat</dt>
-                            <dd class="col-sm-9">
-                                <span
-                                    class="badge
-                                    @if ($agreementLetter->letter_status == 'Sudah Terkirim') bg-success
-                                    @elseif ($agreementLetter->letter_status == 'Belum Terkirim') bg-warning
-                                    @else bg-secondary @endif
-                                ">
-                                    {{ $agreementLetter->letter_status }}
-                                </span>
-                            </dd>
-
+                            {{-- Baris 3: File Lampiran --}}
                             <dt class="col-sm-3">Status Berlaku Surat</dt>
                             <dd class="col-sm-9">
                                 @if ($agreementLetter->is_active == 1)

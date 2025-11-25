@@ -129,29 +129,6 @@
                                     </div>
                                 </div>
 
-                                {{-- Field: letter_status (Select) --}}
-                                <div class="row mb-3">
-                                    <label for="letter_status" class="col-sm-3 col-form-label">Status Pengiriman <span
-                                            class="text-danger">*</span></label>
-                                    <div class="col-sm-9">
-                                        <select class="form-select @error('letter_status') is-invalid @enderror"
-                                            id="letter_status" name="letter_status" required>
-                                            {{-- Default ke 'Pending' untuk data baru --}}
-                                            <option value="Belum Terkirim"
-                                                {{ old('letter_status') == 'Belum Terkirim' ? 'selected' : '' }}>Belum
-                                                Terkirim
-                                            </option>
-                                            <option value="Sudah Terkirim"
-                                                {{ old('letter_status') == 'Sudah Terkirim' ? 'selected' : '' }}>Sudah
-                                                Terkirim
-                                            </option>
-                                        </select>
-                                        @error('letter_status')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                </div>
-
                                 {{-- Field: is_active (select) --}}
                                 <div class="row mb-3">
                                     <label for="is_active" class="col-sm-3 col-form-label">Status Berlaku <span
@@ -226,14 +203,6 @@
             $('#sales_name').select2({
                 theme: 'bootstrap-5',
                 placeholder: '-- Pilih Sales --',
-                dropdownParent: $('body'),
-                width: '100%',
-                allowClear: true
-            });
-
-            $('#letter_status').select2({
-                theme: 'bootstrap-5',
-                placeholder: '-- Pilih Status Pengiriman --',
                 dropdownParent: $('body'),
                 width: '100%',
                 allowClear: true
