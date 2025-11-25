@@ -288,7 +288,12 @@ class SalespersonSalesController extends Controller
                 ->where('MFSSM_SalesmanID', $id)
                 ->firstOrFail();
 
-            return view('pages.feat.sales.salesperson-sales.show-milenia', compact('salesperson'));
+            $brands = DB::connection('sqlsrv_wh')->table('MFIB')
+                ->select('MFIB_BrandID', 'MFIB_Description')
+                ->orderBy('MFIB_Description')
+                ->get();
+
+            return view('pages.feat.sales.salesperson-sales.show-milenia', compact('salesperson', 'brands'));
         } catch (\Exception $e) {
             Log::error('Gagal menampilkan detail sales: ' . $e->getMessage(), ['salesman_id' => $id, 'exception' => $e]);
 
@@ -303,7 +308,12 @@ class SalespersonSalesController extends Controller
                 ->where('MFSSM_SalesmanID', $id)
                 ->firstOrFail();
 
-            return view('pages.feat.sales.salesperson-sales.show-milenia-branch', compact('salesperson'));
+            $brands = DB::connection('sqlsrv_wh')->table('MFIB')
+                ->select('MFIB_BrandID', 'MFIB_Description')
+                ->orderBy('MFIB_Description')
+                ->get();
+
+            return view('pages.feat.sales.salesperson-sales.show-milenia-branch', compact('salesperson', 'brands'));
         } catch (\Exception $e) {
             Log::error('Gagal menampilkan detail sales: ' . $e->getMessage(), ['salesman_id' => $id, 'exception' => $e]);
 
@@ -318,7 +328,12 @@ class SalespersonSalesController extends Controller
                 ->where('MFSSM_SalesmanID', $id)
                 ->firstOrFail();
 
-            return view('pages.feat.sales.salesperson-sales.show-map', compact('salesperson'));
+            $brands = DB::connection('sqlsrv_snx')->table('MFIB')
+                ->select('MFIB_BrandID', 'MFIB_Description')
+                ->orderBy('MFIB_Description')
+                ->get();
+
+            return view('pages.feat.sales.salesperson-sales.show-map', compact('salesperson', 'brands'));
         } catch (\Exception $e) {
             Log::error('Gagal menampilkan detail sales: ' . $e->getMessage(), ['salesman_id' => $id, 'exception' => $e]);
 
@@ -332,7 +347,12 @@ class SalespersonSalesController extends Controller
                 ->where('MFSSM_SalesmanID', $id)
                 ->firstOrFail();
 
-            return view('pages.feat.sales.salesperson-sales.show-map-branch', compact('salesperson'));
+            $brands = DB::connection('sqlsrv_snx')->table('MFIB')
+                ->select('MFIB_BrandID', 'MFIB_Description')
+                ->orderBy('MFIB_Description')
+                ->get();
+
+            return view('pages.feat.sales.salesperson-sales.show-map-branch', compact('salesperson', 'brands'));
         } catch (\Exception $e) {
             Log::error('Gagal menampilkan detail sales: ' . $e->getMessage(), ['salesman_id' => $id, 'exception' => $e]);
 
@@ -382,6 +402,10 @@ class SalespersonSalesController extends Controller
                 $query->whereBetween('SOIVD.SOIVD_OrderDate', [$request->start_date, $request->end_date]);
             }
 
+            if ($request->filled('brand_id')) {
+                $query->where('MFIMA.MFIMA_Brand', $request->brand_id);
+            }
+
             $invoiceSub = DB::connection('sqlsrv_wh')->table('SOIVD')
                 ->join('SOIVH', 'SOIVD.SOIVD_InvoiceID', '=', 'SOIVH.SOIVH_InvoiceID')
                 ->select(
@@ -394,6 +418,11 @@ class SalespersonSalesController extends Controller
 
             if ($request->filled('start_date') && $request->filled('end_date')) {
                 $invoiceSub->whereBetween('SOIVD.SOIVD_OrderDate', [$request->start_date, $request->end_date]);
+            }
+
+            if ($request->filled('brand_id')) {
+                $invoiceSub->join('MFIMA', 'SOIVD.SOIVD_ItemID', '=', 'MFIMA.MFIMA_ItemID')
+                    ->where('MFIMA.MFIMA_Brand', $request->brand_id);
             }
 
             $queryForTotal = DB::connection('sqlsrv_wh')
@@ -482,6 +511,10 @@ class SalespersonSalesController extends Controller
                 $query->whereBetween('SOIVD_CABANG.SOIVD_OrderDate', [$request->start_date, $request->end_date]);
             }
 
+            if ($request->filled('brand_id')) {
+                $query->where('MFIMA.MFIMA_Brand', $request->brand_id);
+            }
+
             $invoiceSub = DB::connection('sqlsrv_wh')->table('SOIVD_CABANG')
                 ->join('SOIVH_CABANG', 'SOIVD_CABANG.SOIVD_InvoiceID', '=', 'SOIVH_CABANG.SOIVH_InvoiceID')
                 ->select(
@@ -494,6 +527,11 @@ class SalespersonSalesController extends Controller
 
             if ($request->filled('start_date') && $request->filled('end_date')) {
                 $invoiceSub->whereBetween('SOIVD_CABANG.SOIVD_OrderDate', [$request->start_date, $request->end_date]);
+            }
+
+            if ($request->filled('brand_id')) {
+                $invoiceSub->join('MFIMA', 'SOIVD_CABANG.SOIVD_ItemID', '=', 'MFIMA.MFIMA_ItemID')
+                    ->where('MFIMA.MFIMA_Brand', $request->brand_id);
             }
 
             $queryForTotal = DB::connection('sqlsrv_wh')
@@ -582,6 +620,10 @@ class SalespersonSalesController extends Controller
                 $query->whereBetween('SOIVD.SOIVD_OrderDate', [$request->start_date, $request->end_date]);
             }
 
+            if ($request->filled('brand_id')) {
+                $query->where('MFIMA.MFIMA_Brand', $request->brand_id);
+            }
+
             $invoiceSub = DB::connection('sqlsrv_snx')->table('SOIVD')
                 ->join('SOIVH', 'SOIVD.SOIVD_InvoiceID', '=', 'SOIVH.SOIVH_InvoiceID')
                 ->select(
@@ -594,6 +636,11 @@ class SalespersonSalesController extends Controller
 
             if ($request->filled('start_date') && $request->filled('end_date')) {
                 $invoiceSub->whereBetween('SOIVD.SOIVD_OrderDate', [$request->start_date, $request->end_date]);
+            }
+
+            if ($request->filled('brand_id')) {
+                $invoiceSub->join('MFIMA', 'SOIVD.SOIVD_ItemID', '=', 'MFIMA.MFIMA_ItemID')
+                    ->where('MFIMA.MFIMA_Brand', $request->brand_id);
             }
 
             $queryForTotal = DB::connection('sqlsrv_snx')
@@ -682,6 +729,10 @@ class SalespersonSalesController extends Controller
                 $query->whereBetween('SOIVD_CABANG.SOIVD_OrderDate', [$request->start_date, $request->end_date]);
             }
 
+            if ($request->filled('brand_id')) {
+                $query->where('MFIMA.MFIMA_Brand', $request->brand_id);
+            }
+
             $invoiceSub = DB::connection('sqlsrv_snx')->table('SOIVD_CABANG')
                 ->join('SOIVH_CABANG', 'SOIVD_CABANG.SOIVD_InvoiceID', '=', 'SOIVH_CABANG.SOIVH_InvoiceID')
                 ->select(
@@ -694,6 +745,11 @@ class SalespersonSalesController extends Controller
 
             if ($request->filled('start_date') && $request->filled('end_date')) {
                 $invoiceSub->whereBetween('SOIVD_CABANG.SOIVD_OrderDate', [$request->start_date, $request->end_date]);
+            }
+
+            if ($request->filled('brand_id')) {
+                $invoiceSub->join('MFIMA', 'SOIVD_CABANG.SOIVD_ItemID', '=', 'MFIMA.MFIMA_ItemID')
+                    ->where('MFIMA.MFIMA_Brand', $request->brand_id);
             }
 
             $queryForTotal = DB::connection('sqlsrv_snx')
@@ -844,8 +900,10 @@ class SalespersonSalesController extends Controller
 
         $fileName = "Sales_Report_{$id}_{$startDate}_to_{$endDate}.xlsx";
 
+        $brandId = $request->input('brand_id');
+
         // Panggil dan download file Excel
-        return Excel::download(new SalesByBrandExportMilenia($id, $startDate, $endDate, $salespersonName, $description), $fileName);
+        return Excel::download(new SalesByBrandExportMilenia($id, $startDate, $endDate, $salespersonName, $description, $brandId), $fileName);
     }
 
     public function exportSalesMapByBrand($id, Request $request)
@@ -868,8 +926,10 @@ class SalespersonSalesController extends Controller
 
         $fileName = "Sales_Report_{$id}_{$startDate}_to_{$endDate}.xlsx";
 
+        $brandId = $request->input('brand_id');
+
         // Panggil dan download file Excel
-        return Excel::download(new SalesByBrandExportMap($id, $startDate, $endDate, $salespersonName, $description), $fileName);
+        return Excel::download(new SalesByBrandExportMap($id, $startDate, $endDate, $salespersonName, $description, $brandId), $fileName);
     }
 
     public function exportSalesMileniaBranchByBrand($id, Request $request)
@@ -892,8 +952,10 @@ class SalespersonSalesController extends Controller
 
         $fileName = "Sales_Report_{$id}_{$startDate}_to_{$endDate}.xlsx";
 
+        $brandId = $request->input('brand_id');
+
         // Panggil dan download file Excel
-        return Excel::download(new SalesByBrandExportMileniaBranch($id, $startDate, $endDate, $salespersonName, $description), $fileName);
+        return Excel::download(new SalesByBrandExportMileniaBranch($id, $startDate, $endDate, $salespersonName, $description, $brandId), $fileName);
     }
 
     public function exportSalesMapBranchByBrand($id, Request $request)
@@ -916,7 +978,9 @@ class SalespersonSalesController extends Controller
 
         $fileName = "Sales_Report_{$id}_{$startDate}_to_{$endDate}.xlsx";
 
+        $brandId = $request->input('brand_id');
+
         // Panggil dan download file Excel
-        return Excel::download(new SalesByBrandExportMapBranch($id, $startDate, $endDate, $salespersonName, $description), $fileName);
+        return Excel::download(new SalesByBrandExportMapBranch($id, $startDate, $endDate, $salespersonName, $description, $brandId), $fileName);
     }
 }

@@ -29,15 +29,24 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="row align-items-end">
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <label for="start_date" class="form-label">Tanggal Mulai</label>
                                 <input type="date" id="start_date" class="form-control">
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <label for="end_date" class="form-label">Tanggal Selesai</label>
                                 <input type="date" id="end_date" class="form-control">
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
+                                <label for="brand_id" class="form-label">Brand</label>
+                                <select id="brand_id" class="form-select select2">
+                                    <option value="">Semua Brand</option>
+                                    @foreach ($brands as $brand)
+                                        <option value="{{ $brand->MFIB_BrandID }}">{{ $brand->MFIB_Description }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-3">
                                 <div class="d-flex justify-content-start gap-2">
                                     <button id="resetBtn" class="btn btn-light">Reset</button>
                                     <button id="filterBtn" class="btn btn-primary">Terapkan Filter</button>
@@ -101,6 +110,8 @@
 @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            $('.select2').select2();
+
             let nextCursor = null;
             let prevCursor = null;
             const tableBody = document.getElementById('transactions-data-body');
@@ -113,6 +124,7 @@
 
             const startDateInput = document.getElementById('start_date');
             const endDateInput = document.getElementById('end_date');
+            const brandIdInput = document.getElementById('brand_id');
             const exportBtn = document.getElementById('exportBtn');
 
             function updateExportLink() {
@@ -122,7 +134,8 @@
                 if (startDate && endDate) {
                     const params = new URLSearchParams({
                         start_date: startDate,
-                        end_date: endDate
+                        end_date: endDate,
+                        brand_id: brandIdInput.value
                     });
 
                     const baseUrl =
@@ -142,7 +155,8 @@
                 const params = new URLSearchParams({
                     cursor: cursor ?? '',
                     start_date: startDateInput.value,
-                    end_date: endDateInput.value
+                    end_date: endDateInput.value,
+                    brand_id: brandIdInput.value
                 });
 
                 const url =
@@ -205,12 +219,13 @@
             resetBtn.addEventListener('click', () => {
                 startDateInput.value = '';
                 endDateInput.value = '';
+                $('#brand_id').val('').trigger('change');
                 loadData();
-                updateExportLink();
             });
 
             startDateInput.addEventListener('input', updateExportLink);
             endDateInput.addEventListener('input', updateExportLink);
+            $('#brand_id').on('change', updateExportLink);
         });
     </script>
 @endpush

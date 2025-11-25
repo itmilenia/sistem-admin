@@ -15,14 +15,16 @@ class SalesByBrandExportMileniaBranch implements FromView, ShouldAutoSize
     protected $salesmanId;
     protected $salespersonName;
     protected $description;
+    protected $brandId;
 
-    public function __construct($salesmanId, $startDate, $endDate, $salespersonName, $description)
+    public function __construct($salesmanId, $startDate, $endDate, $salespersonName, $description, $brandId = null)
     {
         $this->salesmanId = $salesmanId;
         $this->startDate = $startDate;
         $this->endDate = $endDate;
         $this->salespersonName = $salespersonName;
         $this->description = $description;
+        $this->brandId = $brandId;
     }
 
     public function view(): View
@@ -37,13 +39,18 @@ class SalesByBrandExportMileniaBranch implements FromView, ShouldAutoSize
             ->join('MFIMA', 'SOIVD_CABANG.SOIVD_ItemID', '=', 'MFIMA.MFIMA_ItemID')
             ->join('MFIB', 'MFIMA.MFIMA_Brand', '=', 'MFIB.MFIB_BrandID')
             ->where('SOIVD_CABANG.SOIVD_SalesmanID', $this->salesmanId)
-            ->whereBetween('SOIVH_CABANG.SOIVH_InvoiceDate', [$this->startDate, $this->endDate])
-            ->select(
-                'MFIB.MFIB_Description as brand_name',
-                DB::raw('YEAR(SOIVH_CABANG.SOIVH_InvoiceDate) as year'),
-                DB::raw('MONTH(SOIVH_CABANG.SOIVH_InvoiceDate) as month'),
-                DB::raw('SUM(SOIVD_CABANG.SOIVD_LineInvoiceAmount) as total_sales')
-            )
+            ->whereBetween('SOIVH_CABANG.SOIVH_InvoiceDate', [$this->startDate, $this->endDate]);
+
+        if ($this->brandId) {
+            $salesData->where('MFIMA.MFIMA_Brand', $this->brandId);
+        }
+
+        $salesData = $salesData->select(
+            'MFIB.MFIB_Description as brand_name',
+            DB::raw('YEAR(SOIVH_CABANG.SOIVH_InvoiceDate) as year'),
+            DB::raw('MONTH(SOIVH_CABANG.SOIVH_InvoiceDate) as month'),
+            DB::raw('SUM(SOIVD_CABANG.SOIVD_LineInvoiceAmount) as total_sales')
+        )
             ->groupBy(
                 'MFIB.MFIB_Description',
                 DB::raw('YEAR(SOIVH_CABANG.SOIVH_InvoiceDate)'),
