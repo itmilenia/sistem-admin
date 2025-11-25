@@ -20,7 +20,7 @@ use App\Http\Controllers\Feat\CustomerTransactionController;
 
 Route::get('/', function () {
     return auth()
-        ? redirect()->route('dashboard')
+        ? redirect()->route('dashboard.home')
         : redirect()->route('login');
 })->name('home');
 
@@ -31,6 +31,7 @@ Route::middleware('guest')->group(function () {
 
 Route::middleware('auth')->group(function () {
     Route::get('/api/milenia-items/search', [QuotationLetterController::class, 'searchMileniaItems'])->name('api.milenia-items.search');
+    Route::get('/api/map-items/search', [QuotationLetterController::class, 'searchMapItems'])->name('api.map-items.search');
 
     Route::prefix('dashboard')->name('dashboard.')->group(function () {
         Route::get('/', [DashboardController::class, 'index'])->name('home');

@@ -48,9 +48,6 @@
                                         <th class="text-center">Perihal</th>
                                         <th class="text-center">Tanggal</th>
                                         <th class="text-center">Penerima</th>
-                                        <th class="text-center">Status</th>
-                                        <th class="text-center">Lampiran</th>
-                                        {{-- Lebar kolom disesuaikan untuk 3 tombol --}}
                                         <th style="width: 20%;" class="text-center">Aksi</th>
                                     </tr>
                                 </thead>
@@ -64,33 +61,19 @@
                                             <td class="text-center">
                                                 {{ \Carbon\Carbon::parse($quotationLetter->letter_date)->translatedFormat('d M Y') }}
                                             </td>
-                                            <td class="text-center">{{ $quotationLetter->recipient }}</td>
-                                            <td class="text-center">
-                                                @if ($quotationLetter->letter_status === 'Sudah Terkirim')
-                                                    <span class="badge bg-success">Sudah Terkirim</span>
-                                                @elseif ($quotationLetter->letter_status === 'Belum Terkirim')
-                                                    <span class="badge bg-warning">Belum Terkirim</span>
-                                                @else
-                                                    <span
-                                                        class="badge bg-secondary">{{ $quotationLetter->letter_status }}</span>
-                                                @endif
-                                            </td>
-                                            <td class="text-center">
-                                                @if ($quotationLetter->quotation_letter_file)
-                                                    <a href="{{ Storage::url($quotationLetter->quotation_letter_file) }}"
-                                                        target="_blank" class="btn btn-sm btn-primary">
-                                                        <i class="feather-file-text me-2"></i> Lihat Lampiran
-                                                    </a>
-                                                @else
-                                                    <span class="text-muted">Tidak ada file</span>
-                                                @endif
-                                            </td>
+                                            <td class="text-center">{{ $quotationLetter->recipient_company_name }}</td>
                                             <td class="text-center">
                                                 <div class="hstack gap-2 justify-content-center">
                                                     {{-- Tombol Lihat --}}
                                                     <a href="{{ route('quotation-letter.map.show', $quotationLetter->id) }}"
                                                         class="btn btn-sm btn-info">
                                                         <i class="feather-eye me-2"></i> Lihat
+                                                    </a>
+
+                                                    {{-- Tombol Cetak PDF --}}
+                                                    <a href="{{ route('quotation-letter.export-pdf', $quotationLetter->id) }}"
+                                                        class="btn btn-sm btn-primary" target="_blank">
+                                                        <i class="feather-printer me-2"></i> Cetak PDF
                                                     </a>
 
                                                     {{-- Tombol Edit --}}

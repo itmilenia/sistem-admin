@@ -106,7 +106,12 @@ class QuotationLetterController extends Controller
 
     public function showMap($id)
     {
-        $quotationLetter = QuotationLetter::findOrFail($id);
+        $quotationLetter = QuotationLetter::with([
+            'details.itemMap',
+            'creator',
+            'updater',
+            'signer'
+        ])->findOrFail($id);
 
         // Cek permission sesuai tipe surat
         $this->authorizeLetterAction($quotationLetter, 'lihat');
@@ -116,25 +121,51 @@ class QuotationLetterController extends Controller
 
     public function createMap()
     {
-        return view('pages.feat.sales.quotation-letter.map.create');
+        $users = User::orderBy('Nama')->where('Aktif', 1)->get();
+        $activeTax = Tax::where('is_active', 1)->first();
+        $taxRate = $activeTax ? $activeTax->tax_rate : 0;
+
+        return view('pages.feat.sales.quotation-letter.map.create', compact('users', 'taxRate'));
     }
 
     public function editMap($id)
     {
-        $quotationLetter = QuotationLetter::findOrFail($id);
+        $quotationLetter = QuotationLetter::with([
+            'details.itemMap',
+            'details.pricelistMap',
+            'creator',
+            'signer'
+        ])->findOrFail($id);
+
+        $users = User::orderBy('Nama')->where('Aktif', 1)->get();
+        $activeTax = Tax::where('is_active', 1)->first();
+        $taxRate = $activeTax ? $activeTax->tax_rate : 0;
 
         // Cek permission sesuai tipe surat
         $this->authorizeLetterAction($quotationLetter, 'ubah');
 
-        return view('pages.feat.sales.quotation-letter.map.edit', compact('quotationLetter'));
+        return view('pages.feat.sales.quotation-letter.map.edit', compact('quotationLetter', 'users', 'taxRate'));
     }
 
     public function exportPdf($id)
     {
-        $quotationLetter = QuotationLetter::with([
-            'details.itemMilenia',
-            'signer'
-        ])->findOrFail($id);
+        $quotationLetter = QuotationLetter::findOrFail($id);
+
+        if ($quotationLetter->letter_type == 'Map') {
+            $quotationLetter->load([
+                'details.itemMap',
+                'details.pricelistMap',
+                'creator',
+                'signer'
+            ]);
+        } else {
+            $quotationLetter->load([
+                'details.itemMilenia',
+                'details.pricelistMilenia',
+                'creator',
+                'signer'
+            ]);
+        }
 
         $this->authorizeLetterAction($quotationLetter, 'lihat');
 
@@ -142,7 +173,12 @@ class QuotationLetterController extends Controller
         $activeTax = Tax::where('is_active', 1)->first();
         $taxRate = $activeTax ? $activeTax->tax_rate : 11;
 
-        $pdf = Pdf::loadView('pdf.quotation_letter_milenia', compact('quotationLetter', 'taxRate'));
+        if ($quotationLetter->letter_type == 'Milenia') {
+            $pdf = Pdf::loadView('pdf.quotation_letter_milenia', compact('quotationLetter', 'taxRate'));
+        } else {
+            $pdf = Pdf::loadView('pdf.quotation_letter_map', compact('quotationLetter', 'taxRate'));
+        }
+
         $pdf->setPaper('A4', 'portrait');
 
         return $pdf->stream('Penawaran-' . $quotationLetter->subject . '.pdf');

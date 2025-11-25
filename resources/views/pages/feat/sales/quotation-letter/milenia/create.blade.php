@@ -127,12 +127,18 @@
                                         <label class="form-label">Perihal <span class="text-danger">*</span></label>
                                         <input type="text" class="form-control @error('subject') is-invalid @enderror"
                                             name="subject" value="{{ old('subject', 'Surat Penawaran Harga') }}" required>
+                                        @error('subject')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
                                     </div>
 
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label">Tipe Surat</label>
                                         <input type="text" class="form-control" name="letter_type" value="Milenia"
                                             readonly>
+                                        @error('letter_type')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
                                     </div>
                                 </div>
                             </fieldset>
