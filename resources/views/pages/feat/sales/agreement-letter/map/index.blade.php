@@ -70,7 +70,7 @@
                                             </td>
                                             <td class="text-center">
                                                 @if ($agreementLetter->agreement_letter_path)
-                                                    <a href="{{ Storage::url($agreementLetter->agreement_letter_path) }}"
+                                                    <a href="{{ asset('storage/' . $agreementLetter->agreement_letter_path) }}"
                                                         target="_blank" class="btn btn-sm btn-primary">
                                                         <i class="feather-file-text me-2"></i> Lihat Lampiran
                                                     </a>

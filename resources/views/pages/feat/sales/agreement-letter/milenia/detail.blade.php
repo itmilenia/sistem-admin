@@ -30,7 +30,7 @@
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h5 class="card-title"><i class="feather-file-text me-2"></i>Informasi Surat Agreement</h5>
                         @if ($agreementLetter->agreement_letter_path)
-                            <a href="{{ Storage::url($agreementLetter->agreement_letter_path) }}" target="_blank"
+                            <a href="{{ asset('storage/' . $agreementLetter->agreement_letter_path) }}" target="_blank"
                                 class="btn btn-primary btn-sm">
                                 <i class="feather-download me-2"></i> Unduh Lampiran
                             </a>
@@ -71,7 +71,7 @@
                             <dt class="col-sm-3">File Lampiran</dt>
                             <dd class="col-sm-9">
                                 @if ($agreementLetter->agreement_letter_path)
-                                    <a href="{{ Storage::url($agreementLetter->agreement_letter_path) }}" target="_blank">
+                                    <a href="{{ asset('storage/' . $agreementLetter->agreement_letter_path) }}" target="_blank">
                                         {{-- Menampilkan nama file saja --}}
                                         {{ basename($agreementLetter->agreement_letter_path) }}
                                     </a>

@@ -31,7 +31,7 @@
                         <h5 class="card-title"><i class="feather-file-text me-2"></i>Header Surat</h5>
                         {{-- Tombol Download File Asli (Jika ada file hasil generate/upload) --}}
                         @if ($quotationLetter->quotation_letter_file)
-                            <a href="{{ Storage::url($quotationLetter->quotation_letter_file) }}" target="_blank"
+                            <a href="{{ asset('storage/' . $quotationLetter->quotation_letter_file) }}" target="_blank"
                                 class="btn btn-primary btn-sm">
                                 <i class="feather-download me-2"></i> Unduh File
                             </a>
@@ -185,7 +185,7 @@
                                 <div class="border rounded p-2 bg-light d-inline-block"
                                     style="min-width: 200px; min-height: 120px;">
                                     @if ($quotationLetter->signature_path)
-                                        <img src="{{ Storage::url($quotationLetter->signature_path) }}"
+                                        <img src="{{ asset('storage/' . $quotationLetter->signature_path) }}"
                                             alt="Tanda Tangan" class="img-fluid" style="max-height: 150px;">
                                     @else
                                         <div

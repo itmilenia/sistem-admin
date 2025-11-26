@@ -177,7 +177,7 @@
                                         @if ($agreementLetter->agreement_letter_path)
                                             <div class="mt-2">
                                                 File saat ini:
-                                                <a href="{{ Storage::url($agreementLetter->agreement_letter_path) }}"
+                                                <a href="{{ asset('storage/' . $agreementLetter->agreement_letter_path) }}"
                                                     target="_blank">
                                                     <i class="feather-file-text me-1"></i>
                                                     {{ basename($agreementLetter->agreement_letter_path) }}

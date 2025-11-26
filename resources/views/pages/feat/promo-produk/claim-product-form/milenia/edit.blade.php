@@ -297,7 +297,7 @@
                                                                                 <i
                                                                                     class="feather-video text-danger fs-2"></i>
                                                                             </div>
-                                                                            <a href="{{ Storage::url($productImage) }}"
+                                                                            <a href="{{ asset('storage/' . $productImage) }}"
                                                                                 target="_blank"
                                                                                 class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center text-decoration-none"
                                                                                 style="background: rgba(0,0,0,0.1); opacity: 0; transition: opacity 0.2s;"
@@ -309,10 +309,10 @@
                                                                             <div class="mt-1 badge bg-info"
                                                                                 style="font-size: 8px;">VIDEO</div>
                                                                         @else
-                                                                            <a href="{{ Storage::url($productImage) }}"
+                                                                            <a href="{{ asset('storage/' . $productImage) }}"
                                                                                 target="_blank"
                                                                                 class="d-block w-100 h-100">
-                                                                                <img src="{{ Storage::url($productImage) }}"
+                                                                                <img src="{{ asset('storage/' . $productImage) }}"
                                                                                     alt="Preview"
                                                                                     class="img-thumbnail w-100 h-100"
                                                                                     style="object-fit: cover;">

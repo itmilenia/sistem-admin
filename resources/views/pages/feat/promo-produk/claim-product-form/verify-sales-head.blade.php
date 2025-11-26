@@ -115,14 +115,14 @@
                                                 @if ($detail->product_image)
                                                     @if ($isVideo)
                                                         <video width="150" height="100" controls>
-                                                            <source src="{{ Storage::url($detail->product_image) }}"
+                                                            <source src="{{ asset('storage/' . $detail->product_image) }}"
                                                                 type="video/{{ $extension == 'mov' ? 'quicktime' : $extension }}">
                                                             Your browser does not support the video tag.
                                                         </video>
                                                     @else
-                                                        <a href="{{ Storage::url($detail->product_image) }}"
+                                                        <a href="{{ asset('storage/' . $detail->product_image) }}"
                                                             target="_blank" title="Klik untuk perbesar">
-                                                            <img src="{{ Storage::url($detail->product_image) }}"
+                                                            <img src="{{ asset('storage/' . $detail->product_image) }}"
                                                                 alt="Gambar Produk" class="img-thumbnail"
                                                                 style="width: 80px; height: 80px;">
                                                         </a>

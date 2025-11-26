@@ -396,7 +396,7 @@
                                             <p class="mb-1 small fw-bold">Tanda Tangan Saat Ini:</p>
                                             <div class="current-signature-box">
                                                 @if ($quotationLetter->signature_path)
-                                                    <img src="{{ Storage::url($quotationLetter->signature_path) }}"
+                                                    <img src="{{ asset('storage/' . $quotationLetter->signature_path) }}"
                                                         alt="Signature" style="max-height: 80px;">
                                                 @else
                                                     <span class="text-muted small fst-italic">- Belum ada tanda tangan

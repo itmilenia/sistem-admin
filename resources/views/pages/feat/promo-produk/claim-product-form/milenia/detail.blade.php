@@ -96,7 +96,7 @@
                             <div class="col-4">
                                 <h6>Checker</h6>
                                 @if ($claim->checker_signature_path)
-                                    <img src="{{ Storage::url($claim->checker_signature_path) }}" alt="TTD Checker"
+                                    <img src="{{ asset('storage/' . $claim->checker_signature_path) }}" alt="TTD Checker"
                                         class="img-thumbnail" style="max-height: 150px;">
                                 @else
                                     <div class="p-3 border rounded bg-light text-muted"
@@ -109,7 +109,7 @@
                             <div class="col-4">
                                 <h6>Sales</h6>
                                 @if ($claim->sales_signature_path)
-                                    <img src="{{ Storage::url($claim->sales_signature_path) }}" alt="TTD Sales"
+                                    <img src="{{ asset('storage/' . $claim->sales_signature_path) }}" alt="TTD Sales"
                                         class="img-thumbnail" style="max-height: 150px;">
                                 @else
                                     <div class="p-3 border rounded bg-light text-muted"
@@ -122,7 +122,7 @@
                             <div class="col-4">
                                 <h6>Sales Head</h6>
                                 @if ($claim->sales_head_signature_path)
-                                    <img src="{{ Storage::url($claim->sales_head_signature_path) }}" alt="TTD Sales Head"
+                                    <img src="{{ asset('storage/' . $claim->sales_head_signature_path) }}" alt="TTD Sales Head"
                                         class="img-thumbnail" style="max-height: 150px;">
                                 @else
                                     <div class="p-3 border rounded bg-light text-muted"
@@ -183,14 +183,14 @@
                                                 @if ($detail->product_image)
                                                     @if ($isVideo)
                                                         <video width="150" height="100" controls>
-                                                            <source src="{{ Storage::url($detail->product_image) }}"
+                                                            <source src="{{ asset('storage/' . $detail->product_image) }}"
                                                                 type="video/{{ $extension == 'mov' ? 'quicktime' : $extension }}">
                                                             Your browser does not support the video tag.
                                                         </video>
                                                     @else
-                                                        <a href="{{ Storage::url($detail->product_image) }}"
+                                                        <a href="{{ asset('storage/' . $detail->product_image) }}"
                                                             target="_blank" title="Klik untuk perbesar">
-                                                            <img src="{{ Storage::url($detail->product_image) }}"
+                                                            <img src="{{ asset('storage/' . $detail->product_image) }}"
                                                                 alt="Gambar Produk" class="img-thumbnail"
                                                                 style="width: 80px; height: 80px;">
                                                         </a>

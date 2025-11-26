@@ -261,7 +261,7 @@
                                         @if ($promotionProgram->program_file)
                                             <div class="mt-2 form-text">
                                                 File saat ini:
-                                                <a href="{{ Storage::url($promotionProgram->program_file) }}"
+                                                <a href="{{ asset('storage/' . $promotionProgram->program_file) }}"
                                                     target="_blank" class="current-file-link">
                                                     <i class="feather-file-text me-1"></i>
                                                     {{ basename($promotionProgram->program_file) }}

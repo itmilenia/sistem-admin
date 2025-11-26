@@ -50,7 +50,7 @@
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h5 class="card-title"><i class="feather-award me-2"></i>Informasi Program Promosi</h5>
                         @if ($promotionProgram->program_file)
-                            <a href="{{ Storage::url($promotionProgram->program_file) }}" target="_blank"
+                            <a href="{{ asset('storage/' . $promotionProgram->program_file) }}" target="_blank"
                                 class="btn btn-primary btn-sm">
                                 <i class="feather-download me-2"></i> Unduh Lampiran
                             </a>
@@ -94,7 +94,7 @@
                             <dt class="col-sm-3">File Lampiran</dt>
                             <dd class="col-sm-9">
                                 @if ($promotionProgram->program_file)
-                                    <a href="{{ Storage::url($promotionProgram->program_file) }}" target="_blank">
+                                    <a href="{{ asset('storage/' . $promotionProgram->program_file) }}" target="_blank">
                                         {{-- Menampilkan nama file saja --}}
                                         {{ basename($promotionProgram->program_file) }}
                                     </a>
@@ -151,17 +151,17 @@
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <h5 class="card-title"><i class="feather-file-text me-2"></i>Tampilan Lampiran</h5>
                             {{-- Tombol unduh di sini juga untuk akses mudah --}}
-                            <a href="{{ Storage::url($promotionProgram->program_file) }}" target="_blank"
+                            <a href="{{ asset('storage/' . $promotionProgram->program_file) }}" target="_blank"
                                 class="btn btn-primary btn-sm">
                                 <i class="feather-download me-2"></i> Unduh / Buka di Tab Baru
                             </a>
                         </div>
                         <div class="card-body p-0" style="height: 800px; overflow: hidden;">
-                            <iframe src="{{ Storage::url($promotionProgram->program_file) }}" width="100%" height="100%"
+                            <iframe src="{{ asset('storage/' . $promotionProgram->program_file) }}" width="100%" height="100%"
                                 style="border: none;" title="Tampilan PDF Program Promosi">
                                 <p class="p-3 text-muted">
                                     Browser Anda tidak mendukung tampilan PDF inline.
-                                    Silakan <a href="{{ Storage::url($promotionProgram->program_file) }}"
+                                    Silakan <a href="{{ asset('storage/' . $promotionProgram->program_file) }}"
                                         target="_blank">unduh file</a> untuk melihatnya.
                                 </p>
                             </iframe>

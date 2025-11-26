@@ -85,7 +85,7 @@
                                             </td>
                                             <td class="text-center">
                                                 @if ($program->program_file)
-                                                    <a href="{{ Storage::url($program->program_file) }}" target="_blank"
+                                                    <a href="{{ asset('storage/' . $program->program_file) }}" target="_blank"
                                                         class="btn btn-sm btn-primary">
                                                         <i class="feather-file-text me-2"></i> Lihat
                                                     </a>
