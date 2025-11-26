@@ -14,10 +14,12 @@
             border-radius: 0.25rem;
             background-color: #ffffff;
         }
+
         #signature-pad {
             width: 100%;
             height: 100%;
         }
+
         .signature-error {
             color: #dc3545;
             font-size: 0.875em;
@@ -88,7 +90,7 @@
                                     <tr>
                                         <th>No. Invoice</th>
                                         <th>Produk</th>
-                                        <th>Gambar</th>
+                                        <th>Gambar/Video</th>
                                         <th class="text-center">Qty</th>
                                         <th>Alasan Retur</th>
                                     </tr>
@@ -99,13 +101,32 @@
                                             <td>{{ $detail->invoice_id }}</td>
                                             <td>{{ $products[$detail->product_id]->MFIMA_Description ?? 'N/A' }}</td>
                                             <td class="text-center" style="width: 100px;">
+                                                @php
+                                                    $extension = $detail->product_image
+                                                        ? pathinfo($detail->product_image, PATHINFO_EXTENSION)
+                                                        : '';
+                                                    $isVideo = in_array(strtolower($extension), [
+                                                        'mp4',
+                                                        'mov',
+                                                        'avi',
+                                                        'wmv',
+                                                    ]);
+                                                @endphp
                                                 @if ($detail->product_image)
-                                                    <a href="{{ Storage::url($detail->product_image) }}" target="_blank"
-                                                        title="Klik untuk perbesar">
-                                                        <img src="{{ Storage::url($detail->product_image) }}"
-                                                            alt="Gambar Produk" class="img-thumbnail"
-                                                            style="width: 80px; height: 80px;">
-                                                    </a>
+                                                    @if ($isVideo)
+                                                        <video width="150" height="100" controls>
+                                                            <source src="{{ Storage::url($detail->product_image) }}"
+                                                                type="video/{{ $extension == 'mov' ? 'quicktime' : $extension }}">
+                                                            Your browser does not support the video tag.
+                                                        </video>
+                                                    @else
+                                                        <a href="{{ Storage::url($detail->product_image) }}"
+                                                            target="_blank" title="Klik untuk perbesar">
+                                                            <img src="{{ Storage::url($detail->product_image) }}"
+                                                                alt="Gambar Produk" class="img-thumbnail"
+                                                                style="width: 80px; height: 80px;">
+                                                        </a>
+                                                    @endif
                                                 @else
                                                     <span class="text-muted">—</span>
                                                 @endif
@@ -135,7 +156,8 @@
                     <div class="card-body">
                         {{-- 5. Ubah Form Action dan ID Form --}}
                         <form id="sales-head-signature-form"
-                            action="{{ route('product-claim-form.sales-head-signature.store', $claim->id) }}" method="POST">
+                            action="{{ route('product-claim-form.sales-head-signature.store', $claim->id) }}"
+                            method="POST">
                             @csrf
 
                             {{-- 6. Ubah Input Tersembunyi --}}

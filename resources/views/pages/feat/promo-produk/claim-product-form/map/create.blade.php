@@ -191,17 +191,17 @@
                                     <table class="table table-bordered" style="min-width: 100%; table-layout: fixed;">
                                         <thead class="table-light">
                                             <tr>
-                                                <th style="width: 15%;">No. Invoice <span class="text-danger">*</span>
+                                                <th class="text-center" style="width: 15%;">No. Invoice <span class="text-danger">*</span>
                                                 </th>
-                                                <th style="width: 20%;">Produk <span class="text-danger">*</span></th>
-                                                <th style="width: 10%;">Gambar</th>
-                                                <th style="width: 8%;">Qty <span class="text-danger">*</span></th>
-                                                <th style="width: 12%;">Tgl. Order <span class="text-danger">*</span></th>
-                                                <th style="width: 12%;">Tgl. Terima <span class="text-danger">*</span>
+                                                <th class="text-center" style="width: 20%;">Produk <span class="text-danger">*</span></th>
+                                                <th class="text-center" style="width: 10%;">Gambar/Video</th>
+                                                <th class="text-center" style="width: 8%;">Qty <span class="text-danger">*</span></th>
+                                                <th class="text-center" style="width: 12%;">Tgl. Order <span class="text-danger">*</span></th>
+                                                <th class="text-center" style="width: 12%;">Tgl. Terima <span class="text-danger">*</span>
                                                 </th>
-                                                <th style="width: 18%;">Alasan Retur <span class="text-danger">*</span>
+                                                <th class="text-center" style="width: 18%;">Alasan Retur <span class="text-danger">*</span>
                                                 </th>
-                                                <th style="width: 5%;" class="text-center">#</th>
+                                                <th class="text-center" style="width: 5%;">#</th>
                                             </tr>
                                         </thead>
                                         <tbody id="product-details-tbody">
@@ -230,7 +230,8 @@
                                                         <td>
                                                             <input type="file"
                                                                 name="details[{{ $i }}][product_image]"
-                                                                class="form-control" accept=".jpg,.jpeg,.png">
+                                                                class="form-control"
+                                                                accept=".jpg,.jpeg,.png,.mp4,.mov,.avi,.wmv">
                                                         </td>
                                                         <td><input type="number"
                                                                 name="details[{{ $i }}][quantity]"
@@ -326,7 +327,7 @@
             </td>
             <td>
                 <input type="file" name="details[__INDEX__][product_image]" class="form-control"
-                    accept=".jpg,.jpeg,.png">
+                    accept=".jpg,.jpeg,.png,.mp4,.mov,.avi,.wmv">
             </td>
             <td><input type="number" name="details[__INDEX__][quantity]" class="form-control" min="1" required>
             </td>

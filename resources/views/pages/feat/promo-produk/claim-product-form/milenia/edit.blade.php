@@ -188,15 +188,15 @@
                                     <table class="table table-bordered" style="min-width: 100%; table-layout: fixed;">
                                         <thead class="table-light">
                                             <tr>
-                                                <th style="width: 15%;">No. Invoice <span class="text-danger">*</span>
+                                                <th class="text-center" style="width: 15%;">No. Invoice <span class="text-danger">*</span>
                                                 </th>
-                                                <th style="width: 20%;">Produk <span class="text-danger">*</span></th>
-                                                <th style="width: 10%;">Gambar</th>
-                                                <th style="width: 8%;">Qty <span class="text-danger">*</span></th>
-                                                <th style="width: 12%;">Tgl. Order <span class="text-danger">*</span></th>
-                                                <th style="width: 12%;">Tgl. Terima <span class="text-danger">*</span>
+                                                <th class="text-center" style="width: 20%;">Produk <span class="text-danger">*</span></th>
+                                                <th class="text-center" style="width: 10%;">Gambar/Video</th>
+                                                <th class="text-center" style="width: 8%;">Qty <span class="text-danger">*</span></th>
+                                                <th class="text-center" style="width: 12%;">Tgl. Order <span class="text-danger">*</span></th>
+                                                <th class="text-center" style="width: 12%;">Tgl. Terima <span class="text-danger">*</span>
                                                 </th>
-                                                <th style="width: 18%;">Alasan Retur <span class="text-danger">*</span>
+                                                <th class="text-center" style="width: 18%;">Alasan Retur <span class="text-danger">*</span>
                                                 </th>
                                                 <th style="width: 5%;" class="text-center">#</th>
                                             </tr>
@@ -251,21 +251,66 @@
                                                             </select>
                                                         </td>
                                                         <td class="text-center">
-                                                            @if ($productImage)
-                                                                <a href="{{ Storage::url($productImage) }}"
-                                                                    target="_blank">
-                                                                    <img src="{{ Storage::url($productImage) }}"
-                                                                        alt="Gambar Produk" class="img-thumbnail"
-                                                                        style="max-width: 100px; max-height: 100px;">
-                                                                </a>
-                                                            @endif
-                                                            <input type="file"
-                                                                name="details[{{ $i }}][product_image]"
-                                                                class="form-control form-control-sm mt-1"
-                                                                accept=".jpg,.jpeg,.png">
-                                                            <input type="hidden"
-                                                                name="details[{{ $i }}][old_product_image]"
-                                                                value="{{ $productImage }}">
+                                                            @php
+                                                                $extension = $productImage
+                                                                    ? pathinfo($productImage, PATHINFO_EXTENSION)
+                                                                    : '';
+                                                                $isVideo = in_array(strtolower($extension), [
+                                                                    'mp4',
+                                                                    'mov',
+                                                                    'avi',
+                                                                    'wmv',
+                                                                ]);
+                                                            @endphp
+
+                                                            <div class="d-flex flex-column align-items-center">
+                                                                @if ($productImage)
+                                                                    <div class="mb-2 position-relative"
+                                                                        style="width: 80px; height: 80px;">
+                                                                        @if ($isVideo)
+                                                                            <div
+                                                                                class="w-100 h-100 bg-light border rounded d-flex align-items-center justify-content-center">
+                                                                                <i
+                                                                                    class="feather-video text-danger fs-2"></i>
+                                                                            </div>
+                                                                            <a href="{{ Storage::url($productImage) }}"
+                                                                                target="_blank"
+                                                                                class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center text-decoration-none"
+                                                                                style="background: rgba(0,0,0,0.1); opacity: 0; transition: opacity 0.2s;"
+                                                                                onmouseover="this.style.opacity=1"
+                                                                                onmouseout="this.style.opacity=0">
+                                                                                <i
+                                                                                    class="feather-play-circle text-white fs-1"></i>
+                                                                            </a>
+                                                                            <div class="mt-1 badge bg-info"
+                                                                                style="font-size: 8px;">VIDEO</div>
+                                                                        @else
+                                                                            <a href="{{ Storage::url($productImage) }}"
+                                                                                target="_blank"
+                                                                                class="d-block w-100 h-100">
+                                                                                <img src="{{ Storage::url($productImage) }}"
+                                                                                    alt="Preview"
+                                                                                    class="img-thumbnail w-100 h-100"
+                                                                                    style="object-fit: cover;">
+                                                                            </a>
+                                                                        @endif
+                                                                    </div>
+                                                                @else
+                                                                    <div class="mb-2 d-flex align-items-center justify-content-center bg-light border rounded text-muted"
+                                                                        style="width: 80px; height: 80px;">
+                                                                        <small>No File</small>
+                                                                    </div>
+                                                                @endif
+
+                                                                <input type="file"
+                                                                    name="details[{{ $i }}][product_image]"
+                                                                    class="form-control form-control-sm"
+                                                                    style="font-size: 0.7rem; width: 120px;"
+                                                                    accept=".jpg,.jpeg,.png,.mp4,.mov,.avi,.wmv">
+                                                                <input type="hidden"
+                                                                    name="details[{{ $i }}][old_product_image]"
+                                                                    value="{{ $productImage }}">
+                                                            </div>
                                                         </td>
                                                         <td><input type="number"
                                                                 name="details[{{ $i }}][quantity]"
@@ -325,7 +370,7 @@
             </td>
             <td>
                 <input type="file" name="details[__INDEX__][product_image]" class="form-control"
-                    accept=".jpg,.jpeg,.png">
+                    accept=".jpg,.jpeg,.png,.mp4,.mov,.avi,.wmv">
             </td>
             <td><input type="number" name="details[__INDEX__][quantity]" class="form-control" min="1" required>
             </td>

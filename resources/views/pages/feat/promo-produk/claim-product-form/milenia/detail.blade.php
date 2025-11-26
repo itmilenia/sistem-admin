@@ -147,14 +147,14 @@
                             <table class="table table-hover table-bordered mb-0" style="width:100%">
                                 <thead class="bg-light">
                                     <tr>
-                                        <th class="text-center">#</th>
-                                        <th>No. Invoice</th>
-                                        <th>Produk</th>
-                                        <th>Gambar</th>
-                                        <th class="text-center">Qty</th>
-                                        <th>Tgl. Order</th>
-                                        <th>Tgl. Pengiriman</th>
-                                        <th>Alasan Retur</th>
+                                        <th class="text-center align-middle">#</th>
+                                        <th class="text-center align-middle">No. Invoice</th>
+                                        <th class="text-center align-middle">Produk</th>
+                                        <th class="text-center align-middle">Gambar/Video</th>
+                                        <th class="text-center align-middle">Qty</th>
+                                        <th class="text-center align-middle">Tgl. Order</th>
+                                        <th class="text-center align-middle">Tgl. Pengiriman</th>
+                                        <th class="text-center align-middle">Alasan Retur</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -166,13 +166,32 @@
                                                 {{ $products[$detail->product_id]->MFIMA_Description ?? 'N/A (ID: ' . $detail->product_id . ')' }}
                                             </td>
                                             <td class="text-center" style="width: 100px;">
+                                                @php
+                                                    $extension = $detail->product_image
+                                                        ? pathinfo($detail->product_image, PATHINFO_EXTENSION)
+                                                        : '';
+                                                    $isVideo = in_array(strtolower($extension), [
+                                                        'mp4',
+                                                        'mov',
+                                                        'avi',
+                                                        'wmv',
+                                                    ]);
+                                                @endphp
                                                 @if ($detail->product_image)
-                                                    <a href="{{ Storage::url($detail->product_image) }}" target="_blank"
-                                                        title="Klik untuk perbesar">
-                                                        <img src="{{ Storage::url($detail->product_image) }}"
-                                                            alt="Gambar Produk" class="img-thumbnail"
-                                                            style="width: 80px; height: 80px;">
-                                                    </a>
+                                                    @if ($isVideo)
+                                                        <video width="150" height="100" controls>
+                                                            <source src="{{ Storage::url($detail->product_image) }}"
+                                                                type="video/{{ $extension == 'mov' ? 'quicktime' : $extension }}">
+                                                            Your browser does not support the video tag.
+                                                        </video>
+                                                    @else
+                                                        <a href="{{ Storage::url($detail->product_image) }}"
+                                                            target="_blank" title="Klik untuk perbesar">
+                                                            <img src="{{ Storage::url($detail->product_image) }}"
+                                                                alt="Gambar Produk" class="img-thumbnail"
+                                                                style="width: 80px; height: 80px;">
+                                                        </a>
+                                                    @endif
                                                 @else
                                                     <span class="text-muted">—</span>
                                                 @endif
@@ -186,7 +205,8 @@
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="7" class="text-center text-muted">Tidak ada detail produk untuk
+                                            <td colspan="7" class="text-center text-muted">Tidak ada detail produk
+                                                untuk
                                                 klaim ini.</td>
                                         </tr>
                                     @endforelse

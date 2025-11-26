@@ -30,7 +30,7 @@ class StoreClaimProductRequest extends FormRequest
             // Validasi lintas database (dicek manual di bawah)
             'details.*.product_id' => 'required|string',
 
-            'details.*.product_image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'details.*.product_image' => 'nullable|file|mimes:jpg,jpeg,png,mp4,mov,avi,wmv|max:10240',
 
             'details.*.quantity' => 'required|integer|min:1',
             'details.*.order_date' => 'required|date',
