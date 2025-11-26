@@ -224,18 +224,18 @@
                 @php $minRows = 4; @endphp
                 @forelse ($claim->claimDetails as $detail)
                     <tr>
-                        <td class="nowrap">{{ $detail->product_id }}</td>
-                        <td>{{ $products[$detail->product_id]->MFIMA_Description ?? 'N/A' }}</td>
-                        <td class="text-center nowrap">{{ $detail->quantity }}
+                        <td class="nowrap" style="vertical-align: middle;">{{ $detail->product_id }}</td>
+                        <td style="vertical-align: middle;">{{ $products[$detail->product_id]->MFIMA_Description ?? 'N/A' }}</td>
+                        <td class="text-center nowrap" style="vertical-align: middle;">{{ $detail->quantity }}
                             {{ $products[$detail->product_id]->MFIMA_InvUM }}</td>
-                        <td class="nowrap text-center">{{ $detail->invoice_id }}</td>
-                        <td class="nowrap">
+                        <td class="nowrap text-center" style="vertical-align: middle;">{{ $detail->invoice_id }}</td>
+                        <td class="nowrap" style="vertical-align: middle; text-align: center;">
                             {{ $detail->order_date ? \Carbon\Carbon::parse($detail->order_date)->format('d-m-Y') : '-' }}
                         </td>
-                        <td class="nowrap">
+                        <td class="nowrap" style="vertical-align: middle; text-align: center;">
                             {{ $detail->delivery_date ? \Carbon\Carbon::parse($detail->delivery_date)->format('d-m-Y') : '-' }}
                         </td>
-                        <td>{{ $detail->return_reason }}</td>
+                        <td style="vertical-align: middle;">{{ $detail->return_reason }}</td>
                     </tr>
                 @empty
                     <tr>

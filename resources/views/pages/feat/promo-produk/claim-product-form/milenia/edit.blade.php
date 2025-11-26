@@ -11,6 +11,18 @@
         .table-responsive .btn {
             white-space: nowrap;
         }
+
+        /* Custom width for Select2 to handle long text */
+        .select2-container .select2-selection--single {
+            height: 38px !important;
+        }
+
+        .select2-container--bootstrap-5 .select2-selection--single .select2-selection__rendered {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+        }
     </style>
 @endpush
 
@@ -146,6 +158,18 @@
                                 </div>
                             </fieldset>
 
+                            {{-- Section: Cari Invoice --}}
+                            <fieldset class="mb-4 p-3 border rounded-3">
+                                <legend class="float-none w-auto px-2 fs-6 fw-bold">Cari Produk via Invoice</legend>
+                                <div class="input-group mb-3">
+                                    <input type="text" class="form-control" id="invoice_search"
+                                        placeholder="Masukkan Nomor Invoice (Contoh: INV...)">
+                                    <button class="btn btn-primary" type="button" id="btn-search-invoice">
+                                        <i class="feather-search me-2"></i>Cari Invoice
+                                    </button>
+                                </div>
+                            </fieldset>
+
                             {{-- Section 2: Detail Produk Klaim (Dinamis) --}}
                             <fieldset class="mb-4 p-3 border rounded-3">
                                 <legend class="float-none w-auto px-2 fs-6 fw-bold">Detail Produk Klaim</legend>
@@ -161,19 +185,20 @@
                                 @enderror
 
                                 <div class="table-responsive">
-                                    <table class="table table-bordered" style="min-width: 1000px;">
-                                        <thead>
+                                    <table class="table table-bordered" style="min-width: 100%; table-layout: fixed;">
+                                        <thead class="table-light">
                                             <tr>
-                                                <th style="width: 15%;">No. Invoice <span class="text-danger">*</span></th>
+                                                <th style="width: 15%;">No. Invoice <span class="text-danger">*</span>
+                                                </th>
                                                 <th style="width: 20%;">Produk <span class="text-danger">*</span></th>
-                                                <th style="width: 15%;">Gambar Produk</th>
+                                                <th style="width: 10%;">Gambar</th>
                                                 <th style="width: 8%;">Qty <span class="text-danger">*</span></th>
                                                 <th style="width: 12%;">Tgl. Order <span class="text-danger">*</span></th>
                                                 <th style="width: 12%;">Tgl. Terima <span class="text-danger">*</span>
                                                 </th>
-                                                <th style="width: 13%;">Alasan Retur <span class="text-danger">*</span>
+                                                <th style="width: 18%;">Alasan Retur <span class="text-danger">*</span>
                                                 </th>
-                                                <th style="width: 5%;" class="text-center">Aksi</th>
+                                                <th style="width: 5%;" class="text-center">#</th>
                                             </tr>
                                         </thead>
                                         <tbody id="product-details-tbody">
@@ -220,7 +245,6 @@
                                                                 @foreach ($products as $product)
                                                                     <option value="{{ $product->MFIMA_ItemID }}"
                                                                         {{ $productId == $product->MFIMA_ItemID ? 'selected' : '' }}>
-                                                                        {{ $product->MFIMA_ItemID }} -
                                                                         {{ $product->MFIMA_Description }}
                                                                     </option>
                                                                 @endforeach
@@ -231,12 +255,14 @@
                                                                 <a href="{{ Storage::url($productImage) }}"
                                                                     target="_blank">
                                                                     <img src="{{ Storage::url($productImage) }}"
-                                                                        alt="Gambar Produk" class="img-thumbnail" style="max-width: 100px; max-height: 100px;">
+                                                                        alt="Gambar Produk" class="img-thumbnail"
+                                                                        style="max-width: 100px; max-height: 100px;">
                                                                 </a>
                                                             @endif
                                                             <input type="file"
                                                                 name="details[{{ $i }}][product_image]"
-                                                                class="form-control form-control-sm mt-1" accept=".jpg,.jpeg,.png">
+                                                                class="form-control form-control-sm mt-1"
+                                                                accept=".jpg,.jpeg,.png">
                                                             <input type="hidden"
                                                                 name="details[{{ $i }}][old_product_image]"
                                                                 value="{{ $productImage }}">
@@ -293,13 +319,13 @@
                     style="width: 100%;">
                     <option value="">-- Pilih Produk --</option>
                     @foreach ($products as $product)
-                        <option value="{{ $product->MFIMA_ItemID }}">{{ $product->MFIMA_ItemID }} -
-                            {{ $product->MFIMA_Description }}</option>
+                        <option value="{{ $product->MFIMA_ItemID }}">{{ $product->MFIMA_Description }}</option>
                     @endforeach
                 </select>
             </td>
             <td>
-                <input type="file" name="details[__INDEX__][product_image]" class="form-control" accept=".jpg,.jpeg,.png">
+                <input type="file" name="details[__INDEX__][product_image]" class="form-control"
+                    accept=".jpg,.jpeg,.png">
             </td>
             <td><input type="number" name="details[__INDEX__][quantity]" class="form-control" min="1" required>
             </td>
@@ -312,6 +338,40 @@
     </template>
 
 @endsection
+
+{{-- Modal Pilih Item Invoice --}}
+<div class="modal fade" id="invoiceItemsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Pilih Item dari Invoice</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table class="table table-hover" id="invoice-items-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 5%;">Pilih</th>
+                                <th>Kode Produk</th>
+                                <th>Nama Produk</th>
+                                <th>Qty Invoice</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{-- Data akan di-append via JS --}}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-primary" id="btn-add-selected-items">Tambahkan Item
+                    Terpilih</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 
 @push('scripts')
@@ -361,7 +421,7 @@
                 });
 
                 // Buka dan fokus otomatis ke kolom search (biar langsung bisa ngetik)
-                $select.select2('open');
+                // $select.select2('open');
 
                 rowIndex++;
             });
@@ -383,6 +443,178 @@
             if (rowIndex === 0) {
                 $('#add-row-btn').click();
             }
+
+            // --- LOGIKA PENCARIAN INVOICE ---
+            $('#btn-search-invoice').on('click', function() {
+                const invoiceNo = $('#invoice_search').val();
+                const companyType = $('#company_type').val(); // Ambil dari input readonly
+
+                if (!invoiceNo) {
+                    Swal.fire('Peringatan', 'Silakan masukkan nomor invoice.', 'warning');
+                    return;
+                }
+
+                // Tampilkan loading
+                Swal.fire({
+                    title: 'Mencari Invoice...',
+                    text: 'Mohon tunggu sebentar.',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                $.ajax({
+                    url: "{{ route('product-claim-form.get-invoice-details') }}",
+                    type: "GET",
+                    data: {
+                        invoice_no: invoiceNo,
+                        company_type: companyType
+                    },
+                    success: function(response) {
+                        Swal.close();
+                        if (Array.isArray(response) && response.length > 0) {
+                            populateInvoiceModal(response);
+                            $('#invoiceItemsModal').modal('show');
+                        } else {
+                            Swal.fire('Info', 'Invoice tidak ditemukan atau tidak ada item.',
+                                'info');
+                        }
+                    },
+                    error: function(xhr) {
+                        Swal.close();
+                        let msg = 'Terjadi kesalahan saat mencari invoice.';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            msg = xhr.responseJSON.message;
+                        }
+                        Swal.fire('Error', msg, 'error');
+                    }
+                });
+            });
+
+            function populateInvoiceModal(items) {
+                const tbody = $('#invoice-items-table tbody');
+                tbody.empty();
+
+                if (items.length === 0) {
+                    tbody.append('<tr><td colspan="4" class="text-center">Tidak ada item ditemukan.</td></tr>');
+                    return;
+                }
+
+                items.forEach((item, index) => {
+                    const row = `
+                        <tr>
+                            <td>
+                                <input type="checkbox" class="invoice-item-checkbox" value="${index}"
+                                    data-invoice="${item.invoice_no}"
+                                    data-date="${item.invoice_date}"
+                                    data-order-date="${item.order_date}"
+                                    data-product-id="${item.product_id}"
+                                    data-qty="${item.quantity}">
+                            </td>
+                            <td>${item.product_id}</td>
+                            <td>${item.product_name}</td>
+                            <td>${item.quantity}</td>
+                        </tr>
+                    `;
+                    tbody.append(row);
+                });
+            }
+
+            $('#btn-add-selected-items').on('click', function() {
+                const selectedCheckboxes = $('.invoice-item-checkbox:checked');
+
+                if (selectedCheckboxes.length === 0) {
+                    Swal.fire('Peringatan', 'Pilih setidaknya satu item.', 'warning');
+                    return;
+                }
+
+                // Cek apakah ada baris pertama yang kosong
+                const rows = $('#product-details-tbody .detail-row');
+                if (rows.length === 1) {
+                    const firstRow = rows.first();
+                    const invoiceVal = firstRow.find('input[name*="[invoice_id]"]').val();
+                    const productVal = firstRow.find('.product-select').val();
+
+                    // Jika kosong, hapus dulu sebelum tambah yang baru
+                    if (!invoiceVal && !productVal) {
+                        firstRow.find('.remove-row-btn').click();
+                    }
+                }
+
+                let duplicateCount = 0;
+
+                selectedCheckboxes.each(function() {
+                    const $cb = $(this);
+                    const invoiceNo = $cb.data('invoice');
+                    const invoiceDate = $cb.data('date');
+                    const orderDate = $cb.data('order-date');
+                    const productId = $cb.data('product-id');
+                    // const qty = $cb.data('qty'); 
+
+                    // Cek duplikasi sebelum menambah
+                    let isDuplicate = false;
+                    $('#product-details-tbody .product-select').each(function() {
+                        if ($(this).val() == productId) {
+                            isDuplicate = true;
+                            return false; // break loop
+                        }
+                    });
+
+                    if (isDuplicate) {
+                        duplicateCount++;
+                        return; // skip adding this item
+                    }
+
+                    // Tambah baris baru
+                    $('#add-row-btn').click();
+
+                    // Ambil baris terakhir yang baru saja ditambahkan
+                    const lastRow = $('#product-details-tbody .detail-row').last();
+
+                    // Isi data
+                    lastRow.find('input[name*="[invoice_id]"]').val(invoiceNo);
+                    lastRow.find('input[name*="[order_date]"]').val(orderDate);
+
+                    // Set Product ID di Select2
+                    const productSelect = lastRow.find('.product-select');
+                    if (productSelect.find("option[value='" + productId + "']").length) {
+                        productSelect.val(productId).trigger('change');
+                    }
+                });
+
+                $('#invoiceItemsModal').modal('hide');
+
+                if (duplicateCount > 0) {
+                    Swal.fire('Info',
+                        `${duplicateCount} item tidak ditambahkan karena sudah ada di daftar.`, 'info');
+                }
+            });
+
+            // --- LOGIKA CEK DUPLIKASI MANUAL ---
+            $(document).on('change', '.product-select', function() {
+                const currentSelect = $(this);
+                const currentValue = currentSelect.val();
+
+                if (!currentValue) return;
+
+                let isDuplicate = false;
+                $('#product-details-tbody .product-select').not(currentSelect).each(function() {
+                    if ($(this).val() == currentValue) {
+                        isDuplicate = true;
+                        return false; // break loop
+                    }
+                });
+
+                if (isDuplicate) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Produk Duplikat',
+                        text: 'Produk ini sudah ada di daftar. Silakan pilih produk lain.',
+                    });
+                    currentSelect.val('').trigger('change');
+                }
+            });
         });
 
         // Fungsi untuk inisialisasi Select2 pada baris 'old' atau 'claim'

@@ -324,6 +324,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/{id}/export-pdf', [ClaimProductFormController::class, 'exportPDF'])->name('export-pdf');
             Route::put('/{id}/update', [ClaimProductFormController::class, 'update'])->name('update');
             Route::delete('/{id}/delete', [ClaimProductFormController::class, 'destroy'])->name('destroy');
+            Route::get('/get-invoice-details', [ClaimProductFormController::class, 'getInvoiceDetails'])->name('get-invoice-details');
 
             Route::prefix('milenia')->group(function () {
                 Route::get('/', [ClaimProductFormController::class, 'indexMilenia'])->middleware('permission:lihat_klaim_produk_milenia')->name('milenia.index');

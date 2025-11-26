@@ -79,7 +79,7 @@ class ClaimProductFormController extends Controller
 
     public function createMilenia()
     {
-        $salesUsers = User::role('sales_milenia')->orderBy('Nama')->get();
+        $salesUsers = User::role(['sales_milenia', 'head_sales_milenia', 'trainer_milenia'])->orderBy('Nama')->get();
         $salesHeads = User::role('head_sales_milenia')->orderBy('Nama')->get();
         $checkers = User::role('trainer_milenia')->orderBy('Nama')->get();
 
@@ -102,7 +102,7 @@ class ClaimProductFormController extends Controller
 
         $claim->load('claimDetails');
 
-        $salesUsers = User::role('sales_milenia')->orderBy('Nama')->get();
+        $salesUsers = User::role(['sales_milenia', 'head_sales_milenia', 'trainer_milenia'])->orderBy('Nama')->get();
         $salesHeads = User::role('head_sales_milenia')->orderBy('Nama')->get();
         $checkers = User::role('trainer_milenia')->orderBy('Nama')->get();
 
@@ -150,7 +150,7 @@ class ClaimProductFormController extends Controller
 
     public function createMap()
     {
-        $salesUsers = User::role('sales_map')->orderBy('Nama')->get();
+        $salesUsers = User::role(['sales_map', 'head_sales_map', 'trainer_map'])->orderBy('Nama')->get();
         $salesHeads = User::role('head_sales_map')->orderBy('Nama')->get();
         $checkers = User::role('trainer_map')->orderBy('Nama')->get();
 
@@ -173,7 +173,7 @@ class ClaimProductFormController extends Controller
 
         $claim->load('claimDetails');
 
-        $salesUsers = User::role('sales_map')->orderBy('Nama')->get();
+        $salesUsers = User::role(['sales_map', 'head_sales_map', 'trainer_map'])->orderBy('Nama')->get();
         $salesHeads = User::role('head_sales_map')->orderBy('Nama')->get();
         $checkers = User::role('trainer_map')->orderBy('Nama')->get();
 
@@ -732,5 +732,65 @@ class ClaimProductFormController extends Controller
             : 'product-claim-form.map';
 
         return $baseRouteName . '.' . $action;
+    }
+
+    public function getInvoiceDetails(Request $request)
+    {
+        $request->validate([
+            'invoice_no' => 'required|string',
+            'company_type' => 'required|string',
+        ]);
+
+        $invoiceNo = $request->invoice_no;
+        $companyType = $request->company_type;
+
+        $connection = $companyType === 'PT Milenia Mega Mandiri' ? 'sqlsrv_wh' : 'sqlsrv_snx';
+
+        // 1. cari di table Pusat (SOIVH & SOIVD)
+        $invoice = DB::connection($connection)
+            ->table('SOIVH')
+            ->join('SOIVD', 'SOIVH.SOIVH_InvoiceID', '=', 'SOIVD.SOIVD_InvoiceID')
+            ->join('MFIMA', 'SOIVD.SOIVD_ItemID', '=', 'MFIMA.MFIMA_ItemID')
+            ->where('SOIVH.SOIVH_InvoiceID', $invoiceNo)
+            ->select(
+                'SOIVH.SOIVH_InvoiceID as invoice_no',
+                'SOIVH.SOIVH_InvoiceDate as invoice_date',
+                'MFIMA.MFIMA_ItemID as product_id',
+                'MFIMA.MFIMA_Description as product_name',
+                'SOIVD.SOIVD_InvoiceQty as quantity',
+                'SOIVD.SOIVD_OrderDate as order_date'
+            )
+            ->get();
+
+        // 2. Jika tidak ketemu di Pusat, cari di table Cabang (SOIVH_CABANG & SOIVD_CABANG)
+        if ($invoice->isEmpty()) {
+            $invoice = DB::connection($connection)
+                ->table('SOIVH_CABANG')
+                ->join('SOIVD_CABANG', 'SOIVH_CABANG.SOIVH_InvoiceID', '=', 'SOIVD_CABANG.SOIVD_InvoiceID')
+                ->join('MFIMA', 'SOIVD_CABANG.SOIVD_ItemID', '=', 'MFIMA.MFIMA_ItemID')
+                ->where('SOIVH_CABANG.SOIVH_InvoiceID', $invoiceNo)
+                ->select(
+                    'SOIVH_CABANG.SOIVH_InvoiceID as invoice_no',
+                    'SOIVH_CABANG.SOIVH_InvoiceDate as invoice_date',
+                    'MFIMA.MFIMA_ItemID as product_id',
+                    'MFIMA.MFIMA_Description as product_name',
+                    'SOIVD_CABANG.SOIVD_InvoiceQty as quantity',
+                    'SOIVD_CABANG.SOIVD_OrderDate as order_date'
+                )
+                ->get();
+        }
+
+        if ($invoice->isEmpty()) {
+            return response()->json(['message' => 'Invoice tidak ditemukan.'], 404);
+        }
+
+        // Format tanggal agar seragam (YYYY-MM-DD)
+        $formattedInvoice = $invoice->map(function ($item) {
+            $item->invoice_date = substr($item->invoice_date, 0, 10);
+            $item->order_date = substr($item->order_date, 0, 10);
+            return $item;
+        });
+
+        return response()->json($formattedInvoice);
     }
 }
