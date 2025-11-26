@@ -12,6 +12,7 @@ class ClaimProduct extends Model
     protected $table = 'tt_product_claim';
     protected $fillable = [
         'company_type',
+        'claim_type',
         'sales_id',
         'sales_head_id',
         'checker_id',

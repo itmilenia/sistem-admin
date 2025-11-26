@@ -21,6 +21,7 @@ class StoreClaimProductRequest extends FormRequest
             'sales_head_id' => 'required|integer|exists:users,ID',
             'checker_id' => 'required|integer|exists:users,ID',
             'retail_name' => 'required|string|max:255',
+            'claim_type' => 'required|in:WHOLESALE,ECOMMERCE',
             'claim_date' => 'required|date',
 
             // Detail

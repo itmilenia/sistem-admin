@@ -82,6 +82,24 @@
                                     </div>
 
                                     <div class="col-md-6">
+                                        <label for="claim_type" class="form-label">Jenis Klaim <span
+                                                class="text-danger">*</span></label>
+                                        <select class="form-select select2-basic @error('claim_type') is-invalid @enderror"
+                                            id="claim_type" name="claim_type" required>
+                                            <option value="">-- Pilih Jenis Klaim --</option>
+                                            <option value="WHOLESALE"
+                                                {{ old('claim_type', $claim->claim_type) == 'WHOLESALE' ? 'selected' : '' }}>
+                                                WHOLESALE</option>
+                                            <option value="ECOMMERCE"
+                                                {{ old('claim_type', $claim->claim_type) == 'ECOMMERCE' ? 'selected' : '' }}>
+                                                ECOMMERCE</option>
+                                        </select>
+                                        @error('claim_type')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    <div class="col-md-6">
                                         <label for="retail_name" class="form-label">Nama Ritel <span
                                                 class="text-danger">*</span></label>
                                         <input type="text"
@@ -188,15 +206,21 @@
                                     <table class="table table-bordered" style="min-width: 100%; table-layout: fixed;">
                                         <thead class="table-light">
                                             <tr>
-                                                <th class="text-center" style="width: 15%;">No. Invoice <span class="text-danger">*</span>
+                                                <th class="text-center" style="width: 15%;">No. Invoice <span
+                                                        class="text-danger">*</span>
                                                 </th>
-                                                <th class="text-center" style="width: 20%;">Produk <span class="text-danger">*</span></th>
+                                                <th class="text-center" style="width: 20%;">Produk <span
+                                                        class="text-danger">*</span></th>
                                                 <th class="text-center" style="width: 10%;">Gambar/Video</th>
-                                                <th class="text-center" style="width: 8%;">Qty <span class="text-danger">*</span></th>
-                                                <th class="text-center" style="width: 12%;">Tgl. Order <span class="text-danger">*</span></th>
-                                                <th class="text-center" style="width: 12%;">Tgl. Terima <span class="text-danger">*</span>
+                                                <th class="text-center" style="width: 8%;">Qty <span
+                                                        class="text-danger">*</span></th>
+                                                <th class="text-center" style="width: 12%;">Tgl. Order <span
+                                                        class="text-danger">*</span></th>
+                                                <th class="text-center" style="width: 12%;">Tgl. Terima <span
+                                                        class="text-danger">*</span>
                                                 </th>
-                                                <th class="text-center" style="width: 18%;">Alasan Retur <span class="text-danger">*</span>
+                                                <th class="text-center" style="width: 18%;">Alasan Retur <span
+                                                        class="text-danger">*</span>
                                                 </th>
                                                 <th style="width: 5%;" class="text-center">#</th>
                                             </tr>

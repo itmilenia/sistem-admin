@@ -47,6 +47,9 @@
                             <dd class="col-sm-8">{{ \Carbon\Carbon::parse($claim->claim_date)->translatedFormat('d F Y') }}
                             </dd>
 
+                            <dt class="col-sm-4">Jenis Klaim</dt>
+                            <dd class="col-sm-8">{{ $claim->claim_type ?? 'N/A' }}</dd>
+
                             <hr class="my-2">
 
                             <dt class="col-sm-4">Sales</dt>

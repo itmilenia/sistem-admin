@@ -51,6 +51,7 @@
                                         <th style="width: 5%;" class="text-center align-middle">#</th>
                                         <th class="text-center align-middle">Nama Ritel</th>
                                         <th class="text-center align-middle">Tipe Perusahaan</th>
+                                        <th class="text-center align-middle">Jenis Klaim</th>
                                         <th class="text-center align-middle">Tanggal Klaim</th>
                                         <th class="text-center align-middle">Sales</th>
                                         <th class="text-center align-middle">Sales Head</th>
@@ -66,6 +67,7 @@
                                             <td class="text-center">{{ $loop->iteration }}</td>
                                             <td>{{ $claim->retail_name }}</td>
                                             <td>{{ $claim->company_type }}</td>
+                                            <td>{{ $claim->claim_type ?? 'N/A' }}</td>
                                             <td class="text-center">
                                                 {{ \Carbon\Carbon::parse($claim->claim_date)->translatedFormat('d M Y') }}
                                             </td>

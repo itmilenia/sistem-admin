@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('tt_product_claim', function (Blueprint $table) {
             $table->id();
             $table->string('company_type');
+            $table->string('claim_type');
             $table->integer('sales_id');
             $table->integer('sales_head_id');
             $table->integer('checker_id');

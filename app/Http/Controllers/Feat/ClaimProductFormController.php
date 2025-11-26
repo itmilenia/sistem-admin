@@ -199,6 +199,7 @@ class ClaimProductFormController extends Controller
         try {
             $headerData = $request->only([
                 'company_type',
+                'claim_type',
                 'sales_id',
                 'sales_head_id',
                 'checker_id',
@@ -269,6 +270,7 @@ class ClaimProductFormController extends Controller
         try {
             $headerData = $request->only([
                 'company_type',
+                'claim_type',
                 'sales_id',
                 'sales_head_id',
                 'checker_id',
