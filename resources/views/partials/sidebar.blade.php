@@ -68,7 +68,7 @@
                     <label>Navigation</label>
                 </li>
 
-                <li class="nxl-item nxl-hasmenu {{ request()->routeIs(['dashboard']) ? 'active' : '' }}">
+                <li class="nxl-item nxl-hasmenu {{ request()->routeIs(['dashboard.home']) ? 'active' : '' }}">
                     <a href="{{ route('dashboard.home') }}" class="nxl-link">
                         <span class="nxl-micon"><i class="feather-airplay"></i></span>
                         <span class="nxl-mtext">Dashboard</span>
