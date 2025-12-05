@@ -119,9 +119,11 @@
                 @canany(['lihat_penjualan_sales_map_cabang', 'lihat_penjualan_sales_map_pusat',
                     'lihat_penjualan_sales_milenia_cabang', 'lihat_penjualan_sales_milenia_pusat',
                     'lihat_surat_agreement_map', 'lihat_surat_agreement_milenia', 'lihat_surat_penawaran_map',
-                    'lihat_surat_penawaran_milenia'])
+                    'lihat_surat_penawaran_milenia', 'lihat_pending_sales_order_map_pusat',
+                    'lihat_pending_sales_order_map_cabang', 'lihat_pending_sales_order_milenia_pusat',
+                    'lihat_pending_sales_order_milenia_cabang'])
                     <li
-                        class="nxl-item nxl-hasmenu {{ request()->routeIs(['salesperson-sales.*', 'quotation-letter.*', 'agreement-letter.*']) ? 'active' : '' }}">
+                        class="nxl-item nxl-hasmenu {{ request()->routeIs(['salesperson-sales.*', 'quotation-letter.*', 'agreement-letter.*', 'pending-so.*']) ? 'active' : '' }}">
                         <a href="javascript:void(0);" class="nxl-link">
                             <span class="nxl-micon"><i class="feather-briefcase"></i></span>
                             <span class="nxl-mtext">Sales</span><span class="nxl-arrow"><i
@@ -134,6 +136,12 @@
                                     class="nxl-item {{ request()->routeIs(['salesperson-sales.transactions.*']) ? 'active' : '' }}">
                                     <a class="nxl-link" href="{{ route('salesperson-sales.landing') }}">Data
                                         Penjualan Sales</a>
+                                </li>
+                            @endcanany
+
+                            @canany(['lihat_pending_sales_order_map_pusat', 'lihat_pending_sales_order_milenia_pusat', 'lihat_pending_sales_order_milenia_cabang'])
+                                <li class="nxl-item {{ request()->routeIs(['pending-so.*']) ? 'active' : '' }}">
+                                    <a class="nxl-link" href="{{ route('pending-so.landing') }}">Pending Sales Order</a>
                                 </li>
                             @endcanany
 

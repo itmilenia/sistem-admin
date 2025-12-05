@@ -1,22 +1,27 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\Master\TaxController;
-use App\Http\Controllers\Master\RoleController;
-use App\Http\Controllers\Master\UserController;
-use App\Http\Controllers\Feat\CustomerController;
-use App\Http\Controllers\Master\PermissionController;
-use App\Http\Controllers\Master\ProductBrandController;
 use App\Http\Controllers\Feat\AgreementLetterController;
-use App\Http\Controllers\Feat\QuotationLetterController;
 use App\Http\Controllers\Feat\ClaimProductFormController;
+use App\Http\Controllers\Feat\CustomerController;
+use App\Http\Controllers\Feat\CustomerTransactionController;
+use App\Http\Controllers\Feat\PendingSalesOrderController;
 use App\Http\Controllers\Feat\ProductPricelistController;
 use App\Http\Controllers\Feat\PromotionProgramController;
+use App\Http\Controllers\Feat\QuotationLetterController;
 use App\Http\Controllers\Feat\SalespersonSalesController;
 use App\Http\Controllers\Master\CustomerNetworkController;
-use App\Http\Controllers\Feat\CustomerTransactionController;
+use App\Http\Controllers\Master\PermissionController;
+use App\Http\Controllers\Master\ProductBrandController;
+use App\Http\Controllers\Master\RoleController;
+use App\Http\Controllers\Master\TaxController;
+use App\Http\Controllers\Master\UserController;
+use Illuminate\Support\Facades\Route;
+
+Route::get('/debug-sosod', function () {
+    return response()->json(\Illuminate\Support\Facades\DB::connection('sqlsrv_wh')->table('SOSOD')->first());
+});
 
 Route::get('/', function () {
     return auth()
@@ -48,7 +53,6 @@ Route::middleware('auth')->group(function () {
         Route::get('/customer/export/map', [DashboardController::class, 'exportCustomerMap'])->name('export.customer-map');
         Route::get('/customer/export/map-branch', [DashboardController::class, 'exportCustomerMapBranch'])->name('export.customer-map-branch');
     });
-
 
     Route::prefix('manajemen-fitur')->group(function () {
         // Route Jaringan Customer
@@ -208,6 +212,29 @@ Route::middleware('auth')->group(function () {
                 Route::get('/{id}/transactions', [SalespersonSalesController::class, 'getSalespersonTransactionsDataMapBranch'])->name('transactions.map.data.branch.details');
                 Route::get('/export-all-per-sales', [SalespersonSalesController::class, 'exportAllSalesMapBranchByBrand'])->name('transactions.map-branch.export-all-per-sales');
                 Route::get('/{id}/export-sales-by-brand', [SalespersonSalesController::class, 'exportSalesMapBranchByBrand'])->name('transactions.map-branch.export-sales-by-brand');
+            });
+        });
+
+        // Route Pending Sales Order (SO tanpa DO)
+        Route::prefix('pending-sales-order')->name('pending-so.')->group(function () {
+            Route::get('/', [PendingSalesOrderController::class, 'landing'])->name('landing');
+
+            Route::middleware('permission:lihat_pending_sales_order_milenia_pusat')->group(function () {
+                Route::get('/milenia', [PendingSalesOrderController::class, 'indexMilenia'])->name('milenia.index');
+                Route::get('/milenia/data', [PendingSalesOrderController::class, 'getDataMilenia'])->name('milenia.data');
+                Route::get('/milenia/{id}', [PendingSalesOrderController::class, 'showMilenia'])->name('milenia.show');
+            });
+
+            Route::middleware('permission:lihat_pending_sales_order_milenia_cabang')->group(function () {
+                Route::get('/milenia-cabang', [PendingSalesOrderController::class, 'indexMileniaBranch'])->name('milenia-branch.index');
+                Route::get('/milenia-cabang/data', [PendingSalesOrderController::class, 'getDataMileniaBranch'])->name('milenia-branch.data');
+                Route::get('/milenia-cabang/{id}', [PendingSalesOrderController::class, 'showMileniaBranch'])->name('milenia-branch.show');
+            });
+
+            Route::middleware('permission:lihat_pending_sales_order_map_pusat')->group(function () {
+                Route::get('/map', [PendingSalesOrderController::class, 'indexMap'])->name('map.index');
+                Route::get('/map/data', [PendingSalesOrderController::class, 'getDataMap'])->name('map.data');
+                Route::get('/map/{id}', [PendingSalesOrderController::class, 'showMap'])->name('map.show');
             });
         });
 

@@ -157,6 +157,23 @@ return [
                 'legacy_limit' => true,
             ],
         ],
+        
+        'sqlsrv_rd' => [
+            'driver' => 'sqlsrv',
+            'host' => env('DB_RD_HOST', 'localhost'),
+            'port' => env('DB_RD_PORT', '1433'),
+            'database' => env('DB_RD_DATABASE', 'VDB-RD'),
+            'username' => env('DB_RD_USERNAME', 'milenia'),
+            'password' => env('DB_RD_PASSWORD', 'milenia'),
+            'charset' => 'utf8',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'encrypt' => env('DB_ENCRYPT', 'no'),
+            'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', 'true'),
+            'options' => [
+                'legacy_limit' => true,
+            ],
+        ],
 
         'sqlsrv_snx' => [
             'driver' => 'sqlsrv',

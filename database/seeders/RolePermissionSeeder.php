@@ -63,6 +63,9 @@ class RolePermissionSeeder extends Seeder
             'tanda_tangan_sales_klaim_produk_map',
             'tanda_tangan_head_sales_klaim_produk_milenia',
             'tanda_tangan_head_sales_klaim_produk_map',
+            'lihat_pending_sales_order_milenia_pusat',
+            'lihat_pending_sales_order_milenia_cabang',
+            'lihat_pending_sales_order_map_pusat',
             'kelola_peran',
             'kelola_hak_akses',
             'kelola_data_master',
@@ -135,6 +138,9 @@ class RolePermissionSeeder extends Seeder
             'ubah_klaim_produk_map',
             'hapus_klaim_produk_milenia',
             'hapus_klaim_produk_map',
+            'lihat_pending_sales_order_milenia_pusat',
+            'lihat_pending_sales_order_milenia_cabang',
+            'lihat_pending_sales_order_map_pusat',
         ]);
 
         $adminCabang_milenia->syncPermissions([
@@ -159,6 +165,7 @@ class RolePermissionSeeder extends Seeder
             'buat_klaim_produk_milenia',
             'ubah_klaim_produk_milenia',
             'hapus_klaim_produk_milenia',
+            'lihat_pending_sales_order_milenia_cabang',
         ]);
 
         $adminPusat_map->syncPermissions([
@@ -185,6 +192,7 @@ class RolePermissionSeeder extends Seeder
             'buat_klaim_produk_map',
             'ubah_klaim_produk_map',
             'hapus_klaim_produk_map',
+            'lihat_pending_sales_order_map_pusat',
         ]);
 
         $trainer_milenia->syncPermissions([
